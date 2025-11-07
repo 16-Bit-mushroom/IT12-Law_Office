@@ -1,0 +1,49 @@
+/* static/css/pages/dashboard.css */
+
+
+
+/* Uses CSS Grid for the two-column layout */
+.dashboard-grid {
+    display: grid;
+    /* 2fr 1fr means the first column is twice as wide as the second */
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+/* Styles for the main (left) column */
+.dashboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Styles for the sidebar (right) column */
+.dashboard-sidebar {
+    display: grid;
+    /* Makes the cards stack and space out */
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+/* --- Stats Card Variation --- */
+/* This styles the .card when it also has the .card-stats class */
+.card-stats {
+    text-align: center;
+    padding: 24px;
+}
+
+.card-stats .stats-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.1;
+}
+
+.card-stats .stats-label {
+    display: block;
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 4px;
+}
+

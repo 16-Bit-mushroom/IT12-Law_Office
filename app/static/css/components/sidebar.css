@@ -1,0 +1,60 @@
+
+.sidebar-header img {
+    width: 42px;
+}
+
+body {
+    min-height: 100vh;
+    background-color: aliceblue;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 260px;
+    background-color: grey;
+    padding: 25px 20px;
+
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    
+}
+
+.sidebar-header h2 {
+    font-size: 1.25 rem;
+    font-weight: 600;
+    color: white;
+    margin-left: 23px;
+}
+
+
+.sidebar-links h4 {
+    color:  white;
+    font-weight: 500px;
+    margin: 10px 0;
+    white-space: nowrap;
+}
+
+.sidebar-links {
+    list-style: none;
+    margin-top: 20;
+}
+
+
+.sidebar-links li a {
+    display: flex;
+    align-items: center;
+    gap: 0 15px;
+    color: white;
+    font-weight: 500;
+    padding: 15px 5px;
+    white-space: nowrap;
+    text-decoration: none;
+    
+}

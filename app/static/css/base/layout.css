@@ -1,0 +1,17 @@
+/* static/css/base/layout.css */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.main-wrapper {
+    flex-grow: 1; /* Takes up all remaining space */
+    display: flex;
+    flex-direction: column; /* Stacks top-bar on top of page-content */
+}
+
+.page-content {
+    flex-grow: 1; /* Takes up all space below the top-bar */
+    padding: 24px;
+    overflow-y: auto; /* Allows content to scroll if it's too long */
+}

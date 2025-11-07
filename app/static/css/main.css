@@ -1,0 +1,12 @@
+@import url(/app/static/css/base/reset.css);
+@import url(/app/static/css/components/sidebar.css);
+
+@import url(/app/static/css/base/_variable.css);
+@import url(/app/static/css/components/_dashboard.css);
+@import url(/app/static/css/components/_data-card.css);
+@import url(/app/static/css/components/_search-bar.css);
+@import url(/app/static/css/components/_document-list.css);
+@import url(/app/static/css/components/_status-tag.css);
+@import url(/app/static/css/components/_deadline-list.css);
+/* ... other global styles ... */
+

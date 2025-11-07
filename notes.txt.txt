@@ -1,0 +1,7 @@
+Create component
+
+- side bar navigation [x]
+- search bar 
+- small cards
+- buttons
+- table

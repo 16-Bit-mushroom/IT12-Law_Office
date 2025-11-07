@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/app/static/css/main.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/app/static/img/scales-of-justice.png" alt="logo">
+            <h2>RJB Law</h2>
+        </div>
+
+        <ul class="sidebar-links">
+            <li><a href="dashboard_page.html"><span><img src="/app/static/img/dashboard.svg" alt=""></span>Dashboard</a>
+            </li>
+            <li><a href="clients_page.html"><span><img src="/app/static/img/clients.svg" alt=""></span>Clients</a></li>
+            <li><a href="documents_page.html"><span><img src="/app/static/img/documents.svg" alt=""></span>Documents</a>
+            </li>
+            <li><a href="case_logs_page.html"><span><img src="/app/static/img/cases.svg" alt=""></span>Case Logs</a>
+            </li>
+            <li><a href="payments_page.html"><span><img src="/app/static/img/payments.svg" alt=""></span>Payments</a>
+            </li>
+        </ul>
+
+        <!-- <div class="user-account">
+            <div class="user-profile">
+                <img src="/app/static/img/profile.svg" alt="profile">
+                <p>Admin</p>
+            </div>
+        </div> -->
+    </aside>
+
+    <div class="page-container">
+
+        <header class="top-bar">
+            <div class="search-bar">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <header class="dashboard-header">
+                <h1>Dashboard</h1>
+                <p>Welcome back, here's your legal management overview</p>
+            </header>
+
+            <section class="dashboard-cards">
+
+                <div class="data-card">
+                    <div class="data-card__info">
+                        <span class="data-card__title">Total Documents</span>
+                        <span class="data-card__value">1243</span>
+                    </div>
+                    <div class="data-card__icon data-card__icon--blue"></div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-card__info">
+                        <span class="data-card__title">Pending Review</span>
+                        <span class="data-card__value">23</span>
+                    </div>
+                    <div class="data-card__icon data-card__icon--gold"></div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-card__info">
+                        <span class="data-card__title">Completed</span>
+                        <span class="data-card__value">1198</span>
+                    </div>
+                    <div class="data-card__icon data-card__icon--green"></div>
+                </div>
+
+            </section>
+
+            <section class="dashboard-panels-bottom">
+                <div class="panel-card">
+
+                    <header class="panel-card__header">
+                        <h3 class="panel-card__title">
+                            <svg class="panel-card__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            Recent Documents
+                        </h3>
+                    </header>
+
+                    <div class="panel-card__body">
+
+                        <div class="document-row">
+                            <div class="document-row__info">
+                                <p class="document-row__title">Property Deed Transfer</p>
+                                <span class="document-row__subtitle">Estill, Chris</span>
+                            </div>
+                            <span class="document-row__date">2025-10-28</span>
+                            <span class="status-tag status-tag--pending">Pending</span>
+                        </div>
+
+                        <div class="document-row document-row--highlight">
+                            <div class="document-row__info">
+                                <p class="document-row__title">Property Deed Transfer</p>
+                                <span class="document-row__subtitle">Quai, JJ</span>
+                            </div>
+                            <span class="document-row__date">2025-10-26</span>
+                            <span class="status-tag status-tag--completed">Completed</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel-card">
+
+                    <header class="panel-card__header">
+                        <h3 class="panel-card__title">
+                            <svg class="panel-card__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Upcoming Deadlines
+                        </h3>
+                    </header>
+
+                    <div class="panel-card__body">
+
+                        <div class="deadline-item">
+                            <div class="deadline-item__header">
+                                <p class="deadline-item__title">Estate Settlement</p>
+                                <span class="deadline-item__days">6d</span>
+                            </div>
+                            <span class="deadline-item__date">Nov 10, 2028</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 90%;"></div>
+                            </div>
+                        </div>
+
+                        <hr class="deadline-divider">
+
+                        <div class="deadline-item">
+                            <div class="deadline-item__header">
+                                <p class="deadline-item__title">Property Deed Transfer</p>
+                                <span class="deadline-item__days">13d</span>
+                            </div>
+                            <span class="deadline-item__date">Nov 10, 2028</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 75%;"></div>
+                            </div>
+                        </div>
+
+                        <hr class="deadline-divider">
+
+                        <div class="deadline-item">
+                            <div class="deadline-item__header">
+                                <p class="deadline-item__title">Smith vs. Jones</p>
+                                <span class="deadline-item__days">21d</span>
+                            </div>
+                            <span class="deadline-item__date">Nov 10, 2028</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 60%;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+</body>
+
+</html>

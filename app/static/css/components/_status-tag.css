@@ -1,0 +1,25 @@
+/* app/static/css/components/_status-tag.css */
+
+.status-tag {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px; /* High value for the pill shape */
+    text-align: center;
+    flex-shrink: 0; /* Ensures the tag holds its size */
+    min-width: 80px;
+}
+
+/* Modifier class for Pending status (Gold) */
+.status-tag--pending {
+    background-color: #FDF4E5; /* Very light background */
+    color: var(--color-card-gold); /* Darker text */
+    /* Use the gold variable defined earlier: --color-card-gold: #B59A5F; */
+}
+
+/* Modifier class for Completed status (Green) */
+.status-tag--completed {
+    background-color: #E6F3E6; /* Very light background */
+    color: var(--color-card-green); /* Darker text */
+    /* Use the green variable defined earlier: --color-card-green: #2A9D49; */
+}

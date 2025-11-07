@@ -1,0 +1,55 @@
+/* app/static/css/components/_deadline-list.css */
+
+.deadline-item {
+    padding: 15px 0;
+}
+
+.deadline-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Aligns title and days remaining */
+    margin-bottom: 5px;
+}
+
+.deadline-item__title {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.deadline-item__days {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.deadline-item__date {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    display: block; /* Ensures it takes full width below the title */
+    margin-bottom: 10px;
+}
+
+.deadline-divider {
+    border: none;
+    border-top: 1px solid #F0F0F0; /* Very light gray separator */
+    margin: 15px 0;
+}
+
+/* app/static/css/components/_deadline-list.css (continued) */
+
+.progress-bar-container {
+    height: 6px;
+    background-color: #E9ECEF; /* Light gray track */
+    border-radius: 3px;
+    overflow: hidden; /* Ensures the blue bar stays inside the rounded corners */
+}
+
+.progress-bar {
+    height: 100%;
+    /* You can define a new, dark primary color if needed, or reuse one */
+    background-color: var(--color-card-blue); /* Dark blue fill (e.g., #1D3557) */
+    /* The width property (e.g., width: 90%) is set inline by your backend/template engine */
+    transition: width 0.3s ease-out; /* Smooth visual update when data changes */
+}

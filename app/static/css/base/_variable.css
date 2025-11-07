@@ -1,0 +1,17 @@
+/* app/static/css/base/_variables.css */
+:root {
+    --color-bg-primary: #F4F4F4;
+    --color-bg-secondary: #FFFFFF;
+    --color-bg-search: #E9ECEF;
+    
+    --color-text-primary: #212529;
+    --color-text-secondary: #6C757D;
+    
+    --color-card-blue: #1D3557;
+    --color-card-gold: #B59A5F;
+    --color-card-green: #2A9D49;
+
+    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --border-radius-m: 12px;
+    --border-radius-s: 8px;
+}

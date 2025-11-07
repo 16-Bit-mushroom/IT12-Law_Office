@@ -1,0 +1,47 @@
+/* app/static/css/components/_document-list.css */
+
+.document-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 15px; /* Added horizontal padding to the rows themselves */
+    margin-bottom: 8px;
+    border-radius: var(--border-radius-s);
+    transition: background-color 0.15s ease;
+}
+
+/* Style for the light gray background on the selected/highlighted row */
+.document-row--highlight {
+    background-color: #F8F9FA; 
+}
+
+/* Optional hover state if you want them to be clickable later */
+.document-row:hover {
+    background-color: #ECEFF1;
+}
+
+.document-row__info {
+    /* Ensures the title/subtitle stack neatly */
+    flex-grow: 1; 
+    margin-right: 20px;
+}
+
+.document-row__title {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.document-row__subtitle {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.document-row__date {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-right: 20px;
+    flex-shrink: 0; /* Prevents the date from being squished */
+}
+

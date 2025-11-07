@@ -1,0 +1,37 @@
+/* app/static/css/components/_search-bar.css */
+
+/* This is the gray bar at the top */
+.top-bar {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: var(--color-bg-primary);
+    border-bottom: 1px solid #DDD; /* Optional: adds a subtle line */
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg-search);
+    border-radius: var(--border-radius-s);
+    padding: 8px 12px;
+    max-width: 400px; /* Or adjust as needed */
+}
+
+.search-bar__icon {
+    color: var(--color-text-secondary);
+    margin-right: 8px;
+    flex-shrink: 0; /* Prevents icon from shrinking */
+}
+
+.search-bar__input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+}
+
+.search-bar__input::placeholder {
+    color: var(--color-text-secondary);
+}

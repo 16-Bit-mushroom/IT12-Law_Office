@@ -1,14 +1,14 @@
-@import url(/app/static/css/base/reset.css);
-@import url(/app/static/css/components/sidebar.css);
-
-@import url(/app/static/css/base/_variable.css);
-@import url(/app/static/css/components/_dashboard.css);
-@import url(/app/static/css/components/_data-card.css);
-@import url(/app/static/css/components/_search-bar.css);
-@import url(/app/static/css/components/_document-list.css);
-@import url(/app/static/css/components/_status-tag.css);
-@import url(/app/static/css/components/_deadline-list.css);
-@import url(/app/static/css/components/_table.css);
-@import url(/app/static/css/components/_button.css);
-/* ... other global styles ... */
-
+/* This approach is less common for CSS imports but would work */
+@import url('/static/css/base/reset.css');
+@import url('/static/css/components/sidebar.css');
+@import url('/static/css/base/_variable.css');
+@import url('/static/css/components/_dashboard.css');
+@import url('/static/css/components/_data-card.css');
+@import url('/static/css/components/_search-bar.css');
+@import url('/static/css/components/_document-list.css');
+@import url('/static/css/components/_status-tag.css');
+@import url('/static/css/components/_deadline-list.css');
+@import url('/static/css/components/_table.css');
+@import url('/static/css/components/_button.css');
+@import url('/static/css/components/_forms.css');
+@import url('/static/css/base/layout.css');

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <title>RJB Law Office</title>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='img/scales-of-justice.svg') }}" alt="logo">
+            <h2>RJB Law</h2>
+        </div>
+
+        <ul class="sidebar-links">
+
+            <li><a href="{{ url_for('dashboard.dashboard_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/dashboard.svg') }}" alt=""></span>Dashboard</a></li>
+
+            <li><a href="{{ url_for('clients.clients_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients</a></li>
+
+            <li><a href="{{ url_for('documents.documents_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Documents</a></li>
+
+            <li><a href="{{ url_for('case_logs.case_logs_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>Case Logs</a></li>
+
+            <li><a href="{{ url_for('payments.payments_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments</a></li>
+
+        </ul>
+
+    </aside>
+
+    <div class="page-container">
+        {% block content %}
+        <!-- Page content (from child templates) goes here -->
+        {% endblock %}
+    </div>
+
+</body>
+
+</html>

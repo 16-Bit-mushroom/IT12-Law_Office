@@ -1,110 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/app/static/css/main.css">
-    <title>Document</title>
-</head>
+{% block content %}
 
-<body>
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <img src="/app/static/img/scales-of-justice.png" alt="logo">
-            <h2>RJB Law</h2>
+
+<main class="dashboard-content">
+    <header class="dashboard-header">
+
+        <div>
+            <h1>Case Logs <span></span></h1>
+            <p>View and manage all legal cases</p>
         </div>
 
-        <ul class="sidebar-links">
-            <li><a href="dashboard_page.html"><span><img src="/app/static/img/dashboard.svg" alt=""></span>Dashboard</a>
-            </li>
-            <li><a href="clients_page.html"><span><img src="/app/static/img/clients.svg" alt=""></span>Clients</a></li>
-            <li><a href="documents_page.html"><span><img src="/app/static/img/documents.svg" alt=""></span>Documents</a>
-            </li>
-            <li><a href="case_logs_page.html"><span><img src="/app/static/img/cases.svg" alt=""></span>Case Logs</a>
-            </li>
-            <li><a href="payments_page.html"><span><img src="/app/static/img/payments.svg" alt=""></span>Payments</a>
-            </li>
-        </ul>
 
-        <!-- <div class="user-account">
-            <div class="user-profile">
-                <img src="/app/static/img/profile.svg" alt="profile">
-                <p>Admin</p>
+
+        <div class="dashboard-actions"
+            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+
+
+
+            <div class="search-bar">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
             </div>
-        </div> -->
-    </aside>
 
-    <div class="page-container">
+            <a href="/clients/new" class="btn btn-primary">
+                <!-- Plus Icon (for the "Add New" action) -->
+                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                New Case
+            </a>
 
+        </div>
+    </header>
 
-        <main class="dashboard-content">
-            <header class="dashboard-header">
+    <section class="dashboard-cards">
 
-                <div>
-                    <h1>Case Logs <span></span></h1>
-                    <p>View and manage all legal cases</p>
-                </div>
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Total Documents</span>
+                <span class="data-card__value">1243</span>
+            </div>
+            <div class="data-card__icon data-card__icon--blue"></div>
+        </div>
 
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Pending Review</span>
+                <span class="data-card__value">23</span>
+            </div>
+            <div class="data-card__icon data-card__icon--gold"></div>
+        </div>
 
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Completed</span>
+                <span class="data-card__value">1198</span>
+            </div>
+            <div class="data-card__icon data-card__icon--green"></div>
+        </div>
 
-                <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+    </section>
+</main>
 
-
-
-                    <div class="search-bar">
-                        <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
-                    </div>
-
-                    <a href="/clients/new" class="btn btn-primary">
-                        <!-- Plus Icon (for the "Add New" action) -->
-                        <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        New Case
-                    </a>
-
-                </div>
-            </header>
-
-            <section class="dashboard-cards">
-
-                <div class="data-card">
-                    <div class="data-card__info">
-                        <span class="data-card__title">Total Documents</span>
-                        <span class="data-card__value">1243</span>
-                    </div>
-                    <div class="data-card__icon data-card__icon--blue"></div>
-                </div>
-
-                <div class="data-card">
-                    <div class="data-card__info">
-                        <span class="data-card__title">Pending Review</span>
-                        <span class="data-card__value">23</span>
-                    </div>
-                    <div class="data-card__icon data-card__icon--gold"></div>
-                </div>
-
-                <div class="data-card">
-                    <div class="data-card__info">
-                        <span class="data-card__title">Completed</span>
-                        <span class="data-card__value">1198</span>
-                    </div>
-                    <div class="data-card__icon data-card__icon--green"></div>
-                </div>
-
-            </section>
-        </main>
-
-    </div>
-</body>
-
-</html>
+{% endblock content %}

@@ -1,0 +1,125 @@
+<!-- {% extends "base.html" %}
+
+{% block title %}Add New Client | Legal Management{% endblock %}
+
+{% block content %} -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/app/static/css/components/_forms.css">
+
+    <title>Document</title>
+</head>
+
+<body>
+
+    <!-- HEADER: Standard layout for the form page -->
+<header class="dashboard-header">
+    <div class="info-text">
+        <h1>Add New Client</h1>
+        <p>Enter the primary details for the new client file.</p>
+    </div>
+    <!-- Right side actions are left empty on form pages to keep focus -->
+    <div class="dashboard-actions" style="width: 480px; flex-shrink: 0;">
+        <!-- This space is reserved for visual consistency with the main dashboard -->
+    </div>
+</header>
+
+<!-- MAIN FORM SECTION -->
+<section class="form-panel-section">
+
+    <!-- Use panel-card for the main container -->
+    <div class="panel-card" style="max-width: 700px; margin: 0 auto;">
+
+        <header class="panel-card__header">
+            <h3 class="panel-card__title">Client Details</h3>
+        </header>
+
+        <!-- Form starts here: Flask submission will use POST method -->
+        <!-- The 'action' path should match the Flask route for saving new clients -->
+        <form method="POST" action="/clients/new_submit" class="panel-card__body">
+
+            <!-- 1. NAME FIELD (Corresponds to 'Name' column) -->
+            <div class="form-group">
+                <label for="client_name">Full Name / Entity Name</label>
+                <input type="text" id="client_name" name="client_name" placeholder="E.g., Chris Estill or Genesis Corp."
+                    required>
+            </div>
+
+            <!-- 2. CONTACT FIELD (Corresponds to 'Contact' column) -->
+            <div class="form-group">
+                <label for="email">Primary Email Contact</label>
+                <input type="email" id="email" name="client_email" placeholder="client@example.com" required>
+            </div>
+
+            <!-- ROW OF TWO FIELDS: Type and Status -->
+            <div style="display: flex; gap: 20px;">
+
+                <!-- 3. TYPE FIELD (Corresponds to 'Type' column) -->
+                <div class="form-group" style="flex: 1;">
+                    <label for="client_type">Client Type</label>
+                    <select id="client_type" name="client_type" required>
+                        <option value="" disabled selected>Select type</option>
+                        <option value="Individual">Individual</option>
+                        <option value="General">General (Business/Corp)</option>
+                        <option value="Non-Profit">Non-Profit</option>
+                        <option value="Government">Governmental</option>
+                    </select>
+                </div>
+
+                <!-- 4. STATUS FIELD (Corresponds to 'Status' column) -->
+                <div class="form-group" style="flex: 1;">
+                    <label for="client_status">Initial Status</label>
+                    <select id="client_status" name="client_status" required>
+                        <option value="Active" selected>Active</option>
+                        <option value="Pending">Pending Review</option>
+                        <option value="Archived">Archived/Closed</option>
+                    </select>
+                    <small class="hint-text">The status controls visibility on the main client list.</small>
+                </div>
+            </div>
+
+            <!-- 5. NOTES / DESCRIPTION FIELD -->
+            <div class="form-group">
+                <label for="notes">Internal Notes</label>
+                <textarea id="notes" name="internal_notes"
+                    placeholder="Any initial details, conflicts of interest, or special filing needs..."></textarea>
+            </div>
+
+            <!-- FORM ACTIONS: Buttons -->
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px;">
+                <!-- Cancel button: links back to the main client list -->
+                <a href="/clients" class="btn"
+                    style="background-color: var(--color-bg-secondary); color: var(--color-text-primary);">
+                    Cancel
+                </a>
+
+                <!-- Submit button: uses the primary style -->
+                <button type="submit" class="btn btn-primary">
+                    <!-- Save Icon -->
+                    <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Save Client
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+</body>
+
+</html>
+
+
+
+

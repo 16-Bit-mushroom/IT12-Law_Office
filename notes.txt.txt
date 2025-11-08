@@ -1,7 +1,30 @@
-Create component
+That is a comprehensive and excellent list! Based on the UI you've been building (a professional legal management dashboard), these components are absolutely necessary for creating a complete, functional, and user-friendly application.
 
-- side bar navigation [x]
-- search bar 
-- small cards
-- buttons
-- table
+You've essentially outlined the transition from a static display to a **fully interactive system**.
+
+Here is a breakdown of the components you should focus on next, categorized by their function and complexity:
+
+---
+
+## 1. Interaction & Feedback Components
+
+These components are essential for guiding the user and providing feedback after an action. They require JavaScript and corresponding CSS.
+
+| Component | Purpose | Technical Requirement |
+| :--- | :--- | :--- |
+| **Toast Notifications** | Provide quick, non-disruptive feedback after a successful or failed action (e.g., "Client saved successfully," "Document deleted"). | CSS (`_toast.css`) and JavaScript (for showing/hiding with a timer). |
+| **Modal / Dialog** | Used for user confirmation or capturing input outside the main flow (e.g., "Are you sure you want to delete this case?"). This replaces the forbidden `alert()`. | CSS (`_modal.css`) and JavaScript (for managing visibility and interaction). |
+| **Form Components** | Individual styling for inputs, textareas, and select elements, including visual cues for validation (error/success states). | CSS (`_forms.css`) for structure and styling, HTML for markup. |
+
+---
+
+## 2. Data Management & Structure Components
+
+These focus on enhancing the existing tables and improving data visibility.
+
+| Component | Purpose | Technical Requirement |
+| :--- | :--- | :--- |
+| **Table Actions (Dropdown)** | A clean, standardized way to provide contextual actions for a row (e.g., `Edit Client`, `View Profile`, `Archive`). These usually appear under an ellipsis icon (`...`). | CSS (`_dropdown.css`) and JavaScript (to toggle visibility). |
+| **Filtering & Sorting UI** | UI elements placed above or within the table header to allow users to filter by status, type, date, or click a header to sort a column. | CSS (`_filters.css`) and JavaScript (for managing state and applying filters/sort logic). |
+| **Client Profile Card (Detail View)** | When a user navigates to `/clients/00101`, this is the main page layout containing the client's information, contact details, notes, etc. | New HTML file (e.g., `client_profile.html`) and associated specific CSS. |
+| **Document/Case Detail Card** | A sub-component used *within* the client profile to neatly display a list of associated cases or documents. | CSS (`_card_details.css`) and corresponding HTML structure. |

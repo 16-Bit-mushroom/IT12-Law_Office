@@ -14,7 +14,7 @@ body {
     left: 0;
     height: 100%;
     width: 260px;
-    background-color: grey;
+    background-color: var(--color-card-blue);
     padding: 25px 20px;
 
 }
@@ -29,14 +29,14 @@ body {
 .sidebar-header h2 {
     font-size: 1.25 rem;
     font-weight: 600;
-    color: white;
+    color: var(--color-card-gold);
     margin-left: 23px;
 }
 
 
 .sidebar-links h4 {
     color:  white;
-    font-weight: 500px;
+    font-weight: 400px;
     margin: 10px 0;
     white-space: nowrap;
 }
@@ -52,7 +52,7 @@ body {
     align-items: center;
     gap: 0 15px;
     color: white;
-    font-weight: 500;
+    font-weight: 300;
     padding: 15px 5px;
     white-space: nowrap;
     text-decoration: none;

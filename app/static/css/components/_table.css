@@ -1,0 +1,121 @@
+/* app/static/css/components/_tables.css */
+
+/* --- Base Table Structure --- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Removes the double border between cells */
+
+
+}
+
+/* --- Table Header (th) Styles --- */
+.table thead th {
+    /* Styles for the column titles (Client ID, Name, Type, etc.) */
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    text-align: left;
+    font-size: 0.8rem;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--color-border-light);
+    /* Light border under header */
+    letter-spacing: 0.5px;
+
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg-secondary);
+    /* Needs a background to hide rows beneath it */
+    z-index: 1;
+    /* Ensures it sits above the scrolling body content */
+}
+
+/* --- Table Data (td) Styles --- */
+.table tbody td {
+    /* Styles for the data cells */
+    padding: 15px 20px;
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    /* Very subtle line between rows */
+    word-break: break-word;
+    /* Prevents long words from breaking layout */
+}
+
+/* Remove the border from the very last row */
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* --- Interactive Row States --- */
+/* Optional: Add hover state to the entire row for better UX */
+.table-row-link:hover {
+    background-color: #F8F9FA;
+    /* Subtle highlight on hover */
+    cursor: pointer;
+}
+
+
+/* --- Clickable Link Styling within Table Cells --- */
+/* The class applied to the anchor tag (<a>) around the client's name */
+.table-link {
+    text-decoration: none;
+    /* Remove default underline */
+    color: var(--color-text-primary);
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.table-link:hover {
+    color: var(--color-accent-blue);
+    /* Highlight color on hover */
+    text-decoration: underline;
+}
+
+/* --- Utility/Responsive Wrapper --- */
+.table-wrapper {
+    /* Use this wrapper if the table has too many columns for mobile devices */
+    overflow-x: auto;
+    width: 100%;
+    max-height: 500px;
+    /* Adjust this height as needed for your desired card size */
+    overflow-y: auto;
+
+}
+
+/* --- Specific Client Table Layout Adjustments --- */
+/* Adjusting column widths to fit the client data appropriately */
+.client-table col.col-id {
+    width: 10%;
+}
+
+.client-table col.col-name {
+    width: 25%;
+}
+
+/* Give Name more space */
+.client-table col.col-type {
+    width: 10%;
+}
+
+.client-table col.col-contact {
+    width: 20%;
+}
+
+.client-table col.col-cases {
+    width: 10%;
+}
+
+.client-table col.col-docs {
+    width: 10%;
+}
+
+.client-table col.col-status {
+    width: 10%;
+}
+
+.client-table col.col-actions {
+    width: 5%;
+}
+
+/* Small column for action icons/buttons */

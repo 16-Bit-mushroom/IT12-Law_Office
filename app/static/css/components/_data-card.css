@@ -33,6 +33,25 @@
     border-radius: var(--border-radius-s);
 }
 
+/* --- SIZE MODIFIER: Small Data Card --- */
+.data-card--sm {
+    padding: 16px; /* Reduced padding for smaller card */
+}
+
+.data-card--sm .data-card__title {
+    font-size: 0.8rem; /* Slightly smaller title */
+}
+
+.data-card--sm .data-card__value {
+    font-size: 1.5rem; /* Reduced value font size */
+}
+
+.data-card--sm .data-card__icon {
+    width: 36px; /* Reduced icon size */
+    height: 36px;
+}
+
+
 /* Modifier classes for icon colors */
 .data-card__icon--blue {
     background-color: var(--color-card-blue);

@@ -14,7 +14,8 @@
     background-color: var(--color-bg-search);
     border-radius: var(--border-radius-s);
     padding: 8px 12px;
-    max-width: 400px; /* Or adjust as needed */
+    max-width: 500px;
+
 }
 
 .search-bar__icon {

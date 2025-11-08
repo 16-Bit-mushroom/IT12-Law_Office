@@ -8,5 +8,7 @@
 @import url(/app/static/css/components/_document-list.css);
 @import url(/app/static/css/components/_status-tag.css);
 @import url(/app/static/css/components/_deadline-list.css);
+@import url(/app/static/css/components/_table.css);
+@import url(/app/static/css/components/_button.css);
 /* ... other global styles ... */
 

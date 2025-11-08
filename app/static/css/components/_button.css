@@ -1,0 +1,50 @@
+/* app/static/css/components/_buttons.css */
+
+/* --- Base Button Style --- */
+.btn {
+    /* General styling for all buttons */
+    display: inline-flex;
+    align-items: center; /* Vertically center icon and text */
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    text-decoration: none; /* Important for <a> tags used as buttons */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle lift */
+}
+
+/* --- Primary (Action) Button Style --- */
+.btn-primary {
+    /* Dark blue background, white text (like the example image) */
+    background-color: var(--color-card-blue); 
+    color: var(--color-text-white);
+    
+    /* Hover state for feedback */
+    &:hover {
+        background-color: var(--color-card-gold); /* Lighter blue on hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Active/Click state */
+    &:active {
+        background-color: #003366; /* Slightly darker shade on click */
+        box-shadow: none;
+        transform: translateY(0);
+    }
+}
+
+/* --- Icon inside Button --- */
+.btn-icon-left {
+    margin-right: 8px; /* Space between icon and text */
+    width: 18px; 
+    height: 18px;
+    /* Ensure the SVG icon uses the button's text color */
+    fill: none;
+    stroke: currentColor; /* Use the color of the button text */
+    stroke-width: 2;
+}

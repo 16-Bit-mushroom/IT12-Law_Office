@@ -16,11 +16,15 @@
         </div>
 
         <ul class="sidebar-links">
-            <li><a href="dashboard_page.html"><span><img src="/app/static/img/dashboard.svg" alt=""></span>Dashboard</a></li>
+            <li><a href="dashboard_page.html"><span><img src="/app/static/img/dashboard.svg" alt=""></span>Dashboard</a>
+            </li>
             <li><a href="clients_page.html"><span><img src="/app/static/img/clients.svg" alt=""></span>Clients</a></li>
-            <li><a href="documents_page.html"><span><img src="/app/static/img/documents.svg" alt=""></span>Documents</a></li>
-            <li><a href="case_logs_page.html"><span><img src="/app/static/img/cases.svg" alt=""></span>Case Logs</a></li>
-            <li><a href="payments_page.html"><span><img src="/app/static/img/payments.svg" alt=""></span>Payments</a></li>
+            <li><a href="documents_page.html"><span><img src="/app/static/img/documents.svg" alt=""></span>Documents</a>
+            </li>
+            <li><a href="case_logs_page.html"><span><img src="/app/static/img/cases.svg" alt=""></span>Case Logs</a>
+            </li>
+            <li><a href="payments_page.html"><span><img src="/app/static/img/payments.svg" alt=""></span>Payments</a>
+            </li>
         </ul>
 
         <!-- <div class="user-account">
@@ -33,22 +37,41 @@
 
     <div class="page-container">
 
-        <header class="top-bar">
-            <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
-            </div>
-        </header>
 
         <main class="dashboard-content">
             <header class="dashboard-header">
-                <h1>Document Tracking</h1>
-                <p>Manage and Track all documents</p>
+
+                <div>
+                    <h1>Documents <span></span></h1>
+                    <p>Manage and track documents</p>
+                </div>
+                <div class="dashboard-actions"
+                  
+                    style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+
+
+
+                    <div class="search-bar">
+                        <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
+                    </div>
+
+                    <a href="/clients/new" class="btn btn-primary">
+                        <!-- Plus Icon (for the "Add New" action) -->
+                        <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        New Document
+                    </a>
+
+                </div>
             </header>
 
             <section class="dashboard-cards">

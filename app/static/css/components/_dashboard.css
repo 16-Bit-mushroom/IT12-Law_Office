@@ -2,6 +2,7 @@
 
 .page-container {
     margin-left: 260px;
+    min-height: 100vh;
 }
 
 /* This styles the main content area */
@@ -9,17 +10,33 @@
     padding: 24px;
 }
 
+/* *** NEW DASHBOARD HEADER LAYOUT *** */
+/* Make the header a flex container to align the title/info and the search bar */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between; /* Pushes the title/info to the left and search to the right */
+    align-items: center; /* Vertically centers items */
+    margin-bottom: 24px; /* Consistent spacing below the header */
+    padding-bottom: 12px; /* Adds a bit of padding at the bottom of the header content */
+    border-bottom: 1px solid var(--color-border-light); /* Adds a separating line */
+}
+
 .dashboard-header h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--color-text-primary);
+    /* Reset margins that might conflict with flex layout */
     margin: 0;
+    font-size: 1.8rem;
+    color: var(--color-text-primary);
 }
 
 .dashboard-header p {
-    font-size: 1rem;
-    color: var(--color-text-secondary);
     margin-top: 4px;
+    color: var(--color-text-secondary);
+}
+
+.dashboard-header .info-text {
+    /* Wrapper for H1 and P */
+    display: flex;
+    flex-direction: column;
 }
 
 /* This creates the responsive card grid */
@@ -46,8 +63,13 @@
     gap: 20px;
     /* Space between the two cards */
     margin-bottom: 24px;
-    margin-top: 50px;
+    margin-top: 24px;
     /* Space below the panels */
+}
+
+.dashboard-panels-bottom--single {
+    display: flex;
+
 }
 
 .panel-card {

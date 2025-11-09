@@ -9,7 +9,10 @@ body {
 }
 
 .sidebar {
+    display: flex;
     position: fixed;
+    flex-direction: column;
+    justify-content: space-between;
     top: 0;
     left: 0;
     height: 100%;
@@ -57,4 +60,61 @@ body {
     white-space: nowrap;
     text-decoration: none;
     
+}
+
+/* Footer */
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative; /* for dropdown positioning */
+    margin-top: auto;
+}
+
+/* Avatar button */
+.avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95rem;
+}
+
+.avatar-btn img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* Dropdown menu */
+.avatar-dropdown {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    bottom: 60px; /* adjust so it pops above avatar */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 10px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 160px;
+    z-index: 100;
+}
+
+.avatar-dropdown a {
+    padding: 8px 20px;
+    color: var(--color-card-blue);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.avatar-dropdown a:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 5px;
 }

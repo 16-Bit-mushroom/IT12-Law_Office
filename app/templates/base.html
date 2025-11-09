@@ -4,9 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✅ Local Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <title>RJB Law Office</title>
 </head>
+
+ <!-- ✅ Bootstrap JS Bundle (includes Popper) -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
 
 <body>
     <aside class="sidebar">
@@ -32,7 +38,24 @@
             <li><a href="{{ url_for('payments.payments_page') }}"><span><img
                             src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments</a></li>
 
+
+
         </ul>
+
+        <div class="sidebar-footer">
+            <button class="avatar-btn" id="avatarBtn">
+                <img src="{{ url_for('static', filename='img/avatar.svg') }}" alt="User Avatar">
+                <span>Atty. Chris</span>
+            </button>
+            <div class="avatar-dropdown" id="avatarDropdown">
+                <a href="#">My Account</a>
+                <a href="#">Manage Users</a>
+                <a href="#">Settings</a>
+                <a href="#">Log Out</a>
+            </div>
+        </div>
+
+
 
     </aside>
 
@@ -43,5 +66,22 @@
     </div>
 
 </body>
+
+<script>
+    const avatarBtn = document.getElementById('avatarBtn');
+    const avatarDropdown = document.getElementById('avatarDropdown');
+
+    avatarBtn.addEventListener('click', () => {
+        avatarDropdown.style.display = avatarDropdown.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener('click', (e) => {
+        if (!avatarBtn.contains(e.target) && !avatarDropdown.contains(e.target)) {
+            avatarDropdown.style.display = 'none';
+        }
+    });
+</script>
+
 
 </html>

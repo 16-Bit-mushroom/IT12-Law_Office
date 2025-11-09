@@ -26,15 +26,20 @@
                 <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
             </div>
 
-            <a href="#" class="btn btn-primary">
-                <!-- Plus Icon (for the "Add New" action) -->
+            <a href="#" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal"
+                data-bs-target="#clientFormModal">
+                <!-- Plus Icon -->
                 <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20"
+                    height="20">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
                 New Client
             </a>
+
+            {% include 'components/client_form.html' %}
+
 
         </div>
 
@@ -387,6 +392,34 @@
         </div>
     </section>
 </main>
+
+<script>
+    document.getElementById('clientForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent default form submission
+        const formData = new FormData(this);
+
+        // Example: AJAX POST to Flask route
+        fetch('/clients/add', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    const modalEl = document.getElementById('clientFormModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+
+                    // Optionally, refresh the table or show a toast
+                    alert('Client added successfully!');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+    });
+</script>
+
 
 <!-- Your provided JavaScript for Table Sorting -->
 <script>

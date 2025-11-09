@@ -393,7 +393,15 @@
     </section>
 </main>
 
-<script>
+{% block scripts %}
+<!-- Page-specific script -->
+<script src="{{ url_for('static', filename='js/clients/client_form.js') }}"></script>
+<script src="{{ url_for('static', filename='js/clients/client_table.js') }}"></script>
+
+
+{% endblock %}
+
+<!-- <script>
     document.getElementById('clientForm').addEventListener('submit', function (e) {
         e.preventDefault(); // Prevent default form submission
         const formData = new FormData(this);
@@ -422,7 +430,7 @@
 
 
 <!-- Your provided JavaScript for Table Sorting -->
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', () => {
         const table = document.querySelector('.table');
         if (!table) return;
@@ -523,6 +531,6 @@
             }
         });
     });
-</script>
+</script> --> -->
 
 {% endblock content %}

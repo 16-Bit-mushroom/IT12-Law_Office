@@ -1,0 +1,49 @@
+Pages -> Models -> Auth/Permissions -> Services -> Components/UI
+
+
+
+================ COMPONENTS =======================
+
+
+search result canvas/
+    what to do with the result? view in table or view details in card style
+
+forms for adding new rows to table
+
+entity cards (for clients, cases, documents, payments, case logs)
+
+toasts
+modals
+dialog
+
+
+================ PAGES ====================
+
+admin page/
+    - add user(username, password, email)
+    - remove user
+    - disable user
+    - edit user
+
+role based access/
+    - what page staff can only access
+    - admin can access all pages
+
+Trash page/
+    - permanently delete
+    - restore selected 
+
+Admin Login page/
+    - directs to dashboard
+
+3 type of users
+    1. end user (staff)
+    2. admin (attorney)
+    3. super user (developer)
+
+
+===================== MODELS =========================
+
+
+
+===================== AUTHENTICATIONS =========================

@@ -26,7 +26,7 @@
                 <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
             </div>
 
-            <a href="/clients/new" class="btn btn-primary">
+            <a href="#" class="btn btn-primary">
                 <!-- Plus Icon (for the "Add New" action) -->
                 <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,54 +83,34 @@
         <!-- The entire table is placed inside a panel card for consistent styling -->
         <div class="panel-card" style="width: 100%;">
 
-            <!-- Panel Header (Client Directory Title) -->
-            <header class="panel-card__header">
-                <h3 class="panel-card__title">
-                    <!-- Icon for Client Directory -->
-                    <svg class="panel-card__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    Client Directory
-                </h3>
-
-                <!-- Search Bar for Filtering
-                <div class="search-bar search-bar--compact">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-text-secondary);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" placeholder="Search clients..." />
-                </div> -->
-            </header>
-
             <!-- Table Container (For horizontal scrolling on mobile, if needed) -->
             <div class="table-wrapper panel-card__body">
                 <table class="table client-table">
 
                     <!-- Define Column Groups for fixed widths (as per _tables.css) -->
                     <colgroup>
-                        <col class="col-id">
-                        <col class="col-name">
-                        <col class="col-type">
-                        <col class="col-contact">
-                        <col class="col-cases">
-                        <col class="col-docs">
-                        <col class="col-status">
-                        <col class="col-actions">
+                        <col class="short">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="long">
+                        <col class="numeric">
+                        <col class="medium">
+                        <col class="short">
+                        <col class="actions">
                     </colgroup>
 
                     <!-- Table Header -->
                     <thead>
                         <tr>
-                            <th>Client ID</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Contact</th>
-                            <th>Active Cases</th>
-                            <th>Documents</th>
-                            <th>Status</th>
+                            <!-- Add data-sort-key and the sort-icon to sortable headers -->
+                            <th data-sort-key="id" class="sorted" data-order="desc">ID <span
+                                    class="sort-icon desc"></span></th>
+                            <th data-sort-key="name">Name <span class="sort-icon"></span></th>
+                            <th data-sort-key="type">Type<span class="sort-icon"></span></th>
+                            <th data-sort-key="cases">Active Cases <span class="sort-icon"></span></th>
+                            <th data-sort-key="contact">Contact<span class="sort-icon"></span></th>
+                            <th data-sort-key="documents">Documents<span class="sort-icon"></span></th>
+                            <th data-sort-key="status">Status <span class="sort-icon"></span></th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -147,7 +127,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -169,7 +148,6 @@
                             <td>General</td>
                             <td>legal@genesis.com</td>
                             <td>12</td>
-                            <td>45</td>
                             <td><span class="status-tag status-tag--pending">Review</span></td>
                             <td>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
@@ -191,7 +169,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -214,7 +191,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -237,7 +213,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -260,7 +235,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -283,7 +257,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -306,7 +279,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -329,7 +301,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -352,7 +323,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -375,7 +345,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -398,7 +367,6 @@
                             <td>Individual</td>
                             <td>chris.e@example.com</td>
                             <td>3</td>
-                            <td>5</td>
                             <td><span class="status-tag status-tag--active">Active</span></td>
                             <td>
                                 <!-- Action Icon -->
@@ -419,5 +387,109 @@
         </div>
     </section>
 </main>
+
+<!-- Your provided JavaScript for Table Sorting -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = document.querySelector('.table');
+        if (!table) return;
+
+        // Select only headers that have the data-sort-key attribute
+        const headers = table.querySelectorAll('th[data-sort-key]');
+        const tbody = table.querySelector('tbody');
+
+        // Helper function to get the clean text value from a cell
+        const getCellValue = (tr, idx) => {
+            // Check if the cell contains a link, if so, use its text
+            const link = tr.children[idx].querySelector('a');
+            // Check for status tag text if no link is found (e.g., Status column)
+            const tag = tr.children[idx].querySelector('.status-tag');
+
+            if (link) {
+                return link.textContent.trim();
+            } else if (tag) {
+                return tag.textContent.trim();
+            } else {
+                return tr.children[idx].textContent.trim();
+            }
+        };
+
+        // The core sorting function
+        const sorter = (idx, asc) => (a, b) => {
+            const valA = getCellValue(asc ? a : b, idx);
+            const valB = getCellValue(asc ? b : a, idx);
+
+            // Tries to parse as a number for numerical sorting (e.g., ID, Cases, Documents columns)
+            // Use a strict regex to check if it's purely numerical content before attempting float parsing
+            // This prevents 'Active' from parsing to NaN and falling through.
+            const cleanValA = valA.replace(/[^0-9.]/g, '');
+            const cleanValB = valB.replace(/[^0-9.]/g, '');
+
+            const numA = parseFloat(cleanValA);
+            const numB = parseFloat(cleanValB);
+
+            // If both cleaned strings successfully parse to finite numbers, perform numeric sort
+            const isNumeric = cleanValA !== "" && !isNaN(numA) && isFinite(numA) &&
+                cleanValB !== "" && !isNaN(numB) && isFinite(numB);
+
+            if (isNumeric) {
+                return numA - numB;
+            } else {
+                // Otherwise, sort alphabetically/lexicographically using localeCompare for correctness
+                return valA.localeCompare(valB);
+            }
+        };
+
+        // Main event listener loop for all sortable headers
+        headers.forEach((header, index) => {
+            // Initialize sort order. ID is set to 'asc' by default in HTML for visual indicator.
+            if (!header.dataset.order) {
+                header.dataset.order = 'desc';
+            }
+
+            header.addEventListener('click', () => {
+                // Determine the next sort order
+                const currentOrder = header.dataset.order === 'desc' ? 'asc' : 'desc';
+                const asc = currentOrder === 'asc';
+
+                // 1. Sort the rows
+                Array.from(tbody.querySelectorAll('tr'))
+                    .sort(sorter(index, asc))
+                    .forEach(tr => tbody.appendChild(tr));
+
+                // 2. Update visual indicators (CSS classes)
+
+                // Remove 'sorted' class from all headers and reset icons
+                headers.forEach(h => {
+                    h.classList.remove('sorted');
+                    h.dataset.order = 'desc'; // Reset data-order for non-clicked headers
+                    const icon = h.querySelector('.sort-icon');
+                    if (icon) {
+                        icon.classList.remove('asc', 'desc');
+                    }
+                });
+
+                // Add 'sorted' class to the clicked header
+                header.classList.add('sorted');
+                header.dataset.order = currentOrder;
+
+                // Update the sort icon for the current header
+                const icon = header.querySelector('.sort-icon');
+                if (icon) {
+                    icon.classList.add(currentOrder);
+                }
+            });
+
+            // Trigger an initial sort on the default column (Client ID in this case)
+            if (header.classList.contains('sorted')) {
+                // Manually trigger the sort function once to ensure the data reflects the initial visual state
+                const initialAsc = header.dataset.order === 'asc';
+                Array.from(tbody.querySelectorAll('tr'))
+                    .sort(sorter(index, initialAsc))
+                    .forEach(tr => tbody.appendChild(tr));
+            }
+        });
+    });
+</script>
 
 {% endblock content %}

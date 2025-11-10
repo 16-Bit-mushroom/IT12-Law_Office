@@ -380,4 +380,8 @@
 
 
 </main>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/payments/payment_table.js') }}"></script>
+
+{% endblock scripts %}
 {% endblock content %}

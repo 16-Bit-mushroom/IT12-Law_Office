@@ -18,4 +18,11 @@ def create_app():
     
     from .routes.payments_routes import payments_bp
     app.register_blueprint(payments_bp)
+
+    from .routes.login_routes import login_bp
+    app.register_blueprint(login_bp)
+
+    from .routes.admin_profile_routes import admin_profile_bp
+    app.register_blueprint(admin_profile_bp)
+
     return app

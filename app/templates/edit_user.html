@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Edit User: {{ user.username }}</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" 
+                   value="{{ user.username }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" 
+                   value="{{ user.email }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="new_password" class="form-label">New Password (leave blank to keep current)</label>
+            <input type="password" class="form-control" id="new_password" name="new_password">
+            <div class="form-text">Leave blank to keep current password. Must be at least 8 characters if changing.</div>
+        </div>
+        
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" 
+                   {{ 'checked' if user.is_admin }}>
+            <label class="form-check-label" for="is_admin">Administrator</label>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update User</button>
+        <a href="{{ url_for('admin.manage_users_page') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

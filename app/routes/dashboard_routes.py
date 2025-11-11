@@ -1,9 +1,17 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template
+from flask_login import login_required
 
-dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
+# Assuming your original dashboard blueprint was named 'dashboard'
+dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/')
 
 @dashboard_bp.route('/')
+@login_required # Protects the dashboard
 def dashboard_page():
-    # For now, use empty list until we fix the service
-    dashboard = []  # get_all_clients() - comment this out temporarily
-    return render_template('dashboard_page.html', dashboard=dashboard)
+    # The dashboard now requires a logged-in user
+    return render_template('dashboard_page.html')
+
+# Assuming you had a separate /dashboard route too
+@dashboard_bp.route('/dashboard')
+@login_required # Protects the dashboard
+def dashboard():
+    return render_template('dashboard_page.html')

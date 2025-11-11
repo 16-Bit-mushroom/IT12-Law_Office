@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="dashboard-content">
+    <!-- Matches the header style used in dashboard_page.html -->
+    <header class="dashboard-header">
+        <h1>Add New User</h1>
+        <p>Create a new employee user account for the system.</p>
+    </header>
+
+    <section class="form-section">
+
+        <!-- Custom styling for flashed messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="app-message app-message--{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Form container with card styling -->
+        <div class="form-card">
+            <form method="POST" action="{{ url_for('admin.add_new_user') }}">
+                
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="text-input" id="username" name="username" required placeholder="e.g., john_doe">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="text-input" id="email" name="email" required placeholder="e.g., john.doe@rjb-law.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="text-input" id="password" name="password" required>
+                    <!-- Custom style for helper text -->
+                    <p class="form-hint">Password must be at least 8 characters long.</p>
+                </div>
+
+                <!-- Added a Role/Title field for more realistic user management -->
+                <div class="form-group">
+                    <label for="role" class="form-label">Role / Title</label>
+                    <select class="text-input" id="role" name="role" required>
+                        <option value="junior associate">Junior Associate</option>
+                        <option value="senior associate">Senior Associate</option>
+                        <option value="paralegal">Paralegal</option>
+                        <option value="senior partner">Senior Partner</option>
+                        <option value="admin staff">Admin Staff</option>
+                    </select>
+                </div>
+                
+                <!-- Custom styling for the checkbox -->
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="is_admin" name="is_admin" class="custom-checkbox">
+                    <label for="is_admin" class="form-label">Grant Administrator Privileges</label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                         <!-- Plus Icon (for the "Add New" action) -->
+                        <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        Create User
+                    </button>
+                    <!-- Existing button classes retained -->
+                    <a href="{{ url_for('admin.manage_users_page') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

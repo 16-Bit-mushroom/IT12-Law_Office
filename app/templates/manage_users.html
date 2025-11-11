@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="dashboard-content">
+    <header class="dashboard-header">
+
+        <div>
+            <h1>Manage Users</h1>
+            <p>View and manage all firm employees, their roles, and access status.</p>
+        </div>
+
+        <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+            <div class="search-bar">
+                <!-- Search Icon -->
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input class="search-bar__input" type="text" placeholder="Search by name, role, or email...">
+            </div>
+
+            <!-- Button to add a new user (admin function) -->
+            <a href="{{ url_for('admin.add_new_user') }}" class="btn btn-primary">
+                <!-- Plus Icon -->
+                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+
+                Add New User</a>
+
+
+        </div>
+
+
+    </header>
+
+    <section class="content-section">
+        <div class="data-card">
+
+            <div class="table-wrapper">
+                <table class="table user-table">
+                    <!-- Column specifications to help with consistent layout -->
+                    <colgroup>
+                        <col class="col-id">
+                        <col class="col-name">
+                        <col class="col-email">
+                        <col class="col-role">
+                        <col class="col-admin">
+                        <col class="col-status">
+                        <col class="col-actions">
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Admin</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>#{{ '%04d' | format(user.id) }}</td>
+                            <td>
+                                <!-- Link to user profile/edit page -->
+                                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="table-link">{{
+                                    user.username }}</a>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>
+                                <!-- Display admin status with a checkmark or cross -->
+                                {% if user.is_admin %}
+                                <span style="color: var(--color-success); font-weight: 600;">Yes</span>
+                                {% else %}
+                                <span style="color: var(--color-text-secondary);">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_active %}
+                                <span class="status-tag status-tag--active">Active</span>
+                                {% else %}
+                                <span class="status-tag status-tag--inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- Action Icon: Edit/View Details -->
+                                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="table-link">{{
+                                    user.username }}</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7"
+                                style="text-align: center; color: var(--color-text-secondary); padding: 40px;">
+                                No users found in the system. Please add the first administrator.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+{% endblock content %}

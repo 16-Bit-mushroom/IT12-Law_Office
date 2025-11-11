@@ -49,10 +49,10 @@
                 <span>Atty. Chris</span>
             </button>
             <div class="avatar-dropdown" id="avatarDropdown">
-                <a href="{{ url_for('manage-profile.admin_profile_page') }}">My Account</a>
-                <a href="#">Manage Users</a>
+                <a href="{{ url_for('admin.admin_page') }}">My Account</a>
+                <a href="{{ url_for('admin.manage_users_page') }}">Manage Users</a>
                 <a href="#">Settings</a>
-                <li><a href="{{ url_for('login.login_page') }}"><span><img>Log Out</a>
+                <li><a href="{{ url_for('auth.logout') }}"><span><img>Log Out</a>
             </div>
         </div>
 

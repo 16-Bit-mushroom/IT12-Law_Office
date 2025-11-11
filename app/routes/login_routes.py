@@ -1,9 +1,36 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import current_user, login_required
+from app.services.auth_service import authenticate_user, deauthenticate_user
 
-login_bp = Blueprint('login', __name__, url_prefix='/')
+# Changed to 'auth' for clarity and to avoid conflicts
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@login_bp.route('/')
-def login_page():
-    # For now, use empty list until we fix the service
-    # dashboard = []  # get_all_clients() - comment this out temporarily
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    # If the user is already logged in, redirect them away from the login page
+    if current_user.is_authenticated:
+        # Send authenticated users to the main dashboard
+        return redirect(url_for('dashboard.dashboard_page'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        success, result = authenticate_user(email, password)
+        
+        if success:
+            flash(f'Welcome back, {result.username}!', 'success')
+            # Redirect to the page they were trying to access, or the dashboard
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('dashboard.dashboard_page'))
+        else:
+            flash(result, 'danger')
+            
     return render_template('login_page.html')
+
+@auth_bp.route('/logout')
+@login_required # Ensures only logged-in users can log out
+def logout():
+    message = deauthenticate_user()
+    flash(message, 'info')
+    return redirect(url_for('auth.login'))

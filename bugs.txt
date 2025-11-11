@@ -1,0 +1,15 @@
+			  =====================================
+		    |	       What's BUGging you?  		|
+			  =====================================
+
+
+
+============ MAJOR =============
+[1] Admin can update credential without entering passwords
+
+
+
+
+============ COSMETICS =========
+[1] No toast when updating profile
+ 

@@ -27,14 +27,23 @@
             <li><a href="{{ url_for('dashboard.dashboard_page') }}"><span><img
                             src="{{ url_for('static', filename='img/dashboard.svg') }}" alt=""></span>Dashboard</a></li>
 
-            <li><a href="{{ url_for('clients.clients_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients</a></li>
+            <li><a href="#"><span><img src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Transactions</a></li>
 
             <li><a href="{{ url_for('documents.documents_page') }}"><span><img
                             src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Documents</a></li>
 
+            <li><a href="{{ url_for('clients.clients_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients</a></li>
+
+
+
             <li><a href="{{ url_for('case_logs.case_logs_page') }}"><span><img
                             src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>Case Logs</a></li>
+
+            <li><a href="#"><span><img
+                            src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Services</a></li>
+
+
 
             <li><a href="{{ url_for('payments.payments_page') }}"><span><img
                             src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments</a></li>

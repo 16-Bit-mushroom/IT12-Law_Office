@@ -47,6 +47,7 @@ body {
 .sidebar-links {
     list-style: none;
     margin-top: 20;
+    padding-left: 0;
 }
 
 

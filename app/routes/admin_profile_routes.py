@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
-from app.services.user_service import get_user_by_id, update_user_profile, update_user_password, get_all_users, update_user_profile_admin
+from app.services.user_service import create_new_user, get_user_by_id, update_user_profile, update_user_password, get_all_users, update_user_profile_admin
 from flask_login import login_required, current_user
 
 

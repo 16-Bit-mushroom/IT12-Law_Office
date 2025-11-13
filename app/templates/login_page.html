@@ -40,15 +40,22 @@
                                 {% endif %}
                             {% endwith %}
 
+                            <!-- Default Credentials Note -->
+                            <div class="alert alert-info">
+                                <strong>Default Credentials:</strong><br>
+                                Email: admin@lawoffice.com<br>
+                                Password: password123
+                            </div>
+
                             <div data-mdb-input-init class="form-outline mb-4">
                                 <!-- Added name="email" to capture the input data -->
-                                <input type="email" id="form2Example18" name="email" class="form-control form-control-lg" required />
+                                <input type="email" id="form2Example18" name="email" class="form-control form-control-lg" required value="admin@lawoffice.com" />
                                 <label class="form-label" for="form2Example18">Email address</label>
                             </div>
 
                             <div data-mdb-input-init class="form-outline mb-4">
                                 <!-- Added name="password" to capture the input data -->
-                                <input type="password" id="form2Example28" name="password" class="form-control form-control-lg" required />
+                                <input type="password" id="form2Example28" name="password" class="form-control form-control-lg" required value="password123" />
                                 <label class="form-label" for="form2Example28">Password</label>
                             </div>
 

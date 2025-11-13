@@ -1,6 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
+from . import db  # Import the shared db instance
 
-db = SQLAlchemy()
 
 class CaseDocument(db.Model):
     """

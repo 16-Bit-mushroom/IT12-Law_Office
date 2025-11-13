@@ -1,5 +1,5 @@
 from flask import Flask
-from app.models import db  # This now imports from models/__init__.py
+from app.models import db
 from flask_login import LoginManager
 
 def create_app():
@@ -16,11 +16,11 @@ def create_app():
     # ================== AUTHENTICATION (Flask-Login) =========================== #
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.login'  # Updated to match your auth blueprint
     login_manager.login_message = "Please log in to access this page."
     login_manager.login_message_category = "info"
 
-    # Import models after db initialization to avoid circular imports
+    # Import User model for the user_loader
     from app.models.user_model import User
 
     @login_manager.user_loader
@@ -42,6 +42,7 @@ def create_app():
     from .routes.payments_routes import payments_bp
     from .routes.login_routes import auth_bp
     from .routes.admin_profile_routes import admin_bp
+    from .routes.transaction_routes import transaction_bp
 
     app.register_blueprint(clients_bp)
     app.register_blueprint(dashboard_bp)
@@ -50,5 +51,6 @@ def create_app():
     app.register_blueprint(payments_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(transaction_bp)
 
     return app

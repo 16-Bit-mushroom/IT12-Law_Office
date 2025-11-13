@@ -1,145 +1,128 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <main class="dashboard-content">
     <header class="dashboard-header">
         <div>
             <h1>Documents <span></span></h1>
-            <p>Manage and track all legal documents and files</p>
+            <p>Manage all case documents</p>
         </div>
 
-        <div class="dashboard-actions"
-            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
-
-
-
+        <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
             <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
+                <input class="search-bar__input" type="text" placeholder="Search documents...">
             </div>
-
-            <a href="#" class="btn btn-primary">
-                <!-- Plus Icon (for the "Add New" action) -->
-                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                New Document
-            </a>
-
         </div>
     </header>
 
     <section class="content-section">
         <div class="panel-card">
-
-
             <div class="table-wrapper">
                 <table class="table document-table">
-                    <!-- Column Definitions (optional but good practice for layout) -->
                     <colgroup>
                         <col class="short">
                         <col class="long">
                         <col class="medium">
-                        <col class="medium">
                         <col class="short">
-                        <col class="medium">
+                        <col class="short">
                         <col class="actions">
                     </colgroup>
 
                     <thead>
                         <tr>
-                            <!-- Add data-sort-key and the sort-icon to sortable headers -->
-                            <th data-sort-key="id" class="sorted" data-order="desc">ID <span
-                                    class="sort-icon desc"></span></th>
-                            <th data-sort-key="title">Document Title <span class="sort-icon"></span></th>
-                            <th data-sort-key="client">Client <span class="sort-icon"></span></th>
-                            <th data-sort-key="case">Case <span class="sort-icon"></span></th>
-                            <th data-sort-key="type">Type <span class="sort-icon"></span></th>
-                            <th data-sort-key="date">Date Uploaded <span class="sort-icon"></span></th>
+                            <th data-sort-key="id">ID</th>
+                            <th data-sort-key="name">Document Name</th>
+                            <th data-sort-key="client">Client</th>
+                            <th data-sort-key="status">Status</th>
+                            <th data-sort-key="transaction">Transaction</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- EXAMPLE DATA ROWS -->
+                        {% for document in documents %}
                         <tr>
-                            <td>#1001</td>
+                            <td>#{{ document.id }}</td>
                             <td>
-                                <a href="#" class="table-link">Client Onboarding Agreement</a>
+                                <a href="#" class="table-link">{{ document.cas_doc_name }}</a>
                             </td>
-                            <td><a href="#" class="table-link">Jane Doe</a></td>
-                            <td>N/A</td>
-                            <td>Contract</td>
-                            <td>2024-11-09</td>
                             <td>
-                                <!-- Action Icon (View) -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    style="cursor: pointer; color: var(--color-text-secondary);">
-                                    <path d="M4 12V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10"></path>
-                                    <rect x="4" y="12" width="16" height="10" rx="2"></rect>
-                                </svg>
+                                {% if document.client %}
+                                    {{ document.client.full_name }}
+                                {% else %}
+                                    Client #{{ document.client_id }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-tag status-tag--{{ document.cas_doc_status|lower }}">
+                                    {{ document.cas_doc_status }}
+                                </span>
+                            </td>
+                            <td>#{{ document.transaction_item_id }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="#" class="btn-action btn-action--info" title="View Details">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
+                        {% else %}
                         <tr>
-                            <td>#1002</td>
-                            <td>
-                                <a href="#" class="table-link">Settlement Proposal - Case 901</a>
-                            </td>
-                            <td><a href="#" class="table-link">Acme Corp</a></td>
-                            <td>Smith vs. Jones</td>
-                            <td>Pleading</td>
-                            <td>2024-11-07</td>
-                            <td>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    style="cursor: pointer; color: var(--color-text-secondary);">
-                                    <path d="M4 12V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10"></path>
-                                    <rect x="4" y="12" width="16" height="10" rx="2"></rect>
-                                </svg>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                No documents found. Documents are automatically created when transactions are approved.
                             </td>
                         </tr>
-                        <tr>
-                            <td>#1003</td>
-                            <td>
-                                <a href="#" class="table-link">Incorporation Certificate</a>
-                            </td>
-                            <td><a href="#" class="table-link">Chris Estill</a></td>
-                            <td>Formation</td>
-                            <td>Certificate</td>
-                            <td>2024-10-25</td>
-                            <td>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    style="cursor: pointer; color: var(--color-text-secondary);">
-                                    <path d="M4 12V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10"></path>
-                                    <rect x="4" y="12" width="16" height="10" rx="2"></rect>
-                                </svg>
-                            </td>
-                        </tr>
-                        <!-- ... More rows dynamically generated by your backend ... -->
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
-
         </div>
     </section>
 </main>
 
+<style>
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-action--info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-action:hover {
+    opacity: 0.8;
+}
+
+.status-tag--draft { background-color: #6c757d; }
+.status-tag--completed { background-color: #28a745; }
+.status-tag--notarized { background-color: #007bff; }
+.status-tag--lacking { background-color: #dc3545; }
+</style>
+
 {% block scripts %}
-
 <script src="{{ url_for('static', filename='js/documents/document_table.js') }}"></script>
-
 {% endblock scripts %}
 
 {% endblock content %}

@@ -1,32 +1,47 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
+from app.services.client_service import add_client, get_all_clients, get_client_by_email
 
 clients_bp = Blueprint('clients', __name__, url_prefix='/clients')
 
 @clients_bp.route('/')
 @login_required 
-
 def clients_page():
-    # For now, use empty list until we fix the service
-    clients = []  # get_all_clients() - comment this out temporarily
+    clients = get_all_clients()
     return render_template('clients_page.html', clients=clients)
 
 @clients_bp.route('/new', methods=['GET'])
 @login_required 
-
 def new_client_form():
+    """Displays the form to add a new client."""
     return render_template('add_client.html')
 
-@clients_bp.route('/new_submit', methods=['POST'])
+@clients_bp.route('/new', methods=['POST'])
 @login_required 
-
 def submit_new_client():
-    # Temporarily comment out the service call
-    # name = request.form['client_name']
-    # email = request.form['client_email']
-    # ctype = request.form['client_type']
-    # status = request.form['client_status']
-    # notes = request.form.get('internal_notes', '')
-    # add_client(name, email, ctype, status, notes)
-    
-    return redirect(url_for('clients.clients_page'))
+    """Submits new client data."""
+    # Get form data including names
+    first_name = request.form['client_first_name']
+    last_name = request.form['client_last_name']
+    address = request.form['client_address']
+    email = request.form['client_email']
+    phone = request.form.get('client_phone')
+    role = request.form.get('client_role')
+    notes = request.form.get('internal_notes', '')
+
+    # Validation: Check for duplicate email
+    if get_client_by_email(email):
+        flash('A client with this email already exists.', 'error')
+        return redirect(url_for('clients.new_client_form'))
+
+    try:
+        # Updated to include names
+        new_client = add_client(address, email, phone, role, notes, first_name, last_name)
+        flash(f'Client {first_name} {last_name} added successfully.', 'success')
+        
+        # Redirect to the transaction form, passing the new client's ID
+        return redirect(url_for('transaction.new_transaction_form', pre_select_client_id=new_client.id))
+        
+    except Exception as e:
+        flash(f'An error occurred while adding the client: {e}', 'error')
+        return redirect(url_for('clients.new_client_form'))

@@ -1,7 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
-db = SQLAlchemy()
+from . import db  # Import the shared db instance
+from datetime import datetime  # Add this import
 
 class NotarialEntry(db.Model):
     """
@@ -25,21 +23,12 @@ class NotarialEntry(db.Model):
     # --- Party Details (The ones whose documents are being notarized) ---
     
     # Name of the principal party/signer (the one executing the document)
-    # The original not_party_name_id suggested a foreign key relationship
-    # If this model only tracks the name directly, keep it simple:
     not_party_name = db.Column(db.String(150), nullable=False) 
-    
-    # Foreign Key to a separate 'Client' or 'Person' table 
-    # (RECOMMENDED for tracking details like address, ID, etc.)
-    # not_party_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=True)
-    # party = db.relationship("Client", backref="notarial_entries") # Assuming a 'Client' model exists
     
     # --- Witness Details ---
     
     # Name of the witness to the transaction
     not_witness_name = db.Column(db.String(150))
-    # If there are multiple witnesses, you would need a separate 'Witness' table and a many-to-many relationship.
-    
     
     # NEW FOREIGN KEY: Links the notary log entry to the specific notarization request
     transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=False, unique=True)

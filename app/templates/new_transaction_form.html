@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">New Transaction</h4>
+                    <p class="text-muted mb-0">Start a new document processing workflow</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('transaction.submit_new_transaction') }}">
+                        <!-- Client Selection -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Client Information</h5>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="client_id" class="form-label">Select Client *</label>
+                                        <select class="form-control" id="client_id" name="client_id" required>
+                                            <option value="">Choose a client...</option>
+                                            {% for client in clients %}
+                                            <option value="{{ client.id }}" 
+                                                {% if pre_select_client_id and client.id == pre_select_client_id|int %}selected{% endif %}>
+                                                {{ client.full_name }} - {{ client.client_email }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <a href="{{ url_for('clients.new_client_form') }}?return_to=new_transaction" class="btn btn-outline-primary w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        </svg>
+                                        Add New Client
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Selection -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Service Details</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="service_id" class="form-label">Service Type *</label>
+                                        <select class="form-control" id="service_id" name="service_id" required>
+                                            <option value="">Select a service...</option>
+                                            {% for service in services %}
+                                            <option value="{{ service.id }}" data-fee="{{ service.fee }}">
+                                                {{ service.service_name }} - ₱{{ "%.2f"|format(service.fee) }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="amount" class="form-label">Amount *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₱</span>
+                                            <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" required>
+                                        </div>
+                                        <small class="form-text text-muted">Service fee will auto-fill when you select a service</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Details -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Document Information</h5>
+                            <div class="mb-3">
+                                <label for="document_title" class="form-label">Document Title *</label>
+                                <input type="text" class="form-control" id="document_title" name="document_title" required placeholder="e.g., Special Power of Attorney, Affidavit of Loss...">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="document_purpose" class="form-label">Document Purpose/Description</label>
+                                <textarea class="form-control" id="document_purpose" name="document_purpose" rows="4" placeholder="Describe the purpose of this document, any special requirements, or additional context..."></textarea>
+                            </div>
+                        </div>
+
+                            <!-- Workflow Information
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">Workflow</h5>
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Workflow Steps:</h6>  
+                                    <ol class="mb-0 small">
+                                        <li><strong>Draft:</strong> Transaction created (current step)</li>
+                                        <li><strong>Pending Approval:</strong> Submit to lawyer for review</li>
+                                        <li><strong>Approved:</strong> Lawyer approves and documents are generated</li>
+                                        <li><strong>Completed:</strong> Document printed, signed, and notarized</li>
+                                        <li><strong>Paid:</strong> Payment processed and transaction archived</li>
+                                    </ol>
+                                </div>
+                            </div> -->
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('transaction.transactions_page') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Transaction</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceSelect = document.getElementById('service_id');
+    const amountInput = document.getElementById('amount');
+    
+    // Auto-fill amount when service is selected
+    serviceSelect.addEventListener('change', function() {
+        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+        const fee = selectedOption.getAttribute('data-fee');
+        
+        if (fee) {
+            amountInput.value = parseFloat(fee).toFixed(2);
+        } else {
+            amountInput.value = '';
+        }
+    });
+    
+    // Allow manual amount override
+    amountInput.addEventListener('input', function() {
+        // Ensure amount is at least 0
+        if (this.value < 0) {
+            this.value = 0;
+        }
+    });
+});
+</script>
+{% endblock %}

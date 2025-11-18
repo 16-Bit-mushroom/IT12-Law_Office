@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-content">
+    <header class="dashboard-header">
+        <div>
+            <h1>Legal Consultations <span></span></h1>
+            <p>Manage all legal consultation sessions and client advice</p>
+        </div>
+
+        <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+            <div class="search-bar">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input class="search-bar__input" type="text" placeholder="Search consultations, clients, topics...">
+            </div>
+
+            <a href="{{ url_for('legal_consultation.new_consultation_form') }}" class="btn btn-primary">
+                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                New Consultation
+            </a>
+        </div>
+    </header>
+
+    <!-- Status Summary Cards -->
+    <section class="dashboard-cards">
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Total Consultations</span>
+                <span class="data-card__value">{{ consultations|length }}</span>
+            </div>
+            <div class="data-card__icon data-card__icon--blue"></div>
+        </div>
+
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">This Month</span>
+                <span class="data-card__value">
+                    {% set current_month = [] %}
+                    {% for consultation in consultations %}
+                        {% if consultation.consultation_date.month == now.month and consultation.consultation_date.year == now.year %}
+                            {% if current_month.append(1) %}{% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ current_month|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--gold"></div>
+        </div>
+
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Follow-ups</span>
+                <span class="data-card__value">
+                    {% set follow_ups = [] %}
+                    {% for consultation in consultations %}
+                        {% if consultation.follow_up_required %}
+                            {% if follow_ups.append(1) %}{% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ follow_ups|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--green"></div>
+        </div>
+
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Avg Duration</span>
+                <span class="data-card__value">
+                    {% set total_duration = [] %}
+                    {% for consultation in consultations %}
+                        {% if total_duration.append(consultation.consultation_duration) %}{% endif %}
+                    {% endfor %}
+                    {% if total_duration %}
+                        {{ (total_duration|sum / total_duration|length)|round }}min
+                    {% else %}
+                        0min
+                    {% endif %}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--purple"></div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <div class="panel-card">
+            <div class="table-wrapper">
+                <table class="table document-table">
+                    <colgroup>
+                        <col class="short">
+                        <col class="medium">
+                        <col class="long">
+                        <col class="medium">
+                        <col class="short">
+                        <col class="medium">
+                        <col class="actions">
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th data-sort-key="id">ID</th>
+                            <th data-sort-key="client">Client</th>
+                            <th data-sort-key="topic">Consultation Topic</th>
+                            <th data-sort-key="type">Type</th>
+                            <th data-sort-key="duration">Duration</th>
+                            <th data-sort-key="date">Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consultation in consultations %}
+                        <tr>
+                            <td>#{{ consultation.id }}</td>
+                            <td>
+                                <a href="#" class="table-link">{{ consultation.client.full_name }}</a>
+                            </td>
+                            <td>
+                                <strong>{{ consultation.consultation_topic }}</strong>
+                                <br><small class="text-muted">{{ consultation.consultation_notes|truncate(100) }}</small>
+                            </td>
+                            <td>
+                                <span class="status-tag status-tag--{{ consultation.consultation_type|lower|replace(' ', '-') }}">
+                                    {{ consultation.consultation_type }}
+                                </span>
+                            </td>
+                            <td>{{ consultation.consultation_duration }} min</td>
+                            <td>{{ consultation.consultation_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="#" class="btn-action btn-action--info" title="View Details" data-bs-toggle="modal" data-bs-target="#detailModal{{ consultation.id }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </a>
+                                    {% if consultation.follow_up_required %}
+                                    <span class="badge bg-warning" title="Follow-up required">!</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Detail Modal -->
+                                <div class="modal fade" id="detailModal{{ consultation.id }}" tabindex="-1" aria-labelledby="detailModalLabel{{ consultation.id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="detailModalLabel{{ consultation.id }}">Consultation Details - #{{ consultation.id }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6>Basic Information</h6>
+                                                        <p><strong>Client:</strong> {{ consultation.client.full_name }}</p>
+                                                        <p><strong>Consultation Type:</strong> {{ consultation.consultation_type }}</p>
+                                                        <p><strong>Duration:</strong> {{ consultation.consultation_duration }} minutes</p>
+                                                        <p><strong>Date:</strong> {{ consultation.consultation_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6>Topic & Notes</h6>
+                                                        <p><strong>Topic:</strong> {{ consultation.consultation_topic }}</p>
+                                                        <p><strong>Notes:</strong> {{ consultation.consultation_notes }}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                {% if consultation.legal_issues or consultation.recommendations %}
+                                                <div class="row mt-3">
+                                                    <div class="col-12">
+                                                        <h6>Legal Analysis</h6>
+                                                        {% if consultation.legal_issues %}
+                                                        <p><strong>Legal Issues Identified:</strong><br>{{ consultation.legal_issues }}</p>
+                                                        {% endif %}
+                                                        {% if consultation.recommendations %}
+                                                        <p><strong>Recommendations:</strong><br>{{ consultation.recommendations }}</p>
+                                                        {% endif %}
+                                                        {% if consultation.next_steps %}
+                                                        <p><strong>Next Steps:</strong><br>{{ consultation.next_steps }}</p>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if consultation.follow_up_required %}
+                                                <div class="row mt-3">
+                                                    <div class="col-12">
+                                                        <div class="alert alert-warning">
+                                                            <strong>Follow-up Required</strong>
+                                                            {% if consultation.follow_up_date %}
+                                                                <br>Scheduled for: {{ consultation.follow_up_date.strftime('%B %d, %Y') }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary">Print Consultation Record</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem;">
+                                No consultations found. <a href="{{ url_for('legal_consultation.new_consultation_form') }}">Record your first consultation</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-action--info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-action:hover {
+    opacity: 0.8;
+}
+
+.status-tag--initial { background-color: #007bff; color: white; }
+.status-tag--follow-up { background-color: #28a745; color: white; }
+.status-tag--emergency { background-color: #dc3545; color: white; }
+
+.badge {
+    font-size: 0.7em;
+    padding: 0.2em 0.4em;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+</style>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/legal_consultation/consultation_table.js') }}"></script>
+{% endblock scripts %}
+
+{% endblock content %}

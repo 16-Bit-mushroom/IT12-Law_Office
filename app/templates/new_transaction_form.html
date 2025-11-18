@@ -6,8 +6,8 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="mb-0">New Transaction</h4>
-                    <p class="text-muted mb-0">Start a new document processing workflow</p>
+                    <h4 class="mb-0">New Legal Service</h4>
+                    <p class="text-muted mb-0">For notarization services, use the <a href="{{ url_for('notarial_entries.notarial_entries_page') }}">Notarial Entries page</a></p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('transaction.submit_new_transaction') }}">
@@ -41,19 +41,21 @@
                             </div>
                         </div>
 
-                        <!-- Service Selection -->
+                        <!-- Service Selection - ONLY NON-NOTARIZATION -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Service Details</h5>
+                            <h5 class="border-bottom pb-2">Legal Service Details</h5>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="service_id" class="form-label">Service Type *</label>
                                         <select class="form-control" id="service_id" name="service_id" required>
-                                            <option value="">Select a service...</option>
+                                            <option value="">Select a legal service...</option>
                                             {% for service in services %}
-                                            <option value="{{ service.id }}" data-fee="{{ service.fee }}">
-                                                {{ service.service_name }} - ₱{{ "%.2f"|format(service.fee) }}
-                                            </option>
+                                                {% if not service.is_notarization %}
+                                                <option value="{{ service.id }}" data-fee="{{ service.fee }}">
+                                                    {{ service.service_name }} - ₱{{ "%.2f"|format(service.fee) }}
+                                                </option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -73,36 +75,36 @@
 
                         <!-- Document Details -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Document Information</h5>
+                            <h5 class="border-bottom pb-2">Service Information</h5>
                             <div class="mb-3">
-                                <label for="document_title" class="form-label">Document Title *</label>
-                                <input type="text" class="form-control" id="document_title" name="document_title" required placeholder="e.g., Special Power of Attorney, Affidavit of Loss...">
+                                <label for="document_title" class="form-label">Service Title *</label>
+                                <input type="text" class="form-control" id="document_title" name="document_title" required placeholder="e.g., Contract Review, Legal Consultation...">
                             </div>
                             
                             <div class="mb-3">
-                                <label for="document_purpose" class="form-label">Document Purpose/Description</label>
-                                <textarea class="form-control" id="document_purpose" name="document_purpose" rows="4" placeholder="Describe the purpose of this document, any special requirements, or additional context..."></textarea>
+                                <label for="document_purpose" class="form-label">Service Description</label>
+                                <textarea class="form-control" id="document_purpose" name="document_purpose" rows="4" placeholder="Describe the legal service being provided..."></textarea>
                             </div>
                         </div>
 
-                            <!-- Workflow Information
-                            <div class="mb-4">
-                                <h5 class="border-bottom pb-2">Workflow</h5>
-                                <div class="alert alert-info">
-                                    <h6 class="alert-heading">Workflow Steps:</h6>  
-                                    <ol class="mb-0 small">
-                                        <li><strong>Draft:</strong> Transaction created (current step)</li>
-                                        <li><strong>Pending Approval:</strong> Submit to lawyer for review</li>
-                                        <li><strong>Approved:</strong> Lawyer approves and documents are generated</li>
-                                        <li><strong>Completed:</strong> Document printed, signed, and notarized</li>
-                                        <li><strong>Paid:</strong> Payment processed and transaction archived</li>
-                                    </ol>
-                                </div>
-                            </div> -->
+                        <!-- Workflow Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Workflow</h5>
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">Workflow Steps:</h6>
+                                <ol class="mb-0 small">
+                                    <li><strong>Draft:</strong> Service request created (current step)</li>
+                                    <li><strong>Pending Approval:</strong> Submit to lawyer for review</li>
+                                    <li><strong>Approved:</strong> Lawyer approves the service</li>
+                                    <li><strong>Completed:</strong> Service delivered to client</li>
+                                    <li><strong>Paid:</strong> Payment processed</li>
+                                </ol>
+                            </div>
+                        </div>
 
                         <div class="d-flex justify-content-between">
                             <a href="{{ url_for('transaction.transactions_page') }}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Create Transaction</button>
+                            <button type="submit" class="btn btn-primary">Create Legal Service</button>
                         </div>
                     </form>
                 </div>

@@ -7,7 +7,7 @@
     <!-- ✅ Local Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <title>RJB Law Office</title>
+    <title>RBJ Law Office</title>
 </head>
 
 <!-- ✅ Bootstrap JS Bundle (includes Popper) -->
@@ -19,7 +19,7 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <img src="{{ url_for('static', filename='img/scales-of-justice.svg') }}" alt="logo">
-            <h2>RJB Law</h2>
+            <h2>RBJ Law</h2>
         </div>
 
         <ul class="sidebar-links">
@@ -27,26 +27,50 @@
             <li><a href="{{ url_for('dashboard.dashboard_page') }}"><span><img
                             src="{{ url_for('static', filename='img/dashboard.svg') }}" alt=""></span>Dashboard</a></li>
 
-            <li><a href="{{ url_for('transaction.transactions_page')}}"><span><img src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Transactions</a></li>
+            <li><a href="{{ url_for('case_logs.case_logs_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>Case Logs</a></li>
+
+            <li><a href="{{ url_for('notarial_entries.notarial_entries_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Notarial
+                    Entries</a> </li>
+
+            <li><a href="{{ url_for('legal_consultation.legal_consultation_page') }}"><span><img
+                            src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Legal
+                    Consultation</a>
+            </li>
 
             <li><a href="{{ url_for('documents.documents_page') }}"><span><img
                             src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Documents</a></li>
 
-            <li><a href="{{ url_for('clients.clients_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients</a></li>
+            <!-- REPLACE the four separate links with this block -->
+            <li class="has-submenu">
+                <button class="submenu-toggle" aria-expanded="false" aria-haspopup="true">
+                    <span><img src="{{ url_for('static', filename='img/more.svg') }}" alt=""></span>
+                    More
+                    <span class="chev" aria-hidden="true">▾</span>
+                </button>
 
+                <ul class="submenu" role="menu" aria-label="More links">
+                    <li role="none"><a role="menuitem" href="{{ url_for('transaction.transactions_page') }}">
+                            <span><img src="{{ url_for('static', filename='img/payments.svg') }}"
+                                    alt=""></span>Transactions
+                        </a></li>
 
+                    <li role="none"><a role="menuitem" href="{{ url_for('clients.clients_page') }}">
+                            <span><img src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients
+                        </a></li>
+                        
 
-            <li><a href="{{ url_for('case_logs.case_logs_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>Case Logs</a></li>
+                    <li role="none"><a role="menuitem" href="#">
+                            <span><img src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Services
+                        </a></li>
 
-            <li><a href="#"><span><img
-                            src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Services</a></li>
-
-
-
-            <li><a href="{{ url_for('payments.payments_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments</a></li>
+                    <li role="none"><a role="menuitem" href="{{ url_for('payments.payments_page') }}">
+                            <span><img src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments
+                        </a></li>
+                </ul>
+            </li>
+            </li>
 
 
 
@@ -91,6 +115,45 @@
             avatarDropdown.style.display = 'none';
         }
     });
+
+    // Submenu toggle for touch / click devices
+    document.addEventListener('DOMContentLoaded', () => {
+        const submenuToggles = document.querySelectorAll('.submenu-toggle');
+
+        submenuToggles.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // prevent link-like behavior if you later convert to <a>
+                e.preventDefault();
+
+                const li = btn.closest('.has-submenu');
+                const isShown = li.classList.toggle('show');    // toggles .show which CSS uses
+                btn.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+            });
+        });
+
+        // Close any open submenu when clicking outside
+        document.addEventListener('click', (e) => {
+            submenuToggles.forEach(btn => {
+                const li = btn.closest('.has-submenu');
+                if (!li.contains(e.target)) {
+                    li.classList.remove('show');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+
+        // Close with Escape key for accessibility
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                submenuToggles.forEach(btn => {
+                    const li = btn.closest('.has-submenu');
+                    li.classList.remove('show');
+                    btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+    });
+
 </script>
 
 

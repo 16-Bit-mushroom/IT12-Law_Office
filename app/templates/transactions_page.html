@@ -4,8 +4,8 @@
 <main class="dashboard-content">
     <header class="dashboard-header">
         <div>
-            <h1>Transactions <span></span></h1>
-            <p>Manage all transactions and track workflow</p>
+            <h1>Legal Services <span></span></h1>
+            <p>Manage legal consultations, contract reviews, and other non-notarization services</p>
         </div>
 
         <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
@@ -22,7 +22,7 @@
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                New Transaction
+                New Legal Service
             </a>
         </div>
     </header>
@@ -31,7 +31,7 @@
     <section class="dashboard-cards">
         <div class="data-card data-card--sm">
             <div class="data-card__info">
-                <span class="data-card__title">Total Transactions</span>
+                <span class="data-card__title">Total Services</span>
                 <span class="data-card__value">{{ transactions|length }}</span>
             </div>
             <div class="data-card__icon data-card__icon--blue"></div>
@@ -64,6 +64,10 @@
 
     <section class="content-section">
         <div class="panel-card">
+            <div class="alert alert-info">
+                <strong>Note:</strong> For notarization services, please use the <a href="{{ url_for('notarial_entries.notarial_entries_page') }}" class="alert-link">Notarial Entries page</a>.
+            </div>
+            
             <div class="table-wrapper">
                 <table class="table document-table">
                     <colgroup>
@@ -181,7 +185,7 @@
                         {% else %}
                         <tr>
                             <td colspan="9" style="text-align: center; padding: 2rem;">
-                                No transactions found. <a href="{{ url_for('transaction.new_transaction_form') }}">Create your first transaction</a>
+                                No legal service transactions found. <a href="{{ url_for('transaction.new_transaction_form') }}">Create your first legal service</a>
                             </td>
                         </tr>
                         {% endfor %}

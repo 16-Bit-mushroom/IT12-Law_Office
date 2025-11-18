@@ -14,3 +14,76 @@
 @import url('/static/css/base/layout.css');
 @import url('/static/css/pages/login.css');
 @import url('/static/css/pages/_admin.css');
+
+
+/* Submenu container */
+.sidebar-links .has-submenu {
+  position: relative;
+  display: block;
+}
+
+/* Toggle button styling (matches other links) */
+.submenu-toggle {
+  /* display: flex; */
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: rgba(152, 173, 241, 0.644);
+  /* text-align: left; */
+  cursor: pointer;
+  font: inherit;
+}
+
+/* small caret */
+.submenu-toggle .chev {
+  margin-left: auto;
+  font-size: 0.9rem;
+  transition: transform .18s ease;
+}
+
+/* Hidden by default */
+.sidebar-links .submenu {
+  display: none;               /* hidden for keyboard users too; JS toggles class "show" */
+  flex-direction: column;
+  gap: 0;
+  padding-left: 1.25rem;       /* indent submenu items */
+  margin: 0;
+  list-style: none;
+}
+
+/* Show on hover (desktop) */
+.sidebar-links .has-submenu:hover > .submenu,
+.sidebar-links .has-submenu:focus-within > .submenu {
+  display: flex;
+}
+
+/* Support programmatic "show" class for JS/touch devices */
+.sidebar-links .has-submenu.show > .submenu {
+  display: flex;
+}
+
+/* Rotate caret when expanded */
+.sidebar-links .has-submenu.show .chev,
+.sidebar-links .has-submenu[aria-expanded="true"] .chev {
+  transform: rotate(180deg);
+}
+
+/* Ensure submenu links look like normal links */
+.sidebar-links .submenu a {
+    font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  text-decoration: none;
+  color: white;
+}
+
+/* Optional: subtle background on hover */
+.sidebar-links .submenu a:hover {
+  background-color: rgba(255, 255, 255, 0);
+}
+

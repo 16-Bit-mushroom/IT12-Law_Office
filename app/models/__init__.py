@@ -11,3 +11,4 @@ from .payment_mdl import Payment
 from .transaction_mdl import TransactionItem
 from .case_doc_mdl import CaseDocument
 from .notarial_entry_mdl import NotarialEntry
+from .legal_consultation_mdl import LegalConsultation

@@ -26,32 +26,38 @@ def seed_initial_admin():
             Service(
                 service_name='Notarization',
                 fee=100.00,
-                description='Document notarization service'
+                description='Document notarization service',
+                is_notarization=True,
             ),
             Service(
                 service_name='Affidavit Preparation',
                 fee=150.00,
-                description='Preparation and notarization of affidavits'
+                description='Preparation and notarization of affidavits',
+                is_notarization=True
             ),
             Service(
                 service_name='Special Power of Attorney',
                 fee=200.00,
-                description='SPA document preparation and notarization'
+                description='SPA document preparation and notarization',
+                is_notarization=True
             ),
             Service(
                 service_name='Deed of Sale',
                 fee=300.00,
-                description='Deed of Sale preparation and notarization'
+                description='Deed of Sale preparation and notarization',
+                is_notarization=True
             ),
             Service(
                 service_name='Contract Review',
                 fee=250.00,
-                description='Legal contract review and consultation'
+                description='Legal contract review and consultation',
+                is_notarization=False
             ),
             Service(
                 service_name='Legal Consultation',
                 fee=500.00,
-                description='General legal consultation service'
+                description='General legal consultation service',
+                is_notarization=False
             )
         ]
         

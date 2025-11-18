@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
+from app.models.service_mdl import Service
 from app.services.transaction_service import (
     create_transaction, get_all_transactions, submit_for_approval, 
     approve_transaction, complete_transaction, mark_payment_paid
@@ -19,9 +20,9 @@ def transactions_page():
 @transaction_bp.route('/new', methods=['GET'])
 @login_required
 def new_transaction_form():
-    """Display new transaction form with client and service selection"""
+    """Display new transaction form with client and NON-notarization service selection"""
     clients = get_all_clients()
-    services = get_all_services()  # You'll need to implement this
+    services = Service.query.filter_by(is_notarization=False).all()  # Only non-notarization services
     pre_select_client_id = request.args.get('pre_select_client_id')
     
     return render_template('new_transaction_form.html', 

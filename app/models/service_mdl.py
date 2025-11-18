@@ -8,6 +8,7 @@ class Service(db.Model):
     service_name = db.Column(db.String(100), nullable=False)
     fee = db.Column(Numeric(10, 2), nullable=False)
     description = db.Column(db.Text)
+    is_notarization = db.Column(db.Boolean, default=False)  # New field
 
     def __repr__(self):
-        return f"<Service(id={self.id}, name='{self.service_name}', fee={self.fee})>"
+        return f"<Service(id={self.id}, name='{self.service_name}', fee={self.fee}, is_notarization={self.is_notarization})>"

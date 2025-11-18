@@ -1,6 +1,63 @@
-[] add details to notarial entry model and table, and page/link
 [] both staff and admin can log on notarial entry
-[] change 'particular' column to 'violation' in Case-Logs table (only visible to admin)
 [] view action in Case Logs opens case details in a format ready to print
 [] In Document Preparation in Tansaction process of Notarization, add input for additional docs for some services
 [] add tabs on Services page 'cases', 'Notarization', 'legal consultation'
+
+
+
+
+================= Dashboard page ===================
+
+
+
+
+
+================= Notarial Entries page ===================
+Admin and staff page
+--------------------
+
+[] notarial entry can have many witnessess
+[] action buttons not working aside from view
+[] model details, table, form might need to be revised.
+
+[x] add details to notarial entry model and table, and page/link
+
+
+
+
+================ Case Logs page ====================
+Admin only page
+---------------
+
+[] set permission so only admin can see the link on the side bar
+[] model details, table, form might need to be revised.
+
+
+
+[x] change 'particular' column to 'violation' in Case-Logs table (only visible to admin)
+
+
+
+================ Legal Consulation page ====================
+Admin only page
+---------------
+
+[] set permission so only admin can see the link on the side bar
+[] model details, table, form might need to be revised.
+
+
+================ Transcation page ====================
+
+================ Services page ====================
+
+================ Payment page ====================
+
+================ Clients page ====================
+
+================ Documents page ====================
+
+
+
+
+
+

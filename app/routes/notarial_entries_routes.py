@@ -1,8 +1,11 @@
+# notarial_entries_routes.py - CORRECTED
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 from flask_login import login_required
-from app.models.notarial_entry_mdl import NotarialEntry
+from app.models.notarial_entry_mdl import NotarialEntry, NotarialEntryParty, NotarialEntryWitness
 from app.models import db
+from app.services.notarial_entry_service import NotarialEntryService
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 notarial_entries_bp = Blueprint('notarial_entries', __name__, url_prefix='/notarial-entries')
 
@@ -10,7 +13,7 @@ notarial_entries_bp = Blueprint('notarial_entries', __name__, url_prefix='/notar
 @login_required
 def notarial_entries_page():
     """Display all notarial entries"""
-    entries = NotarialEntry.query.order_by(NotarialEntry.not_date.desc()).all()
+    entries = NotarialEntryService.get_all_entries()
     return render_template('notarial_entries.html', entries=entries, now=datetime.utcnow())
 
 @notarial_entries_bp.route('/create-manual', methods=['POST'])
@@ -18,54 +21,78 @@ def notarial_entries_page():
 def create_manual_entry():
     """Create a manual notarial entry"""
     try:
-        entry = NotarialEntry(
-            not_entry_num=request.form['entry_number'],
-            not_entry_page_num = request.form['entry_page_num'],
-            not_entry_book_num = request.form['entry_book_num'],
-            not_series = request.form['not_series'],
-            not_title=request.form['document_title'],
-            
-            not_party_name=request.form['party_name'],
-            not_party_address = request.form['party_address'],
-
-            not_witness_name=request.form.get('witness_name'),
-            not_witness_address=request.form.get('witness_address'),
-
-            # competent evidence of identity
-            not_comp_evidence_id = request.form.get('not_comp_evidence_id'),
-
-
-            not_date=datetime.strptime(request.form['notarization_date'], '%Y-%m-%dT%H:%M'),
-            not_type_act=request.form['notarial_act_type'],
-
-            not_fee = request.form['notarial_fee'],
-            not_fee_or = request.form['notarial_fee_or'],
-            
-            not_other_place = request.form['other_place']
-        )
-        
-        db.session.add(entry)
-        db.session.commit()
+        entry = NotarialEntryService.create_manual_entry(request.form)
         flash('Notarial entry created successfully!', 'success')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
         
     except Exception as e:
-        db.session.rollback()
         flash(f'Error creating notarial entry: {str(e)}', 'error')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
 
-# @notarial_entries_bp.route('/<int:entry_id>/mark-signed', methods=['POST'])
-# @login_required
-# def mark_entry_signed(entry_id):
-#     """Mark an entry as signed in physical register"""
-#     try:
-#         entry = NotarialEntry.query.get(entry_id)
-#         if entry:
-#             entry.physical_book_signed = True
-#             entry.thumbprint_obtained = True
-#             db.session.commit()
-#             return jsonify({'success': True})
-#         return jsonify({'success': False, 'error': 'Entry not found'})
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({'success': False, 'error': str(e)})
+@notarial_entries_bp.route('/<int:entry_id>/update', methods=['POST'])
+@login_required
+def update_entry(entry_id):
+    """Update a notarial entry"""
+    try:
+        entry = NotarialEntryService.update_entry(entry_id, request.form)
+        if entry:
+            flash('Notarial entry updated successfully!', 'success')
+        else:
+            flash('Notarial entry not found!', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+        
+    except Exception as e:
+        flash(f'Error updating notarial entry: {str(e)}', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+
+@notarial_entries_bp.route('/<int:entry_id>/delete', methods=['POST'])
+@login_required
+def delete_entry(entry_id):
+    """Delete a notarial entry"""
+    try:
+        success = NotarialEntryService.delete_entry(entry_id)
+        if success:
+            flash('Notarial entry deleted successfully!', 'success')
+        else:
+            flash('Notarial entry not found!', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+    except Exception as e:
+        flash(f'Error deleting notarial entry: {str(e)}', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+
+@notarial_entries_bp.route('/<int:entry_id>', methods=['GET'])
+@login_required
+def get_entry(entry_id):
+    """Get notarial entry data for editing"""
+    # Eager load the relationships
+    entry = NotarialEntry.query.options(
+        joinedload(NotarialEntry.parties),
+        joinedload(NotarialEntry.witnesses)
+    ).get(entry_id)
+    
+    if entry:
+        return jsonify({
+            'id': entry.id,
+            'not_entry_num': entry.not_entry_num,
+            'not_page_num': entry.not_page_num,
+            'not_book_num': entry.not_book_num,
+            'not_series': entry.not_series,
+            'not_title': entry.not_title,
+            'not_date': entry.not_date.strftime('%Y-%m-%dT%H:%M'),
+            'not_type_act': entry.not_type_act,
+            'not_fee': float(entry.not_fee),
+            'not_fee_or': entry.not_fee_or,
+            'not_other_place': entry.not_other_place,
+            'not_comp_evidence_id': entry.not_comp_evidence_id,
+            'parties': [{
+                'id': party.id,
+                'party_name': party.party_name,
+                'party_address': party.party_address
+            } for party in entry.parties],
+            'witnesses': [{
+                'id': witness.id,
+                'witness_name': witness.witness_name,
+                'witness_address': witness.witness_address
+            } for witness in entry.witnesses]
+        })
+    return jsonify({'error': 'Entry not found'}), 404

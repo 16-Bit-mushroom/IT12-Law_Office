@@ -1,0 +1,6 @@
+[] add details to notarial entry model and table, and page/link
+[] both staff and admin can log on notarial entry
+[] change 'particular' column to 'violation' in Case-Logs table (only visible to admin)
+[] view action in Case Logs opens case details in a format ready to print
+[] In Document Preparation in Tansaction process of Notarization, add input for additional docs for some services
+[] add tabs on Services page 'cases', 'Notarization', 'legal consultation'

@@ -1,0 +1,26 @@
+
++=====================================+
+|   For Notarizaton service flow      |
++=====================================+
+
+
+Kani services ni sila, joint affidavit, contracts, deed of sale. So ani na lang na sya.
+
+1. Create clients profile if non existing.
+2. Create transactions, select single or multiple clients for this transaction.
+3. Select service (or services?)
+
+4. Document title
+5. Notes/Description
+6. Create transaction
+
+
+
+Automated.
+[] recorded on Transaction table
+[] record on Payments 
+[] clients record of that particular transaction are recorded on the clients table (happened during registering clients at step
+
++=====================================+
+|   For Notarizaton service flow      |
++=====================================+

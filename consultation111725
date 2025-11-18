@@ -16,11 +16,19 @@
 Admin and staff page
 --------------------
 
-[] notarial entry can have many witnessess
-[] action buttons not working aside from view
-[] model details, table, form might need to be revised.
+[] notarial entry can have 1-2 or no witnessess
+[] need action buttons view/delete
+[] when view button is clicked, opens the form filled with the data of the entry and is editable.
+[] ID must have ID date expiration
+[] concat book, page, entry number when fetching data from db and displayin to the table as one column
+[] If one entry has multiple parties, view entry  then click button 'add another party'
+[] In the Form, data type of Series of is Year only
+[] restore Date input in the form that was replaced by Series Of
 
 [x] add details to notarial entry model and table, and page/link
+[x] model details, table, form might need to be revised.
+[x] follow form format same on book
+
 
 
 
@@ -31,6 +39,7 @@ Admin only page
 
 [] set permission so only admin can see the link on the side bar
 [] model details, table, form might need to be revised.
+[] need to create form
 
 
 

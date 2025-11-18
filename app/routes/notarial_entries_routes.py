@@ -20,21 +20,28 @@ def create_manual_entry():
     try:
         entry = NotarialEntry(
             not_entry_num=request.form['entry_number'],
-            not_date=datetime.strptime(request.form['notarization_date'], '%Y-%m-%dT%H:%M'),
-            notarial_act_type=request.form['notarial_act_type'],
+            not_entry_page_num = request.form['entry_page_num'],
+            not_entry_book_num = request.form['entry_book_num'],
+            not_series = request.form['not_series'],
             not_title=request.form['document_title'],
-            not_party_name=request.form['principal_name'],
-            principal_address=request.form['principal_address'],
-            personal_knowledge=bool(request.form.get('personal_knowledge')),
-            id_type=request.form.get('id_type'),
-            id_number=request.form.get('id_number'),
-            id_issuing_agency=request.form.get('issuing_agency'),
-            id_date_issued=datetime.strptime(request.form['id_date_issued'], '%Y-%m-%d').date() if request.form.get('id_date_issued') else None,
+            
+            not_party_name=request.form['party_name'],
+            not_party_address = request.form['party_address'],
+
             not_witness_name=request.form.get('witness_name'),
-            witness_address=request.form.get('witness_address'),
-            special_remarks=request.form.get('special_remarks'),
-            physical_book_signed=bool(request.form.get('physical_book_signed')),
-            thumbprint_obtained=bool(request.form.get('thumbprint_obtained'))
+            not_witness_address=request.form.get('witness_address'),
+
+            # competent evidence of identity
+            not_comp_evidence_id = request.form.get('not_comp_evidence_id'),
+
+
+            not_date=datetime.strptime(request.form['notarization_date'], '%Y-%m-%dT%H:%M'),
+            not_type_act=request.form['notarial_act_type'],
+
+            not_fee = request.form['notarial_fee'],
+            not_fee_or = request.form['notarial_fee_or'],
+            
+            not_other_place = request.form['other_place']
         )
         
         db.session.add(entry)
@@ -47,18 +54,18 @@ def create_manual_entry():
         flash(f'Error creating notarial entry: {str(e)}', 'error')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
 
-@notarial_entries_bp.route('/<int:entry_id>/mark-signed', methods=['POST'])
-@login_required
-def mark_entry_signed(entry_id):
-    """Mark an entry as signed in physical register"""
-    try:
-        entry = NotarialEntry.query.get(entry_id)
-        if entry:
-            entry.physical_book_signed = True
-            entry.thumbprint_obtained = True
-            db.session.commit()
-            return jsonify({'success': True})
-        return jsonify({'success': False, 'error': 'Entry not found'})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'error': str(e)})
+# @notarial_entries_bp.route('/<int:entry_id>/mark-signed', methods=['POST'])
+# @login_required
+# def mark_entry_signed(entry_id):
+#     """Mark an entry as signed in physical register"""
+#     try:
+#         entry = NotarialEntry.query.get(entry_id)
+#         if entry:
+#             entry.physical_book_signed = True
+#             entry.thumbprint_obtained = True
+#             db.session.commit()
+#             return jsonify({'success': True})
+#         return jsonify({'success': False, 'error': 'Entry not found'})
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({'success': False, 'error': str(e)})

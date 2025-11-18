@@ -8,9 +8,12 @@
             <p>Official notarial register - All notarial acts recorded chronologically</p>
         </div>
 
-        <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+        <div class="dashboard-actions"
+            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
             <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
@@ -18,7 +21,8 @@
             </div>
 
             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEntryModal">
-                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
@@ -43,9 +47,9 @@
                 <span class="data-card__value">
                     {% set current_month = [] %}
                     {% for entry in entries %}
-                        {% if entry.not_date.month == now.month and entry.not_date.year == now.year %}
-                            {% if current_month.append(1) %}{% endif %}
-                        {% endif %}
+                    {% if entry.not_date.month == now.month and entry.not_date.year == now.year %}
+                    {% if current_month.append(1) %}{% endif %}
+                    {% endif %}
                     {% endfor %}
                     {{ current_month|length }}
                 </span>
@@ -59,9 +63,9 @@
                 <span class="data-card__value">
                     {% set signed_count = [] %}
                     {% for entry in entries %}
-                        {% if entry.physical_book_signed %}
-                            {% if signed_count.append(1) %}{% endif %}
-                        {% endif %}
+                    {% if entry.physical_book_signed %}
+                    {% if signed_count.append(1) %}{% endif %}
+                    {% endif %}
                     {% endfor %}
                     {{ signed_count|length }}
                 </span>
@@ -75,9 +79,9 @@
                 <span class="data-card__value">
                     {% set unsigned_count = [] %}
                     {% for entry in entries %}
-                        {% if not entry.physical_book_signed %}
-                            {% if unsigned_count.append(1) %}{% endif %}
-                        {% endif %}
+                    {% if not entry.physical_book_signed %}
+                    {% if unsigned_count.append(1) %}{% endif %}
+                    {% endif %}
                     {% endfor %}
                     {{ unsigned_count|length }}
                 </span>
@@ -104,105 +108,102 @@
 
                     <thead>
                         <tr>
-                            <th data-sort-key="entry_num">Entry #</th>
-                            <th data-sort-key="date">Date & Time</th>
-                            <th data-sort-key="type">Notarial Act</th>
-                            <th data-sort-key="title">Document Title</th>
-                            <th data-sort-key="party">Principal/Signatory</th>
-                            <th data-sort-key="id_type">ID Evidence</th>
-                            <th data-sort-key="witness">Witness</th>
-                            <th data-sort-key="signed">Book Signed</th>
+                            <th data-sort-key="book_num">Book No.</th>
+                            <th data-sort-key="page_num">Page No.</th>
+                            <th data-sort-key="entry_num">Entry No.</th>
+                            <th data-sort-key="series`">Series Of</th>
+                            <th data-sort-key="title">Title/Description</th>
+                            <th data-sort-key="parties">Parties</th>
+                            <th data-sort-key="witness">Witnesses</th>
+                            <th data-sort-key="not_act_type">Notarial Act. Type</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for entry in entries %}
                         <tr>
+
+                            <td>
+                                <strong>{{ entry.not_entry_book_num }}</strong>
+                            </td>
+
+                            <td>
+                                <strong>{{ entry.not_entry_page_num }}</strong>
+                            </td>
+
                             <td>
                                 <strong>{{ entry.not_entry_num }}</strong>
                             </td>
+
+
+
+
+                            <td>
+                                <strong>{{ entry.not_series }}</strong>
+                            </td>
+
+
+                            <td>
+                                <strong>{{ entry.not_title }}</strong>
+                            </td>
+
+                            <td>
+                                <strong>{{ entry.not_party_name }}</strong>
+                            </td>
+
+                            <td>
+                                <strong>{{ entry.not_witness_name }}</strong>
+                            </td>
+
+                            <td>
+                                <strong>{{ entry.not_comp_evidence_id }}</strong>
+                            </td>
+
+
                             <td>
                                 <div>{{ entry.not_date.strftime('%Y-%m-%d') }}</div>
                                 <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>
                             </td>
                             <td>
-                                <span class="status-tag status-tag--{{ entry.notarial_act_type|lower|replace(' ', '-')|replace('or', '') }}">
-                                    {{ entry.notarial_act_type }}
+                                <span
+                                    class="status-tag status-tag--{{ entry.notarial_act_type|lower|replace(' ', '-')|replace('or', '') }}">
+                                    {{ entry.not_act_type }}
                                 </span>
                             </td>
-                            <td>
-                                <a href="#" class="table-link">{{ entry.not_title }}</a>
-                                {% if entry.transaction_item %}
-                                    <br><small class="text-muted">Transaction #{{ entry.transaction_item.id }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <strong>{{ entry.not_party_name }}</strong>
-                                <br><small class="text-muted">{{ entry.principal_address|truncate(50) }}</small>
-                            </td>
-                            <td>
-                                <div><strong>{{ entry.id_type }}</strong></div>
-                                <small class="text-muted">{{ entry.id_number }}</small>
-                                {% if entry.personal_knowledge %}
-                                    <br><small class="text-success">✓ Personal Knowledge</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if entry.not_witness_name %}
-                                    <div>{{ entry.not_witness_name }}</div>
-                                    {% if entry.witness_address %}
-                                        <small class="text-muted">{{ entry.witness_address|truncate(30) }}</small>
-                                    {% endif %}
-                                {% else %}
-                                    <span class="text-muted">No witness</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if entry.physical_book_signed %}
-                                    <span class="status-tag status-tag--signed">✓ Signed</span>
-                                {% else %}
-                                    <span class="status-tag status-tag--unsigned">Pending</span>
-                                {% endif %}
-                            </td>
+
                             <td>
                                 <div class="action-buttons">
-                                    <a href="#" class="btn-action btn-action--info" title="View Full Details" data-bs-toggle="modal" data-bs-target="#detailModal{{ entry.id }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <a href="#" class="btn-action btn-action--info" title="View Full Details"
+                                        data-bs-toggle="modal" data-bs-target="#detailModal{{ entry.id }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    </a>
-                                    {% if not entry.physical_book_signed %}
-                                    <button class="btn-action btn-action--success" title="Mark as Signed" onclick="markAsSigned('{{ entry.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
-                                    </button>
-                                    {% endif %}
-                                    <a href="#" class="btn-action btn-action--warning" title="Print Entry">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                                            <rect x="6" y="14" width="12" height="8"></rect>
                                         </svg>
                                     </a>
                                 </div>
 
                                 <!-- Detail Modal -->
-                                <div class="modal fade" id="detailModal{{ entry.id }}" tabindex="-1" aria-labelledby="detailModalLabel{{ entry.id }}" aria-hidden="true">
+                                <div class="modal fade" id="detailModal{{ entry.id }}" tabindex="-1"
+                                    aria-labelledby="detailModalLabel{{ entry.id }}" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="detailModalLabel{{ entry.id }}">Notarial Entry Details - {{ entry.not_entry_num }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <h5 class="modal-title" id="detailModalLabel{{ entry.id }}">Notarial
+                                                    Entry Details - {{ entry.not_entry_num }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <h6>Basic Information</h6>
                                                         <p><strong>Entry Number:</strong> {{ entry.not_entry_num }}</p>
-                                                        <p><strong>Date & Time:</strong> {{ entry.not_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
-                                                        <p><strong>Notarial Act:</strong> {{ entry.notarial_act_type }}</p>
+                                                        <p><strong>Date & Time:</strong> {{ entry.not_date.strftime('%B
+                                                            %d, %Y at %I:%M %p') }}</p>
+                                                        <p><strong>Notarial Act:</strong> {{ entry.notarial_act_type }}
+                                                        </p>
                                                         <p><strong>Document Title:</strong> {{ entry.not_title }}</p>
                                                     </div>
                                                     <div class="col-md-6">
@@ -211,31 +212,36 @@
                                                         <p><strong>Address:</strong> {{ entry.principal_address }}</p>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="row mt-3">
                                                     <div class="col-md-6">
                                                         <h6>Identity Verification</h6>
                                                         <p><strong>ID Type:</strong> {{ entry.id_type }}</p>
                                                         <p><strong>ID Number:</strong> {{ entry.id_number }}</p>
-                                                        <p><strong>Issuing Agency:</strong> {{ entry.issuing_agency }}</p>
+                                                        <p><strong>Issuing Agency:</strong> {{ entry.issuing_agency }}
+                                                        </p>
                                                         {% if entry.id_date_issued %}
-                                                            <p><strong>ID Date Issued:</strong> {{ entry.id_date_issued.strftime('%B %d, %Y') }}</p>
+                                                        <p><strong>ID Date Issued:</strong> {{
+                                                            entry.id_date_issued.strftime('%B %d, %Y') }}</p>
                                                         {% endif %}
                                                         {% if entry.personal_knowledge %}
-                                                            <p><strong>Identity Established via Personal Knowledge</strong></p>
+                                                        <p><strong>Identity Established via Personal Knowledge</strong>
+                                                        </p>
                                                         {% endif %}
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6>Witness Information</h6>
                                                         {% if entry.not_witness_name %}
-                                                            <p><strong>Witness Name:</strong> {{ entry.not_witness_name }}</p>
-                                                            <p><strong>Witness Address:</strong> {{ entry.witness_address or 'Not provided' }}</p>
+                                                        <p><strong>Witness Name:</strong> {{ entry.not_witness_name }}
+                                                        </p>
+                                                        <p><strong>Witness Address:</strong> {{ entry.witness_address or
+                                                            'Not provided' }}</p>
                                                         {% else %}
-                                                            <p>No witnesses recorded</p>
+                                                        <p>No witnesses recorded</p>
                                                         {% endif %}
                                                     </div>
                                                 </div>
-                                                
+
                                                 {% if entry.special_remarks %}
                                                 <div class="row mt-3">
                                                     <div class="col-12">
@@ -244,31 +250,32 @@
                                                     </div>
                                                 </div>
                                                 {% endif %}
-                                                
+
                                                 <div class="row mt-3">
                                                     <div class="col-12">
                                                         <h6>Physical Register Status</h6>
                                                         <p>
-                                                            <strong>Signed in Physical Book:</strong> 
+                                                            <strong>Signed in Physical Book:</strong>
                                                             {% if entry.physical_book_signed %}
-                                                                <span class="text-success">✓ Completed</span>
+                                                            <span class="text-success">✓ Completed</span>
                                                             {% else %}
-                                                                <span class="text-warning">Pending</span>
+                                                            <span class="text-warning">Pending</span>
                                                             {% endif %}
                                                         </p>
                                                         <p>
-                                                            <strong>Thumbprint Obtained:</strong> 
+                                                            <strong>Thumbprint Obtained:</strong>
                                                             {% if entry.thumbprint_obtained %}
-                                                                <span class="text-success">✓ Completed</span>
+                                                            <span class="text-success">✓ Completed</span>
                                                             {% else %}
-                                                                <span class="text-warning">Pending</span>
+                                                            <span class="text-warning">Pending</span>
                                                             {% endif %}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
                                                 <button type="button" class="btn btn-primary">Print Entry</button>
                                             </div>
                                         </div>
@@ -279,7 +286,8 @@
                         {% else %}
                         <tr>
                             <td colspan="9" style="text-align: center; padding: 2rem;">
-                                No notarial entries found. Entries are automatically created when notarization transactions are approved.
+                                No notarial entries found. Entries are automatically created when notarization
+                                transactions are approved.
                             </td>
                         </tr>
                         {% endfor %}
@@ -295,69 +303,85 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="newEntryModalLabel">Add Manual Notarial Entry</h5>
+                <h5 class="modal-title" id="newEntryModalLabel">New Notarial Entry</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted">Complete all mandatory fields as required by the 2004 Rules on Notarial Practice.</p>
+                <p class="text-muted">Complete all mandatory fields as required by the 2004 Rules on Notarial Practice.
+                </p>
                 <form method="POST" action="{{ url_for('notarial_entries.create_manual_entry') }}">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Entry Number *</label>
-                                <input type="text" class="form-control" name="entry_number" placeholder="e.g., NOTARY-2024-001" required>
+                                <label class="form-label">Book No.</label>
+                                <input type="text" class="form-control" name="not_entry_num"
+                                    placeholder="e.g., NOTARY-2024-001" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Page No.</label>
+                                <input type="text" class="form-control" name="not_page_num"
+                                    placeholder="e.g., NOTARY-2024-001" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Entry No.</label>
+                                <input type="text" class="form-control" name="not_book_num"
+                                    placeholder="e.g., NOTARY-2024-001" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Date & Time of Notarization *</label>
+                                <label class="form-label"> Series Of</label>
                                 <input type="datetime-local" class="form-control" name="notarization_date" required>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Type of Notarial Act *</label>
-                        <select class="form-control" name="notarial_act_type" required>
-                            <option value="">Select notarial act...</option>
-                            <option value="Acknowledgment">Acknowledgment</option>
-                            <option value="Jurat">Jurat</option>
-                            <option value="Oath or Affirmation">Oath or Affirmation</option>
-                            <option value="Certified True Copy">Certified True Copy</option>
-                            <option value="Signature Witnessing">Signature Witnessing</option>
-                            <option value="Other">Other Authorized Act</option>
-                        </select>
-                    </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Title or Description of Document *</label>
-                        <input type="text" class="form-control" name="document_title" placeholder="e.g., Deed of Absolute Sale, Affidavit of Loss..." required>
+                        <input type="text" class="form-control" name="document_title"
+                            placeholder="e.g., Deed of Absolute Sale, Affidavit of Loss..." required>
                     </div>
-                    
+
+
+
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Principal/Signatory Name *</label>
-                                <input type="text" class="form-control" name="principal_name" placeholder="Full legal name" required>
+                                <label class="form-label">Affiant/Signatory Name *</label>
+                                <input type="text" class="form-control" name="principal_name"
+                                    placeholder="Full legal name" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Principal Address *</label>
-                                <textarea class="form-control" name="principal_address" rows="2" placeholder="Complete residential address" required></textarea>
+                                <textarea class="form-control" name="principal_address" rows="2"
+                                    placeholder="Complete residential address" required></textarea>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="personal_knowledge" id="personalKnowledge">
-                            <label class="form-check-label" for="personalKnowledge">
-                                Identity established through personal knowledge of notary public
-                            </label>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Witness Name (if any)</label>
+                                <input type="text" class="form-control" name="witness_name"
+                                    placeholder="Full name of witness">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Witness Address</label>
+                                <textarea class="form-control" name="witness_address" rows="2"
+                                    placeholder="Complete address of witness"></textarea>
+                            </div>
                         </div>
                     </div>
-                    
+
+
                     <div id="idDetails">
                         <h6>Competent Evidence of Identity *</h6>
                         <div class="row">
@@ -385,12 +409,6 @@
                                     <input type="text" class="form-control" name="id_number" placeholder="ID number">
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Issuing Agency *</label>
-                                    <input type="text" class="form-control" name="issuing_agency" placeholder="Agency that issued ID">
-                                </div>
-                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -401,44 +419,31 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Witness Name (if any)</label>
-                                <input type="text" class="form-control" name="witness_name" placeholder="Full name of witness">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Witness Address</label>
-                                <textarea class="form-control" name="witness_address" rows="2" placeholder="Complete address of witness"></textarea>
-                            </div>
-                        </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Type of Notarial Act *</label>
+                        <select class="form-control" name="notarial_act_type" required>
+                            <option value="">Select notarial act...</option>
+                            <option value="Acknowledgment">Acknowledgment</option>
+                            <option value="Jurat">Jurat</option>
+                            <option value="Oath or Affirmation">Oath or Affirmation</option>
+                            <option value="Certified True Copy">Certified True Copy</option>
+                            <option value="Signature Witnessing">Signature Witnessing</option>
+                            <option value="Other">Other Authorized Act</option>
+                        </select>
                     </div>
-                    
+
+
+
+
                     <div class="mb-3">
                         <label class="form-label">Special Remarks</label>
-                        <textarea class="form-control" name="special_remarks" rows="3" placeholder="Any special circumstances, use of translator, physical limitations, etc."></textarea>
+                        <textarea class="form-control" name="not_other_place" rows="3"
+                            placeholder="Any special circumstances, use of translator, physical limitations, etc."></textarea>
                     </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="physical_book_signed" id="physicalBookSigned">
-                            <label class="form-check-label" for="physicalBookSigned">
-                                Principal has signed in physical notarial register
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="thumbprint_obtained" id="thumbprintObtained">
-                            <label class="form-check-label" for="thumbprintObtained">
-                                Thumbprint obtained in physical notarial register
-                            </label>
-                        </div>
-                    </div>
+
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -450,111 +455,142 @@
 </div>
 
 <style>
-.action-buttons {
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-}
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
 
-.btn-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-}
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
 
-.btn-action--info {
-    background-color: #17a2b8;
-    color: white;
-}
+    .btn-action--info {
+        background-color: #17a2b8;
+        color: white;
+    }
 
-.btn-action--success {
-    background-color: #28a745;
-    color: white;
-}
+    .btn-action--success {
+        background-color: #28a745;
+        color: white;
+    }
 
-.btn-action--warning {
-    background-color: #ffc107;
-    color: #000;
-}
+    .btn-action--warning {
+        background-color: #ffc107;
+        color: #000;
+    }
 
-.btn-action:hover {
-    opacity: 0.8;
-}
+    .btn-action:hover {
+        opacity: 0.8;
+    }
 
-.status-tag {
-    padding: 0.25em 0.5em;
-    border-radius: 4px;
-    font-size: 0.75em;
-    font-weight: 500;
-}
+    .status-tag {
+        padding: 0.25em 0.5em;
+        border-radius: 4px;
+        font-size: 0.75em;
+        font-weight: 500;
+    }
 
-.status-tag--acknowledgment { background-color: #007bff; color: white; }
-.status-tag--jurat { background-color: #28a745; color: white; }
-.status-tag--oath-or-affirmation { background-color: #6f42c1; color: white; }
-.status-tag--certified-true-copy { background-color: #fd7e14; color: white; }
-.status-tag--signature-witnessing { background-color: #20c997; color: white; }
-.status-tag--other { background-color: #6c757d; color: white; }
-.status-tag--signed { background-color: #28a745; color: white; }
-.status-tag--unsigned { background-color: #ffc107; color: #000; }
+    .status-tag--acknowledgment {
+        background-color: #007bff;
+        color: white;
+    }
 
-.text-muted {
-    color: #6c757d !important;
-}
+    .status-tag--jurat {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-tag--oath-or-affirmation {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+    .status-tag--certified-true-copy {
+        background-color: #fd7e14;
+        color: white;
+    }
+
+    .status-tag--signature-witnessing {
+        background-color: #20c997;
+        color: white;
+    }
+
+    .status-tag--other {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .status-tag--signed {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-tag--unsigned {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
 </style>
 
 <script>
-function markAsSigned(entryId) {
-    if (confirm('Mark this entry as signed in physical notarial register?')) {
-        // This would typically make an API call to update the entry
-        fetch(`/notarial-entries/${entryId}/mark-signed`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error marking entry as signed');
-        });
-    }
-}
-
-// Toggle ID details based on personal knowledge checkbox
-document.addEventListener('DOMContentLoaded', function() {
-    const personalKnowledgeCheckbox = document.querySelector('input[name="personal_knowledge"]');
-    const idDetailsSection = document.getElementById('idDetails');
-    
-    function toggleIdDetails() {
-        if (personalKnowledgeCheckbox.checked) {
-            idDetailsSection.style.display = 'none';
-            // Make ID fields not required
-            document.querySelectorAll('#idDetails [name]').forEach(field => {
-                field.required = false;
-            });
-        } else {
-            idDetailsSection.style.display = 'block';
-            // Make ID fields required
-            document.querySelectorAll('#idDetails [name]').forEach(field => {
-                field.required = true;
-            });
+    function markAsSigned(entryId) {
+        if (confirm('Mark this entry as signed in physical notarial register?')) {
+            // This would typically make an API call to update the entry
+            fetch(`/notarial-entries/${entryId}/mark-signed`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error marking entry as signed');
+                });
         }
     }
-    
-    personalKnowledgeCheckbox.addEventListener('change', toggleIdDetails);
-    toggleIdDetails(); // Initial state
-});
+
+    // Toggle ID details based on personal knowledge checkbox
+    document.addEventListener('DOMContentLoaded', function () {
+        const personalKnowledgeCheckbox = document.querySelector('input[name="personal_knowledge"]');
+        const idDetailsSection = document.getElementById('idDetails');
+
+        function toggleIdDetails() {
+            if (personalKnowledgeCheckbox.checked) {
+                idDetailsSection.style.display = 'none';
+                // Make ID fields not required
+                document.querySelectorAll('#idDetails [name]').forEach(field => {
+                    field.required = false;
+                });
+            } else {
+                idDetailsSection.style.display = 'block';
+                // Make ID fields required
+                document.querySelectorAll('#idDetails [name]').forEach(field => {
+                    field.required = true;
+                });
+            }
+        }
+
+        personalKnowledgeCheckbox.addEventListener('change', toggleIdDetails);
+        toggleIdDetails(); // Initial state
+    });
 </script>
 
 {% block scripts %}

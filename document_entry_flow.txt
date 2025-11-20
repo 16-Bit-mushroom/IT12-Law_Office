@@ -1,0 +1,164 @@
+You’re asking the **correct UI/UX question** here:
+
+> **How do we let users add “documents” while filling out a Notarial Entry form?
+> Do we do a two-step form? A modal? Inline uploads?**
+
+Here’s the clean, practical, *non-confusing* approach used in real systems.
+
+---
+
+# ✅ **Correct Pattern: Two-Stage Save (Create Parent → Then Add Documents)**
+
+### Why this is the best design?
+
+Because:
+
+1. A document must reference a **parent_id** (notarial_entry_id).
+2. You *cannot* upload documents before the parent ID exists.
+3. It’s too error-prone to mix a giant form + multiple file uploads + dynamic inputs all in one submission.
+4. Legal offices prefer clarity over complexity.
+
+---
+
+# 🧩 **Flow for Notarial Entry With Documents**
+
+### **Step 1 — Create the Notarial Entry (your current form)**
+
+User fills:
+
+✔ Book No
+✔ Page No
+✔ Entry No
+✔ Parties
+✔ Witnesses
+✔ Notarial Act
+✔ Fee
+✔ Etc.
+
+Then user clicks:
+
+> **Save Entry**
+
+Backend creates:
+
+```
+notarial_entry.id = 123
+```
+
+Now the object exists — we can attach documents to it.
+
+---
+
+# **Step 2 — After Saving → Redirect to “Document Attachments” section**
+
+After saving, show the Notarial Entry Details page:
+
+```
+Notarial Entry #123
+------------------------------------
+[ Details… ]
+
+Documents:
+    No documents yet.
+    [ Add Document ]
+```
+
+Clicking **Add Document** opens a small modal:
+
+### **Add Document Modal**
+
+* Document Type (text dropdown: “Affidavit”, “ID”, “SPA Draft”, etc.)
+* File Upload (optional)
+* Notes
+
+Backend auto-fills:
+
+```
+parent_type = "notarial"
+parent_id = 123
+```
+
+User attaches as many documents as needed.
+
+---
+
+# ❌ What NOT to do
+
+These options create technical and UI problems:
+
+### ✘ Don’t include documents inside the giant Notarial Entry form
+
+People will forget to add docs or fail uploads, causing the whole form to break.
+
+### ✘ Don’t do a two-part step wizard unless absolutely necessary
+
+Only useful if the document is strictly required for the entry (it isn’t).
+
+### ✘ Don’t upload files before knowing the parent ID
+
+This causes orphaned files, messy storage, and cleanup logic.
+
+---
+
+# 📐 Why your current Notarial Entry form shouldn’t include documents
+
+I looked at your screenshot — your form is:
+
+✔ long
+✔ detailed
+✔ includes dynamic fields (Add Party, Add Witness)
+
+If you attach documents inside this form:
+
+* Errors become harder to recover from
+* Form becomes laggy
+* File uploads complicate validation
+* Users get irritated saving and re-uploading files
+
+This is why CRMs, ERPs, and legal case systems always separate the two.
+
+---
+
+# 🧠 What to do if users MUST upload documents BEFORE saving?
+
+Then use this pattern:
+
+### Pattern: “Save Draft → Add Documents → Final Save”
+
+But this adds complexity and isn’t needed for your case.
+
+---
+
+# ⭐ Recommended UI / UX Implementation (simple and powerful)
+
+### 1. User fills Notarial Entry form → Save
+
+### 2. Redirect to the Entry Details page
+
+### 3. Show a Documents section with an “Add Document” button
+
+### 4. Each document opens a short modal to upload
+
+### 5. Display attached documents in a small table
+
+This mirrors systems used by:
+
+* Case management software
+* Document management systems
+* Notarial software
+* Government tracking systems
+* Medical record systems
+
+Because it’s the most reliable.
+
+---
+
+# If you want, I can draft:
+
+✔ A wireframe for the Notarial Entry Details page
+✔ The exact Bootstrap/Tailwind HTML for the Document section
+✔ The Flask route and model for saving documents
+✔ The polymorphic schema (parent_id + parent_type)
+✔ Improved UX for document upload (modal, table, tags, actions)
+
+Just tell me which one you want next.

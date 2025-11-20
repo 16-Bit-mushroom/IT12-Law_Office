@@ -15,19 +15,30 @@
 ================= Notarial Entries page ===================
 Admin and staff page
 --------------------
+[]If entry has no transaction → Show "Create Transaction"
+[]If transaction exists but unpaid → Show "Pay"
+[]Every notarial entry can have a transaction, but it may start Unpaid.
+    The transaction is created automatically when the entry is added.
+[] The entry must be added to theTransaction table as well.
 
-[] notarial entry can have 1-2 or no witnessess
-[] need action buttons view/delete
-[] when view button is clicked, opens the form filled with the data of the entry and is editable.
-[] ID must have ID date expiration
-[] concat book, page, entry number when fetching data from db and displayin to the table as one column
-[] If one entry has multiple parties, view entry  then click button 'add another party'
-[] In the Form, data type of Series of is Year only
-[] restore Date input in the form that was replaced by Series Of
-
+[x] ID must have ID date expiration
+[x] The value in column witness and parties should be a clickable or hover to view button that opens a card with lists of parties or witness that also allows to edit delete the witness or party
 [x] add details to notarial entry model and table, and page/link
 [x] model details, table, form might need to be revised.
 [x] follow form format same on book
+[x] when view button is clicked, opens the form filled with the data of the entry and is editable.
+[x] If one entry has multiple parties, view entry  then click button 'add another party'
+[x] restore Date input in the form that was replaced by Series Of
+[x] In the Form, data type of Series of is Year only
+[x] concat book, page, entry number when fetching data from db and displayin to the table as one column
+[x] need action buttons view/delete
+[x] notarial entry can have 1-2 or no witnessess
+
+
+
+
+
+
 
 
 

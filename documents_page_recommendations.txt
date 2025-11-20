@@ -1,0 +1,161 @@
+Here is the clean, scalable answer based on **database design**, **workflow**, and **legal office practice**.
+
+You’re building *Document Tracking* — the central place where **all documents across the system** are listed, filtered, and viewed.
+
+So the key question:
+
+> **Where should documents be created? Inside their respective pages (Notarial / Case / Consultation), or directly in the Documents page?**
+
+The correct design is:
+
+---
+
+# ✅ **Documents should be created from THEIR SOURCE PAGES (Notarial, Case, Consultation).**
+
+### Why?
+
+Because each document *belongs* to a specific parent entity:
+
+* Notarial Entry → has documents
+* Case Log → has documents
+* Legal Consultation → has documents
+
+Documents are **context-dependent**, not standalone.
+
+Creating documents directly from the Documents Page would force users to manually set relationships, causing errors and confusion.
+
+---
+
+# 🚀 **Correct Workflow**
+
+### 1. **User is working on a Notarial Entry**
+
+They click:
+
+> **Add Document**
+
+Document metadata auto-links to `notarial_entry_id`.
+
+### 2. **User is working on a Case Log**
+
+They click:
+
+> **Add Document**
+
+Document links to `case_log_id`.
+
+### 3. **User is working on a Legal Consultation**
+
+They click:
+
+> **Add Attachment / Document**
+
+Document links to `consultation_id`.
+
+This makes document creation **intuitive** and avoids orphan documents.
+
+---
+
+# 🗂️ What the *Documents Page* should do
+
+### The Documents page is for:
+
+* Viewing all documents
+* Filtering (All / Notarial / Case / Consultation)
+* Searching (by client, date, doc type)
+* Downloading / Opening
+* Seeing which parent entry each document belongs to
+
+### NOT for:
+
+* Creating documents
+* Editing documents
+* Uploading documents
+* Assigning documents to entries manually
+
+---
+
+# 🧠 Database Structure (recommended)
+
+Table: **documents**
+
+| id | parent_type    | parent_id | doc_type     | file_path    | notes | created_at |
+| -- | -------------- | --------- | ------------ | ------------ | ----- | ---------- |
+| 1  | "notarial"     | 12        | Deed of Sale | /uploads/... |       | 2025-01-01 |
+| 2  | "case"         | 88        | Affidavit    | ...          |       | 2025-01-02 |
+| 3  | "consultation" | 33        | Notes        | ...          |       | 2025-01-05 |
+
+This is the **polymorphic relation** pattern — perfect for your setup.
+
+---
+
+# 📌 Benefits of this design
+
+### ✔ No orphaned documents
+
+Everything is guaranteed linked to something real.
+
+### ✔ Easy UI — attach docs where you're already working
+
+Users don’t have to leave a case form just to add a file.
+
+### ✔ Cleaner Documents Page
+
+Acts as a “master inventory” of all files.
+
+### ✔ Easier backend
+
+No need for complex logic to assign documents.
+
+---
+
+# 🔥 BONUS: What the “Add Document” UI looks like in each page
+
+### Example (Case Page)
+
+```
+Case Details:
+    [ ...fields... ]
+
+Documents:
+    [Add Document]
+    - Affidavit.pdf
+    - Complaint Form.pdf
+```
+
+Clicking **Add Document** opens a modal:
+
+* Document Type
+* Upload File (optional)
+* Notes
+
+The backend auto-sets:
+
+```
+parent_type = "case"
+parent_id = <this case's id>
+```
+
+---
+
+# 🧩 Final TL;DR
+
+| Task                   | Where it should happen                              |
+| ---------------------- | --------------------------------------------------- |
+| **Add document**       | On the source page (Notarial / Case / Consultation) |
+| **Edit document**      | On the source page                                  |
+| **View all documents** | Documents Page                                      |
+| **Filter documents**   | Documents Page                                      |
+| **Sort documents**     | Documents Page                                      |
+| **Download documents** | Documents Page                                      |
+
+---
+
+If you want, I can:
+
+✔ Draw a wireframe for the Documents Page
+✔ Create the SQL schema for `documents` table
+✔ Create the Flask routes + models for polymorphic document storage
+✔ Provide a Bootstrap UI snippet for “Add Document” inside each page
+
+Just tell me which one.

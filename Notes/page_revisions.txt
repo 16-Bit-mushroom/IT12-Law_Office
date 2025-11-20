@@ -15,12 +15,18 @@
 ================= Notarial Entries page ===================
 Admin and staff page
 --------------------
-[]If entry has no transaction → Show "Create Transaction"
-[]If transaction exists but unpaid → Show "Pay"
-[]Every notarial entry can have a transaction, but it may start Unpaid.
-    The transaction is created automatically when the entry is added.
-[] The entry must be added to theTransaction table as well.
 
+
+
+
+
+
+
+[x] 11-20-25: If entry has no transaction → Show "Create Transaction". 11-21-25 
+[x]If transaction exists but unpaid → Show "Pay"
+[x]Every notarial entry can have a transaction, but it may start Unpaid.
+    The transaction is created automatically when the entry is added.
+[x] The entry must be added to theTransaction table as well.
 [x] ID must have ID date expiration
 [x] The value in column witness and parties should be a clickable or hover to view button that opens a card with lists of parties or witness that also allows to edit delete the witness or party
 [x] add details to notarial entry model and table, and page/link

@@ -38,13 +38,14 @@ def create_app():
     from .routes.clients_routes import clients_bp
     from .routes.dashboard_routes import dashboard_bp
     from .routes.case_logs_routes import case_logs_bp
-    from .routes.documents_routes import documents_bp
     from .routes.payments_routes import payments_bp
     from .routes.login_routes import auth_bp
     from .routes.admin_profile_routes import admin_bp
     from .routes.transaction_routes import transaction_bp
     from .routes.notarial_entries_routes import notarial_entries_bp
     from .routes.legal_consultation_routes import legal_consultation_bp
+    from .routes.documents_routes import documents_bp
+    from .routes.notarial_entries_routes import notarial_entries_bp
 
     app.register_blueprint(clients_bp)
     app.register_blueprint(dashboard_bp)

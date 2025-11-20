@@ -1,3 +1,4 @@
+<!-- templates/documents_page.html - FIXED TABLE DESIGN -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -5,80 +6,236 @@
     <header class="dashboard-header">
         <div>
             <h1>Documents <span></span></h1>
-            <p>Manage all case documents</p>
+            <p>Centralized document management for all notarial entries, cases, and consultations</p>
         </div>
 
-        <div class="dashboard-actions" style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+        <div class="dashboard-actions">
             <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input class="search-bar__input" type="text" placeholder="Search documents...">
+                <input class="search-bar__input" type="text" placeholder="Search documents, clients, file types...">
             </div>
         </div>
     </header>
 
+    <!-- Documents Summary Cards -->
+    <section class="dashboard-cards">
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Total Documents</span>
+                <span class="data-card__value">{{ documents|length }}</span>
+            </div>
+            <div class="data-card__icon data-card__icon--blue"></div>
+        </div>
+
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Notarial</span>
+                <span class="data-card__value">
+                    {% set notarial_count = [] %}
+                    {% for doc in documents %}
+                    {% if doc.parent_type == 'notarial_entry' %}
+                    {% if notarial_count.append(1) %}{% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {{ notarial_count|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--gold"></div>
+        </div>
+
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Case Files</span>
+                <span class="data-card__value">
+                    {% set case_count = [] %}
+                    {% for doc in documents %}
+                    {% if doc.parent_type == 'case' %}
+                    {% if case_count.append(1) %}{% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {{ case_count|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--green"></div>
+        </div>
+
+        <div class="data-card data-card--sm">
+            <div class="data-card__info">
+                <span class="data-card__title">Consultation</span>
+                <span class="data-card__value">
+                    {% set consultation_count = [] %}
+                    {% for doc in documents %}
+                    {% if doc.parent_type == 'consultation' %}
+                    {% if consultation_count.append(1) %}{% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {{ consultation_count|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--purple"></div>
+        </div>
+    </section>
+
+    <!-- Filter Buttons -->
     <section class="content-section">
         <div class="panel-card">
+            <div class="filter-buttons mb-4">
+                <div class="btn-group" role="group" aria-label="Document filters">
+                    <button type="button" class="btn btn-outline-primary active" data-filter="all">
+                        All Documents
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="notarial_entry">
+                        Notarial
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="case">
+                        Case Files
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="consultation">
+                        Consultation
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="client">
+                        Client Files
+                    </button>
+                </div>
+            </div>
+
             <div class="table-wrapper">
-                <table class="table document-table">
+                <table class="table">
                     <colgroup>
-                        <col class="short">
-                        <col class="long">
-                        <col class="medium">
-                        <col class="short">
-                        <col class="short">
-                        <col class="actions">
+                        <col style="width: 5%">
+                        <col style="width: 25%">
+                        <col style="width: 10%">
+                        <col style="width: 15%">
+                        <col style="width: 10%">
+                        <col style="width: 15%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
                     </colgroup>
 
                     <thead>
                         <tr>
-                            <th data-sort-key="id">ID</th>
-                            <th data-sort-key="name">Document Name</th>
-                            <th data-sort-key="client">Client</th>
-                            <th data-sort-key="status">Status</th>
-                            <th data-sort-key="transaction">Transaction</th>
+                            <th>ID</th>
+                            <th>Document Name</th>
+                            <th>Doc Type</th>
+                            <th>Related To</th>
+                            <th>Status</th>
+                            <th>Location</th>
+                            <th>Uploaded</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {% for document in documents %}
-                        <tr>
-                            <td>#{{ document.id }}</td>
+                        <tr class="document-row" data-parent-type="{{ document.parent_type }}">
+                            <td><strong>#{{ document.id }}</strong></td>
                             <td>
-                                <a href="#" class="table-link">{{ document.cas_doc_name }}</a>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                        {{ document.context_name }}
+                                    </span>
+
+                                    <div class="d-flex align-items-center mt-1">
+                                        {% if document.parent_type == 'notarial_entry' %}
+                                        <span
+                                            class="badge bg-primary-subtle text-primary border border-primary-subtle me-2"
+                                            style="font-size: 0.65rem;">Notarial</span>
+                                        {% elif document.parent_type == 'case' %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success-subtle me-2"
+                                            style="font-size: 0.65rem;">Case</span>
+                                        {% elif document.parent_type == 'consultation' %}
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle me-2"
+                                            style="font-size: 0.65rem;">Consultation</span>
+                                        {% endif %}
+
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            {{ document.context_ref }}
+                                        </small>
+                                    </div>
+                                </div>
                             </td>
+
+                            <td><span class="badge bg-light text-dark border">{{ document.document_type or 'General'
+                                    }}</span></td>
+
                             <td>
-                                {% if document.client %}
-                                    {{ document.client.full_name }}
+                                {% if document.parent_type == 'notarial_entry' %}
+                                <span class="badge bg-primary mb-1">Notarial #{{ document.parent_id }}</span>
+                                {% elif document.parent_type == 'case' %}
+                                <span class="badge bg-success mb-1">Case #{{ document.parent_id }}</span>
                                 {% else %}
-                                    Client #{{ document.client_id }}
+                                <span class="badge bg-secondary mb-1">{{ document.parent_type|title }}</span>
                                 {% endif %}
                             </td>
+
                             <td>
-                                <span class="status-tag status-tag--{{ document.cas_doc_status|lower }}">
-                                    {{ document.cas_doc_status }}
+                                <span
+                                    class="status-tag status-tag--{{ document.document_status|lower|replace(' ', '-') }}">
+                                    {{ document.document_status }}
                                 </span>
                             </td>
-                            <td>#{{ document.transaction_item_id }}</td>
+
+                            <td>
+                                <div class="d-flex align-items-center text-muted small">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="me-1">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    {{ document.physical_location or 'Digital Only' }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small">{{ document.uploaded_at.strftime('%m/%d/%Y') }}</div>
+                            </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="#" class="btn-action btn-action--info" title="View Details">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <a href="{{ url_for('documents.view_document', document_id=document.id) }}"
+                                        target="_blank" class="btn-action btn-action--info" title="View">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </a>
+
+                                    <a href="{{ url_for('documents.download_document', document_id=document.id) }}"
+                                        class="btn-action btn-action--secondary" title="Download">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                    </a>
+
+                                    <form action="{{ url_for('documents.delete_document', document_id=document.id) }}"
+                                        method="POST" style="display:inline;"
+                                        onsubmit="return confirm('Are you sure you want to delete this document?');">
+                                        <button type="submit" class="btn-action btn-action--danger" title="Delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path
+                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
                         {% else %}
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 2rem;">
-                                No documents found. Documents are automatically created when transactions are approved.
-                            </td>
-                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -88,41 +245,247 @@
 </main>
 
 <style>
-.action-buttons {
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-}
+    .action-buttons {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
 
-.btn-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-}
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
 
-.btn-action--info {
-    background-color: #17a2b8;
-    color: white;
-}
+    .btn-action--info {
+        background-color: #17a2b8;
+        color: white;
+    }
 
-.btn-action:hover {
-    opacity: 0.8;
-}
+    .btn-action--secondary {
+        background-color: #6c757d;
+        color: white;
+    }
 
-.status-tag--draft { background-color: #6c757d; }
-.status-tag--completed { background-color: #28a745; }
-.status-tag--notarized { background-color: #007bff; }
-.status-tag--lacking { background-color: #dc3545; }
+    .btn-action--danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+        transform: translateY(-1px);
+    }
+
+    .file-icon {
+        flex-shrink: 0;
+    }
+
+    .filter-buttons .btn {
+        border-radius: 6px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .filter-buttons .btn.active {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .document-row {
+        transition: background-color 0.2s ease;
+    }
+
+    .document-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        padding: 0.75rem 0.5rem;
+    }
+
+    .table td {
+        padding: 0.75rem 0.5rem;
+        vertical-align: middle;
+    }
+
+    .table-wrapper {
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+
+    .text-break {
+        word-break: break-word;
+    }
+
+    .font-monospace {
+        font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+    }
+
+    .badge {
+        font-size: 0.75em;
+        font-weight: 500;
+    }
+
+    /* STATUS TAGS */
+    .status-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Color Logic */
+    .status-tag--pending,
+    .status-tag--draft {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+    }
+
+    .status-tag--for-signature,
+    .status-tag--notarization {
+        background-color: #cff4fc;
+        color: #055160;
+        border: 1px solid #b6effb;
+    }
+
+    .status-tag--complete,
+    .status-tag--released {
+        background-color: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+    }
+
+    .status-tag--missing,
+    .status-tag--lacking {
+        background-color: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+    }
+</style>
 </style>
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/documents/document_table.js') }}"></script>
-{% endblock scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-buttons .btn');
+        const documentRows = document.querySelectorAll('.document-row');
 
-{% endblock content %}
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                const filter = this.getAttribute('data-filter');
+
+                // Show/hide rows based on filter
+                let visibleCount = 0;
+                documentRows.forEach(row => {
+                    if (filter === 'all' || row.getAttribute('data-parent-type') === filter) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show message if no documents match filter
+                const tbody = document.querySelector('tbody');
+                let noResultsRow = tbody.querySelector('.no-results-message');
+
+                if (visibleCount === 0) {
+                    if (!noResultsRow) {
+                        noResultsRow = document.createElement('tr');
+                        noResultsRow.className = 'no-results-message';
+                        noResultsRow.innerHTML = `
+                        <td colspan="8" class="text-center py-4">
+                            <div class="text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <p class="mb-0">No documents found for this filter.</p>
+                            </div>
+                        </td>
+                    `;
+                        tbody.appendChild(noResultsRow);
+                    }
+                } else if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-bar__input');
+        searchInput.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+
+            let visibleCount = 0;
+            documentRows.forEach(row => {
+                if (row.style.display === 'none') return;
+
+                const filename = row.querySelector('.fw-semibold').textContent.toLowerCase();
+                const notes = row.querySelector('.text-muted.small')?.textContent.toLowerCase() || '';
+                const fileType = row.querySelector('.font-monospace').textContent.toLowerCase();
+                const parentType = row.querySelector('.badge').textContent.toLowerCase();
+
+                if (filename.includes(searchTerm) || notes.includes(searchTerm) ||
+                    fileType.includes(searchTerm) || parentType.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update visible count after search
+            const tbody = document.querySelector('tbody');
+            let noResultsRow = tbody.querySelector('.no-results-message');
+
+            if (visibleCount === 0) {
+                if (!noResultsRow) {
+                    noResultsRow = document.createElement('tr');
+                    noResultsRow.className = 'no-results-message';
+                    noResultsRow.innerHTML = `
+                    <td colspan="8" class="text-center py-4">
+                        <div class="text-muted">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-2">
+                                <circle cx="11" cy="11" r="8"></
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <p class="mb-0">No documents match your search.</p>
+                        </div>
+                    </td>
+                `;
+                    tbody.appendChild(noResultsRow);
+                }
+            } else if (noResultsRow) {
+                noResultsRow.remove();
+            }
+        });
+    });
+</script>
+
+{% endblock %}

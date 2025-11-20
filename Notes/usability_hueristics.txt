@@ -1,0 +1,2 @@
+[] No toast when creating entries
+[] no undo in payment status

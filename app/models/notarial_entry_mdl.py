@@ -12,7 +12,7 @@ class NotarialEntry(db.Model):
     not_entry_num = db.Column(db.String(255), nullable=False)
     not_page_num = db.Column(db.String(255), nullable=False)
     not_book_num = db.Column(db.String(255), nullable=False)
-    not_series = db.Column(db.Integer, nullable=False)  # Changed to Integer for year only
+    not_series = db.Column(db.Integer, nullable=False)
     
     # Document/Instrument title
     not_title = db.Column(db.String(255), nullable=False)
@@ -33,12 +33,29 @@ class NotarialEntry(db.Model):
     # Competent evidence of identity
     not_comp_evidence_id = db.Column(db.String(150), nullable=True)
     
-    # Foreign Key
-    transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=False, unique=True)
-    transaction_item = db.relationship('TransactionItem', backref='notary_entry', lazy=True)
+    # Transaction reference - CORRECTED: Only one foreign key
+    transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=True)
+    
+    # Transaction status - Store as string, not foreign key
+    transaction_status = db.Column(db.String(50), default='no_transaction')  # no_transaction, unpaid, paid
+    
+    # Relationship with explicit foreign_keys - CORRECTED
+    transaction_item = db.relationship('TransactionItem', 
+                                     foreign_keys=[transaction_item_id],
+                                     backref='notary_entries', 
+                                     lazy=True)
 
     def __repr__(self):
         return f"<NotarialEntry(Entry #'{self.not_entry_num}', Title='{self.not_title}', Date='{self.not_date.strftime('%Y-%m-%d')}')>"
+
+    # Properties to check transaction status
+    @property
+    def has_transaction(self):
+        return self.transaction_item_id is not None
+
+    @property
+    def is_paid(self):
+        return self.transaction_status == 'paid'
 
 
 class NotarialEntryParty(db.Model):

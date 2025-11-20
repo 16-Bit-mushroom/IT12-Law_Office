@@ -118,107 +118,170 @@
                             <th data-sort-key="witness">Witnesses</th>
                             <th data-sort-key="not_act_type">Notarial Act Type</th>
                             <th>Date</th>
+                            <th>Payment Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
 
                     <!-- In the table body -->
-<tbody>
-    {% for entry in entries %}
-    <tr>
-        <td>
-            <strong>{{ entry.not_book_num }}-{{ entry.not_page_num }}-{{ entry.not_entry_num }}</strong>
-        </td>
-        <td>
-            <strong>{{ entry.not_series }}</strong>
-        </td>
-        <td>
-            <strong>{{ entry.not_title }}</strong>
-        </td>
-        <td>
-            <div class="clickable-list">
-                <button type="button" class="btn btn-sm btn-outline-primary view-parties-btn" 
-                        data-entry-id="{{ entry.id }}" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#partiesModal">
-                    View Parties ({{ entry.parties|length }})
-                </button>
-                <div class="list-tooltip">
-                    {% for party in entry.parties %}
-                    <div class="party-item">
-                        <strong>{{ party.party_name }}</strong>
-                        <br>
-                        <small class="text-muted">{{ party.party_address }}</small>
-                        {% if party.id_type %}
-                        <br>
-                        <small>ID: {{ party.id_type }} - {{ party.id_number }}</small>
-                        {% endif %}
-                    </div>
-                    {% if not loop.last %}<hr class="my-1">{% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="clickable-list">
-                {% if entry.witnesses|length > 0 %}
-                <button type="button" class="btn btn-sm btn-outline-secondary view-witnesses-btn" 
-                        data-entry-id="{{ entry.id }}" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#witnessesModal">
-                    View Witnesses ({{ entry.witnesses|length }})
-                </button>
-                <div class="list-tooltip">
-                    {% for witness in entry.witnesses %}
-                    <div class="witness-item">
-                        <strong>{{ witness.witness_name }}</strong>
-                        {% if witness.witness_address %}
-                        <br>
-                        <small class="text-muted">{{ witness.witness_address }}</small>
-                        {% endif %}
-                    </div>
-                    {% if not loop.last %}<hr class="my-1">{% endif %}
-                    {% endfor %}
-                </div>
-                {% else %}
-                <span class="text-muted">No witnesses</span>
-                {% endif %}
-            </div>
-        </td>
-        <td>
-            <span class="status-tag status-tag--{{ entry.not_type_act|lower|replace(' ', '-') }}">
-                {{ entry.not_type_act }}
-            </span>
-        </td>
-        <td>
-            <div>{{ entry.not_date.strftime('%Y-%m-%d') }}</div>
-            <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>
-        </td>
-        <td>
-            <div class="action-buttons">
-                <a href="#" class="btn-action btn-action--info" title="View/Edit"
-                    data-bs-toggle="modal" data-bs-target="#entryModal"
-                    onclick="loadEntryData('{{ entry.id }}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                </a>
-                <form method="POST" action="{{ url_for('notarial_entries.delete_entry', entry_id=entry.id) }}" 
-                      style="display: inline;" 
-                      onsubmit="return confirm('Are you sure you want to delete this entry?');">
-                    <button type="submit" class="btn-action btn-action--danger" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                    </button>
-                </form>
-            </div>
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
+                    <tbody>
+                        {% for entry in entries %}
+                        <tr>
+                            <td>
+                                <strong>{{ entry.not_book_num }}-{{ entry.not_page_num }}-{{ entry.not_entry_num
+                                    }}</strong>
+                            </td>
+                            <td>
+                                <strong>{{ entry.not_series }}</strong>
+                            </td>
+                            <td>
+                                <strong>{{ entry.not_title }}</strong>
+                            </td>
+                            <td>
+                                <div class="clickable-list">
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-parties-btn"
+                                        data-entry-id="{{ entry.id }}" data-bs-toggle="modal"
+                                        data-bs-target="#partiesModal">
+                                        View Parties ({{ entry.parties|length }})
+                                    </button>
+                                    <div class="list-tooltip">
+                                        {% for party in entry.parties %}
+                                        <div class="party-item">
+                                            <strong>{{ party.party_name }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ party.party_address }}</small>
+                                            {% if party.id_type %}
+                                            <br>
+                                            <small>ID: {{ party.id_type }} - {{ party.id_number }}</small>
+                                            {% endif %}
+                                        </div>
+                                        {% if not loop.last %}
+                                        <hr class="my-1">{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="clickable-list">
+                                    {% if entry.witnesses|length > 0 %}
+                                    <button type="button" class="btn btn-sm btn-outline-secondary view-witnesses-btn"
+                                        data-entry-id="{{ entry.id }}" data-bs-toggle="modal"
+                                        data-bs-target="#witnessesModal">
+                                        View Witnesses ({{ entry.witnesses|length }})
+                                    </button>
+                                    <div class="list-tooltip">
+                                        {% for witness in entry.witnesses %}
+                                        <div class="witness-item">
+                                            <strong>{{ witness.witness_name }}</strong>
+                                            {% if witness.witness_address %}
+                                            <br>
+                                            <small class="text-muted">{{ witness.witness_address }}</small>
+                                            {% endif %}
+                                        </div>
+                                        {% if not loop.last %}
+                                        <hr class="my-1">{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">No witnesses</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-tag status-tag--{{ entry.not_type_act|lower|replace(' ', '-') }}">
+                                    {{ entry.not_type_act }}
+                                </span>
+                            </td>
+                            <td>
+                                <div>{{ entry.not_date.strftime('%Y-%m-%d') }}</div>
+                                <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>
+                            </td>
+                            <td>
+                                {% if entry.is_paid %}
+                                <span class="status-tag status-tag--signed">Paid</span>
+                                {% elif entry.has_transaction %}
+                                <span class="status-tag status-tag--unsigned">Unpaid</span>
+                                {% else %}
+                                <span class="status-tag status-tag--other">No Transaction</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="action-buttons">
+                                    <!-- View Details Button -->
+                                    <a href="{{ url_for('notarial_entries.entry_details', entry_id=entry.id) }}"
+                                        class="btn-action btn-action--info" title="View Details">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </a>
+
+                                    <!-- Transaction Actions -->
+                                    {% if not entry.has_transaction %}
+                                    <form method="POST"
+                                        action="{{ url_for('notarial_entries.create_transaction', entry_id=entry.id) }}"
+                                        style="display: inline;">
+                                        <button type="submit" class="btn-action btn-action--success"
+                                            title="Create Transaction">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    {% elif not entry.is_paid %}
+                                    <form method="POST"
+                                        action="{{ url_for('notarial_entries.mark_as_paid', entry_id=entry.id) }}"
+                                        style="display: inline;">
+                                        <button type="submit" class="btn-action btn-action--warning"
+                                            title="Mark as Paid">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+
+                                    <!-- Edit Button -->
+                                    <a href="#" class="btn-action btn-action--secondary" title="Edit"
+                                        data-bs-toggle="modal" data-bs-target="#entryModal"
+                                        onclick="loadEntryData('{{ entry.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </a>
+
+                                    <!-- Delete Button -->
+                                    <form method="POST"
+                                        action="{{ url_for('notarial_entries.delete_entry', entry_id=entry.id) }}"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                                        <button type="submit" class="btn-action btn-action--danger" title="Delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path
+                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -237,7 +300,8 @@
             </div>
             <form id="entryForm" method="POST" action="{{ url_for('notarial_entries.create_manual_entry') }}">
                 <div class="modal-body">
-                    <p class="text-muted">Complete all mandatory fields as required by the 2004 Rules on Notarial Practice.</p>
+                    <p class="text-muted">Complete all mandatory fields as required by the 2004 Rules on Notarial
+                        Practice.</p>
 
                     <!-- Entry Reference Numbers -->
                     <div class="row">
@@ -526,104 +590,105 @@
     }
 
     .clickable-list {
-    position: relative;
-    display: inline-block;
-}
+        position: relative;
+        display: inline-block;
+    }
 
-.clickable-list .list-tooltip {
-    visibility: hidden;
-    width: 300px;
-    background-color: #fff;
-    color: #333;
-    text-align: left;
-    border-radius: 6px;
-    padding: 12px;
-    position: absolute;
-    z-index: 1000;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -150px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border: 1px solid #dee2e6;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
+    .clickable-list .list-tooltip {
+        visibility: hidden;
+        width: 300px;
+        background-color: #fff;
+        color: #333;
+        text-align: left;
+        border-radius: 6px;
+        padding: 12px;
+        position: absolute;
+        z-index: 1000;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -150px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #dee2e6;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
 
-.clickable-list:hover .list-tooltip {
-    visibility: visible;
-    opacity: 1;
-}
+    .clickable-list:hover .list-tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
 
-.list-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #fff transparent transparent transparent;
-}
+    .list-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #fff transparent transparent transparent;
+    }
 
-.party-item, .witness-item {
-    font-size: 0.875rem;
-}
+    .party-item,
+    .witness-item {
+        font-size: 0.875rem;
+    }
 
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
 </style>
 
 <script>
-let currentEditingId = null;
+    let currentEditingId = null;
 
-// Initialize when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Set default datetime for new entries
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    document.querySelector('input[name="notarization_date"]').value = now.toISOString().slice(0, 16);
-    
-    // Add event listeners for dynamic fields
-    document.getElementById('addPartyBtn')?.addEventListener('click', function() {
+    // Initialize when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set default datetime for new entries
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.querySelector('input[name="notarization_date"]').value = now.toISOString().slice(0, 16);
+
+        // Add event listeners for dynamic fields
+        document.getElementById('addPartyBtn')?.addEventListener('click', function () {
+            addPartyField();
+        });
+
+        document.getElementById('addWitnessBtn')?.addEventListener('click', function () {
+            addWitnessField();
+        });
+
+        // Add event listeners for parties/witnesses modals
+        document.getElementById('partiesModal')?.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const entryId = button.getAttribute('data-entry-id');
+            loadPartiesModal(entryId);
+        });
+
+        document.getElementById('witnessesModal')?.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const entryId = button.getAttribute('data-entry-id');
+            loadWitnessesModal(entryId);
+        });
+
+        // Initialize with one party field
         addPartyField();
     });
-    
-    document.getElementById('addWitnessBtn')?.addEventListener('click', function() {
-        addWitnessField();
-    });
-    
-    // Add event listeners for parties/witnesses modals
-    document.getElementById('partiesModal')?.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const entryId = button.getAttribute('data-entry-id');
-        loadPartiesModal(entryId);
-    });
-    
-    document.getElementById('witnessesModal')?.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const entryId = button.getAttribute('data-entry-id');
-        loadWitnessesModal(entryId);
-    });
-    
-    // Initialize with one party field
-    addPartyField();
-});
 
-// Function to load parties modal
-function loadPartiesModal(entryId) {
-    fetch(`/notarial-entries/${entryId}`)
-        .then(response => response.json())
-        .then(entry => {
-            if (entry.error) {
-                document.getElementById('partiesModalBody').innerHTML = '<p>Error loading parties data.</p>';
-                return;
-            }
-            
-            let partiesHtml = '';
-            if (entry.parties && entry.parties.length > 0) {
-                partiesHtml = `
+    // Function to load parties modal
+    function loadPartiesModal(entryId) {
+        fetch(`/notarial-entries/${entryId}`)
+            .then(response => response.json())
+            .then(entry => {
+                if (entry.error) {
+                    document.getElementById('partiesModalBody').innerHTML = '<p>Error loading parties data.</p>';
+                    return;
+                }
+
+                let partiesHtml = '';
+                if (entry.parties && entry.parties.length > 0) {
+                    partiesHtml = `
                     <div class="list-group">
                         ${entry.parties.map((party, index) => `
                             <div class="list-group-item">
@@ -645,32 +710,32 @@ function loadPartiesModal(entryId) {
                         `).join('')}
                     </div>
                 `;
-            } else {
-                partiesHtml = '<p class="text-muted">No parties found for this entry.</p>';
-            }
-            
-            document.getElementById('partiesModalBody').innerHTML = partiesHtml;
-            document.getElementById('partiesModalLabel').textContent = `Parties - Entry ${entry.not_entry_num}`;
-        })
-        .catch(error => {
-            console.error('Error loading parties:', error);
-            document.getElementById('partiesModalBody').innerHTML = '<p>Error loading parties data.</p>';
-        });
-}
+                } else {
+                    partiesHtml = '<p class="text-muted">No parties found for this entry.</p>';
+                }
 
-// Function to load witnesses modal
-function loadWitnessesModal(entryId) {
-    fetch(`/notarial-entries/${entryId}`)
-        .then(response => response.json())
-        .then(entry => {
-            if (entry.error) {
-                document.getElementById('witnessesModalBody').innerHTML = '<p>Error loading witnesses data.</p>';
-                return;
-            }
-            
-            let witnessesHtml = '';
-            if (entry.witnesses && entry.witnesses.length > 0) {
-                witnessesHtml = `
+                document.getElementById('partiesModalBody').innerHTML = partiesHtml;
+                document.getElementById('partiesModalLabel').textContent = `Parties - Entry ${entry.not_entry_num}`;
+            })
+            .catch(error => {
+                console.error('Error loading parties:', error);
+                document.getElementById('partiesModalBody').innerHTML = '<p>Error loading parties data.</p>';
+            });
+    }
+
+    // Function to load witnesses modal
+    function loadWitnessesModal(entryId) {
+        fetch(`/notarial-entries/${entryId}`)
+            .then(response => response.json())
+            .then(entry => {
+                if (entry.error) {
+                    document.getElementById('witnessesModalBody').innerHTML = '<p>Error loading witnesses data.</p>';
+                    return;
+                }
+
+                let witnessesHtml = '';
+                if (entry.witnesses && entry.witnesses.length > 0) {
+                    witnessesHtml = `
                     <div class="list-group">
                         ${entry.witnesses.map((witness, index) => `
                             <div class="list-group-item">
@@ -692,90 +757,90 @@ function loadWitnessesModal(entryId) {
                         `).join('')}
                     </div>
                 `;
-            } else {
-                witnessesHtml = '<p class="text-muted">No witnesses found for this entry.</p>';
-            }
-            
-            document.getElementById('witnessesModalBody').innerHTML = witnessesHtml;
-            document.getElementById('witnessesModalLabel').textContent = `Witnesses - Entry ${entry.not_entry_num}`;
-        })
-        .catch(error => {
-            console.error('Error loading witnesses:', error);
-            document.getElementById('witnessesModalBody').innerHTML = '<p>Error loading witnesses data.</p>';
-        });
-}
+                } else {
+                    witnessesHtml = '<p class="text-muted">No witnesses found for this entry.</p>';
+                }
 
-// Function to load entry data for editing
-function loadEntryData(entryId) {
-    fetch(`/notarial-entries/${entryId}`)
-        .then(response => response.json())
-        .then(entry => {
-            if (entry.error) {
-                alert('Error loading entry: ' + entry.error);
-                return;
-            }
-            
-            currentEditingId = entryId;
-            
-            // Fill basic form fields
-            document.querySelector('input[name="entry_number"]').value = entry.not_entry_num;
-            document.querySelector('input[name="entry_page_num"]').value = entry.not_page_num;
-            document.querySelector('input[name="entry_book_num"]').value = entry.not_book_num;
-            document.querySelector('input[name="not_series"]').value = entry.not_series;
-            document.querySelector('input[name="document_title"]').value = entry.not_title;
-            
-            // Format date for datetime-local input
-            const notDate = new Date(entry.not_date);
-            notDate.setMinutes(notDate.getMinutes() - notDate.getTimezoneOffset());
-            document.querySelector('input[name="notarization_date"]').value = notDate.toISOString().slice(0, 16);
-            
-            document.querySelector('select[name="notarial_act_type"]').value = entry.not_type_act;
-            document.querySelector('input[name="notarial_fee"]').value = entry.not_fee;
-            document.querySelector('input[name="notarial_fee_or"]').value = entry.not_fee_or;
-            document.querySelector('textarea[name="other_place"]').value = entry.not_other_place || '';
-            document.querySelector('select[name="not_comp_evidence_id"]').value = entry.not_comp_evidence_id || '';
-            
-            // Set ID expiration date if it exists in the main entry
-            if (entry.id_expiration_date) {
-                document.querySelector('input[name="id_expiration_date"]').value = entry.id_expiration_date;
-            }
-            
-            // Fill parties
-            const partiesContainer = document.getElementById('partiesContainer');
-            partiesContainer.innerHTML = '';
-            if (entry.parties && entry.parties.length > 0) {
-                entry.parties.forEach(party => {
-                    addPartyField(party);
-                });
-            } else {
-                addPartyField(); // Add one empty party field
-            }
-            
-            // Fill witnesses
-            const witnessesContainer = document.getElementById('witnessesContainer');
-            witnessesContainer.innerHTML = '';
-            if (entry.witnesses && entry.witnesses.length > 0) {
-                entry.witnesses.forEach(witness => {
-                    addWitnessField(witness);
-                });
-            }
-            
-            // Update modal title and form action
-            document.querySelector('#entryModal .modal-title').textContent = 'Edit Notarial Entry';
-            document.getElementById('entryForm').action = `/notarial-entries/${entryId}/update`;
-        })
-        .catch(error => {
-            console.error('Error loading entry:', error);
-            alert('Error loading entry data');
-        });
-}
+                document.getElementById('witnessesModalBody').innerHTML = witnessesHtml;
+                document.getElementById('witnessesModalLabel').textContent = `Witnesses - Entry ${entry.not_entry_num}`;
+            })
+            .catch(error => {
+                console.error('Error loading witnesses:', error);
+                document.getElementById('witnessesModalBody').innerHTML = '<p>Error loading witnesses data.</p>';
+            });
+    }
 
-// Function to add a new party field (SIMPLIFIED - No ID fields)
-function addPartyField(partyData = null) {
-    const container = document.getElementById('partiesContainer');
-    const index = container.children.length;
-    
-    const partyHtml = `
+    // Function to load entry data for editing - UPDATED
+    function loadEntryData(entryId) {
+        fetch(`/notarial-entries/${entryId}/json`)  // CHANGED ENDPOINT
+            .then(response => response.json())
+            .then(entry => {
+                if (entry.error) {
+                    alert('Error loading entry: ' + entry.error);
+                    return;
+                }
+
+                currentEditingId = entryId;
+
+                // Fill basic form fields
+                document.querySelector('input[name="entry_number"]').value = entry.not_entry_num;
+                document.querySelector('input[name="entry_page_num"]').value = entry.not_page_num;
+                document.querySelector('input[name="entry_book_num"]').value = entry.not_book_num;
+                document.querySelector('input[name="not_series"]').value = entry.not_series;
+                document.querySelector('input[name="document_title"]').value = entry.not_title;
+
+                // Format date for datetime-local input
+                const notDate = new Date(entry.not_date);
+                notDate.setMinutes(notDate.getMinutes() - notDate.getTimezoneOffset());
+                document.querySelector('input[name="notarization_date"]').value = notDate.toISOString().slice(0, 16);
+
+                document.querySelector('select[name="notarial_act_type"]').value = entry.not_type_act;
+                document.querySelector('input[name="notarial_fee"]').value = entry.not_fee;
+                document.querySelector('input[name="notarial_fee_or"]').value = entry.not_fee_or;
+                document.querySelector('textarea[name="other_place"]').value = entry.not_other_place || '';
+                document.querySelector('select[name="not_comp_evidence_id"]').value = entry.not_comp_evidence_id || '';
+
+                // Set ID expiration date if it exists in the main entry
+                if (entry.id_expiration_date) {
+                    document.querySelector('input[name="id_expiration_date"]').value = entry.id_expiration_date;
+                }
+
+                // Fill parties
+                const partiesContainer = document.getElementById('partiesContainer');
+                partiesContainer.innerHTML = '';
+                if (entry.parties && entry.parties.length > 0) {
+                    entry.parties.forEach(party => {
+                        addPartyField(party);
+                    });
+                } else {
+                    addPartyField(); // Add one empty party field
+                }
+
+                // Fill witnesses
+                const witnessesContainer = document.getElementById('witnessesContainer');
+                witnessesContainer.innerHTML = '';
+                if (entry.witnesses && entry.witnesses.length > 0) {
+                    entry.witnesses.forEach(witness => {
+                        addWitnessField(witness);
+                    });
+                }
+
+                // Update modal title and form action
+                document.querySelector('#entryModal .modal-title').textContent = 'Edit Notarial Entry';
+                document.getElementById('entryForm').action = `/notarial-entries/${entryId}/update`;
+            })
+            .catch(error => {
+                console.error('Error loading entry:', error);
+                alert('Error loading entry data');
+            });
+    }
+
+    // Function to add a new party field (SIMPLIFIED - No ID fields)
+    function addPartyField(partyData = null) {
+        const container = document.getElementById('partiesContainer');
+        const index = container.children.length;
+
+        const partyHtml = `
         <div class="party-field border p-3 mb-3 rounded">
             <div class="row">
                 <div class="col-md-6">
@@ -794,19 +859,19 @@ function addPartyField(partyData = null) {
             ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removePartyField(this)">Remove Party</button>' : ''}
         </div>
     `;
-    
-    container.insertAdjacentHTML('beforeend', partyHtml);
-}
 
-// Function to add a new witness field
-function addWitnessField(witnessData = null) {
-    const container = document.getElementById('witnessesContainer');
-    if (container.children.length >= 2) {
-        alert('Maximum of 2 witnesses allowed');
-        return;
+        container.insertAdjacentHTML('beforeend', partyHtml);
     }
-    
-    const witnessHtml = `
+
+    // Function to add a new witness field
+    function addWitnessField(witnessData = null) {
+        const container = document.getElementById('witnessesContainer');
+        if (container.children.length >= 2) {
+            alert('Maximum of 2 witnesses allowed');
+            return;
+        }
+
+        const witnessHtml = `
         <div class="witness-field border p-3 mb-3 rounded">
             <div class="row">
                 <div class="col-md-6">
@@ -825,125 +890,125 @@ function addWitnessField(witnessData = null) {
             ${container.children.length > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeWitnessField(this)">Remove Witness</button>' : ''}
         </div>
     `;
-    
-    container.insertAdjacentHTML('beforeend', witnessHtml);
-}
 
-// Function to remove a party field
-function removePartyField(button) {
-    if (document.querySelectorAll('.party-field').length > 1) {
-        button.closest('.party-field').remove();
-    } else {
-        alert('At least one party is required');
+        container.insertAdjacentHTML('beforeend', witnessHtml);
     }
-}
 
-// Function to remove a witness field
-function removeWitnessField(button) {
-    button.closest('.witness-field').remove();
-}
-
-// Function to reset the form for new entry
-function resetForm() {
-    currentEditingId = null;
-    document.getElementById('entryForm').reset();
-    document.getElementById('entryForm').action = '/notarial-entries/create-manual';
-    document.querySelector('#entryModal .modal-title').textContent = 'New Notarial Entry';
-    
-    // Clear dynamic fields
-    document.getElementById('partiesContainer').innerHTML = '';
-    document.getElementById('witnessesContainer').innerHTML = '';
-    
-    // Set current year as default
-    const currentYear = new Date().getFullYear();
-    document.querySelector('input[name="not_series"]').value = currentYear;
-    
-    // Set current datetime
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    document.querySelector('input[name="notarization_date"]').value = now.toISOString().slice(0, 16);
-    
-    // Add one empty party field
-    addPartyField();
-}
-
-// Reset form when modal is shown for new entry
-document.getElementById('entryModal')?.addEventListener('show.bs.modal', function (event) {
-    if (!event.relatedTarget || !event.relatedTarget.hasAttribute('onclick')) {
-        resetForm();
+    // Function to remove a party field
+    function removePartyField(button) {
+        if (document.querySelectorAll('.party-field').length > 1) {
+            button.closest('.party-field').remove();
+        } else {
+            alert('At least one party is required');
+        }
     }
-});
 
-// Handle form submission
-document.getElementById('entryForm')?.addEventListener('submit', function(e) {
-    // Basic validation
-    const parties = document.querySelectorAll('.party-field');
-    if (parties.length === 0) {
-        e.preventDefault();
-        alert('At least one party is required');
-        return;
+    // Function to remove a witness field
+    function removeWitnessField(button) {
+        button.closest('.witness-field').remove();
     }
-    
-    // Validate each party has name and address
-    for (let party of parties) {
-        const name = party.querySelector('input[name="party_name"]').value.trim();
-        const address = party.querySelector('textarea[name="party_address"]').value.trim();
-        
-        if (!name || !address) {
+
+    // Function to reset the form for new entry
+    function resetForm() {
+        currentEditingId = null;
+        document.getElementById('entryForm').reset();
+        document.getElementById('entryForm').action = '/notarial-entries/create-manual';
+        document.querySelector('#entryModal .modal-title').textContent = 'New Notarial Entry';
+
+        // Clear dynamic fields
+        document.getElementById('partiesContainer').innerHTML = '';
+        document.getElementById('witnessesContainer').innerHTML = '';
+
+        // Set current year as default
+        const currentYear = new Date().getFullYear();
+        document.querySelector('input[name="not_series"]').value = currentYear;
+
+        // Set current datetime
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.querySelector('input[name="notarization_date"]').value = now.toISOString().slice(0, 16);
+
+        // Add one empty party field
+        addPartyField();
+    }
+
+    // Reset form when modal is shown for new entry
+    document.getElementById('entryModal')?.addEventListener('show.bs.modal', function (event) {
+        if (!event.relatedTarget || !event.relatedTarget.hasAttribute('onclick')) {
+            resetForm();
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('entryForm')?.addEventListener('submit', function (e) {
+        // Basic validation
+        const parties = document.querySelectorAll('.party-field');
+        if (parties.length === 0) {
             e.preventDefault();
-            alert('All parties must have both name and address');
+            alert('At least one party is required');
             return;
         }
-    }
-});
 
-// Placeholder functions for party/witness operations
-function editParty(entryId, partyId) {
-    alert('Edit party functionality to be implemented. Party ID: ' + partyId);
-    // This would open a modal to edit the specific party
-}
+        // Validate each party has name and address
+        for (let party of parties) {
+            const name = party.querySelector('input[name="party_name"]').value.trim();
+            const address = party.querySelector('textarea[name="party_address"]').value.trim();
 
-function deleteParty(entryId, partyId) {
-    if (confirm('Are you sure you want to delete this party?')) {
-        alert('Delete party functionality to be implemented. Party ID: ' + partyId);
-        // This would make an API call to delete the party
-    }
-}
-
-function editWitness(entryId, witnessId) {
-    alert('Edit witness functionality to be implemented. Witness ID: ' + witnessId);
-    // This would open a modal to edit the specific witness
-}
-
-function deleteWitness(entryId, witnessId) {
-    if (confirm('Are you sure you want to delete this witness?')) {
-        alert('Delete witness functionality to be implemented. Witness ID: ' + witnessId);
-        // This would make an API call to delete the witness
-    }
-}
-
-// Function to confirm deletion
-function confirmDelete(entryId) {
-    if (confirm('Are you sure you want to delete this notarial entry? This action cannot be undone.')) {
-        // Create a form and submit it
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/notarial-entries/${entryId}/delete`;
-        
-        // Add CSRF token if needed
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrf_token';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
+            if (!name || !address) {
+                e.preventDefault();
+                alert('All parties must have both name and address');
+                return;
+            }
         }
-        
-        document.body.appendChild(form);
-        form.submit();
+    });
+
+    // Placeholder functions for party/witness operations
+    function editParty(entryId, partyId) {
+        alert('Edit party functionality to be implemented. Party ID: ' + partyId);
+        // This would open a modal to edit the specific party
     }
-}
+
+    function deleteParty(entryId, partyId) {
+        if (confirm('Are you sure you want to delete this party?')) {
+            alert('Delete party functionality to be implemented. Party ID: ' + partyId);
+            // This would make an API call to delete the party
+        }
+    }
+
+    function editWitness(entryId, witnessId) {
+        alert('Edit witness functionality to be implemented. Witness ID: ' + witnessId);
+        // This would open a modal to edit the specific witness
+    }
+
+    function deleteWitness(entryId, witnessId) {
+        if (confirm('Are you sure you want to delete this witness?')) {
+            alert('Delete witness functionality to be implemented. Witness ID: ' + witnessId);
+            // This would make an API call to delete the witness
+        }
+    }
+
+    // Function to confirm deletion
+    function confirmDelete(entryId) {
+        if (confirm('Are you sure you want to delete this notarial entry? This action cannot be undone.')) {
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/notarial-entries/${entryId}/delete`;
+
+            // Add CSRF token if needed
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 
 {% block scripts %}

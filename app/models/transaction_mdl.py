@@ -1,3 +1,4 @@
+# transaction_mdl.py - UPDATED (if you want bidirectional relationship)
 from . import db
 from datetime import UTC, datetime
 from sqlalchemy import Numeric
@@ -24,6 +25,6 @@ class TransactionItem(db.Model):
     transaction_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(UTC))
     approved_date = db.Column(db.DateTime)      # When lawyer approved
     completed_date = db.Column(db.DateTime)     # When document was finalized
-    
+
     def __repr__(self):
         return f"<TransactionItem(id={self.id}, status='{self.transaction_status}', client_id={self.client_id})>"

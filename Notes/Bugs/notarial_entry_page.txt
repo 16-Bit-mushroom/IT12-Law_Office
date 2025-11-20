@@ -1,0 +1,22 @@
+================{{  Notarial Entries page  ]]===================
+Admin and staff page
+--------------------
+
+------------------=[  Major  ]=----------------------
+[] 11-21-25: Expiration date no retained when opening edit details
+[] 11-21-25: Replace Entry reference value with more descriptive like 'Book 1, p2, entry 1'
+
+[] 11-21-25: No undo option in pay button
+[] 11-21-25: Fix duplicate entry reference
+[] 11-21-25: Deleting an entry should also delete the documents? and entry on transactions?
+[] 11-21-25: Viewing entry from http://127.0.0.1:5000/notarial-entries/1 doesnt show document counts, but on http://127.0.0.1:5000/documents/notarial-entry/1 shows count
+
+
+
+------------------=[  Minor  ]=----------------------
+[] 11-21-25: Error loading parties/witness modal
+[] 11-21-25: No toasts
+
+
+
+------------------=[  Fix/Patch  ]=----------------------

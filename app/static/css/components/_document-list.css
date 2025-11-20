@@ -1,14 +1,23 @@
 /* app/static/css/components/_document-list.css */
 
 .document-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 15px; /* Added horizontal padding to the rows themselves */
-    margin-bottom: 8px;
-    border-radius: var(--border-radius-s);
+    /* These styles look like they are intended for a list/div structure, not a table row */
+    /* If you are using a standard <table>, these will break the layout. */
+    /* You must ensure your table is styled using standard table CSS (or use Flex/Grid *outside* the table). */
+    
+    /* REMOVING display: flex; IS ESSENTIAL FOR TABLE LAYOUT */
+    /* display: flex; */ 
+    /* align-items: center; */
+    /* justify-content: space-between; */
+    
+    /* Keep the visual styles */
+    /* padding: 15px 15px; */ /* Padding should be on <td> elements for tables */
+    /* margin-bottom: 8px; */ /* Margins don't usually work well on <tr> */
+
+    border-radius: var(--border-radius-s); /* Inherited from ID rule */
     transition: background-color 0.15s ease;
 }
+
 
 /* Style for the light gray background on the selected/highlighted row */
 .document-row--highlight {

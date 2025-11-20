@@ -1,0 +1,25 @@
+================{{  Documents page  ]]===================
+Admin and staff page
+--------------------
+
+------------------=[  Major  ]=----------------------
+[] 11-21-25: 
+[] 11-21-25: No undo option in pay button
+[] 11-21-25: Fix duplicate entry reference
+[] 11-21-25: Must not have delete functionalities
+
+
+[x] 11-21-25: Filters not properly working
+[x] 11-21-25: Download file not workking; 11-21-25
+
+
+
+
+
+------------------=[  Minor  ]=----------------------
+[] 11-21-25: Error loading parties/witness modal
+[] 11-21-25: No toasts
+
+
+
+------------------=[  Fix/Patch  ]=----------------------

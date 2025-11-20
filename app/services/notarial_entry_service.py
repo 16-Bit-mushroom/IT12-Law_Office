@@ -1,26 +1,26 @@
-# services/notarial_entry_service.py - CORRECTED
+# services/notarial_entry_service.py - UPDATED
 from app.models.notarial_entry_mdl import NotarialEntry, NotarialEntryParty, NotarialEntryWitness
+from app.models.transaction_mdl import TransactionItem
 from app.models import db
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 
 class NotarialEntryService:
-    
     @staticmethod
     def get_all_entries():
         """Get all notarial entries with their parties and witnesses"""
         return NotarialEntry.query.options(
             joinedload(NotarialEntry.parties),
             joinedload(NotarialEntry.witnesses)
-        ).order_by(NotarialEntry.not_date.desc()).all()
-    
-    @staticmethod
+        ).order_by(NotarialEntry.not_date.desc()).all() # Line 20 or similar
+
+    @staticmethod # Missing staticmethod decorator?
     def get_entry_by_id(entry_id):
-        """Get a specific notarial entry by ID"""
-        return NotarialEntry.query.options(
-            joinedload(NotarialEntry.parties),
-            joinedload(NotarialEntry.witnesses)
-        ).get(entry_id)
+         """Get a single notarial entry with relationships"""
+         return NotarialEntry.query.options(
+             joinedload(NotarialEntry.parties),
+             joinedload(NotarialEntry.witnesses)
+         ).filter_by(id=entry_id).first()
     
     @staticmethod
     def create_manual_entry(form_data):
@@ -42,18 +42,19 @@ class NotarialEntryService:
                 not_fee_or=form_data.get('notarial_fee_or', ''),
                 not_other_place=form_data.get('other_place', ''),
                 not_comp_evidence_id=form_data.get('not_comp_evidence_id', ''),
-                transaction_item_id=0  # Default for manual entries
+                transaction_item_id=None,  # Start without transaction
+                transaction_status='no_transaction'  # Default status
             )
             
             db.session.add(entry)
-            db.session.flush()  # Get the ID without committing
+            db.session.flush()
             
-            # Add parties - using correct field names
+            # Add parties
             party_names = form_data.getlist('party_name')
             party_addresses = form_data.getlist('party_address')
             
             for i in range(len(party_names)):
-                if party_names[i].strip():  # Only add if party name exists and is not empty
+                if party_names[i].strip():
                     party = NotarialEntryParty(
                         notarial_entry_id=entry.id,
                         party_name=party_names[i],
@@ -61,12 +62,12 @@ class NotarialEntryService:
                     )
                     db.session.add(party)
             
-            # Add witnesses (0-2)
+            # Add witnesses
             witness_names = form_data.getlist('witness_name')
             witness_addresses = form_data.getlist('witness_address')
             
             for i in range(min(len(witness_names), 2)):
-                if witness_names[i].strip():  # Only add if witness name exists and is not empty
+                if witness_names[i].strip():
                     witness = NotarialEntryWitness(
                         notarial_entry_id=entry.id,
                         witness_name=witness_names[i],
@@ -80,6 +81,65 @@ class NotarialEntryService:
         except Exception as e:
             db.session.rollback()
             raise e
+
+    # NEW: Create transaction for entry
+    @staticmethod
+    def create_transaction_for_entry(entry_id):
+        """Create a transaction for an existing notarial entry"""
+        try:
+            entry = NotarialEntry.query.get(entry_id)
+            if not entry:
+                return None
+            
+            # Create a new transaction item
+            transaction = TransactionItem(
+                client_id=1,  # Default client - you might want to get this from parties
+                service_id=1,  # Default service - you might want to create a "Notarial Service"
+                transaction_amount=entry.not_fee,
+                document_title=entry.not_title,
+                transaction_status='Approved',  # Assuming auto-approval for notarial entries
+                payment_status='Pending'
+            )
+            
+            db.session.add(transaction)
+            db.session.flush()  # Get the transaction ID
+            
+            # Link the entry to the transaction
+            entry.transaction_item_id = transaction.id
+            entry.transaction_status = 'unpaid'
+            
+            db.session.commit()
+            return entry
+            
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    # NEW: Mark entry as paid
+    @staticmethod
+    def mark_as_paid(entry_id):
+        """Mark notarial entry as paid"""
+        try:
+            entry = NotarialEntry.query.get(entry_id)
+            if not entry:
+                return None
+            
+            entry.transaction_status = 'paid'
+            
+            # Also update the linked transaction if it exists
+            if entry.transaction_item:
+                entry.transaction_item.payment_status = 'Paid'
+            
+            db.session.commit()
+            return entry
+            
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    # ... rest of existing methods (update_entry, delete_entry, etc.)
+
+    # ... rest of existing methods (update_entry, delete_entry, etc.)
     
     @staticmethod
     def update_entry(entry_id, form_data):

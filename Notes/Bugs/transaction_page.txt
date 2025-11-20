@@ -1,0 +1,19 @@
+x================{{  Transaction page  ]]===================
+Admin and staff page
+--------------------
+
+------------------=[  Major  ]=----------------------
+
+[] 11-21-25: Deleting an entry should also delete the documents? and entry on transactions?
+[] 11-21-25: Action button not working
+[] 11-21-25: What actions can be performed in this page
+
+
+
+------------------=[  Minor  ]=----------------------
+[] 11-21-25: Error loading parties/witness modal
+[] 11-21-25: No toasts
+
+
+
+------------------=[  Fix/Patch  ]=----------------------

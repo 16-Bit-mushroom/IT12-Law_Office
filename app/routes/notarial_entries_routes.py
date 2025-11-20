@@ -16,6 +16,88 @@ def notarial_entries_page():
     entries = NotarialEntryService.get_all_entries()
     return render_template('notarial_entries.html', entries=entries, now=datetime.utcnow())
 
+# Entry details page for document management
+@notarial_entries_bp.route('/<int:entry_id>')
+@login_required
+def entry_details(entry_id):
+    """Display notarial entry details and documents"""
+    entry = NotarialEntryService.get_entry_by_id(entry_id)
+    if not entry:
+        flash('Notarial entry not found!', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+    
+    return render_template('notarial_entry_details.html', entry=entry)
+
+# JSON API endpoint for editing - CHANGED URL PATTERN
+@notarial_entries_bp.route('/<int:entry_id>/json', methods=['GET'])  # CHANGED
+@login_required
+def get_entry_json(entry_id):  # CHANGED FUNCTION NAME
+    """Get notarial entry data for editing (JSON API)"""
+    # Eager load the relationships
+    entry = NotarialEntry.query.options(
+        joinedload(NotarialEntry.parties),
+        joinedload(NotarialEntry.witnesses)
+    ).get(entry_id)
+    
+    if entry:
+        return jsonify({
+            'id': entry.id,
+            'not_entry_num': entry.not_entry_num,
+            'not_page_num': entry.not_page_num,
+            'not_book_num': entry.not_book_num,
+            'not_series': entry.not_series,
+            'not_title': entry.not_title,
+            'not_date': entry.not_date.strftime('%Y-%m-%dT%H:%M'),
+            'not_type_act': entry.not_type_act,
+            'not_fee': float(entry.not_fee),
+            'not_fee_or': entry.not_fee_or,
+            'not_other_place': entry.not_other_place,
+            'not_comp_evidence_id': entry.not_comp_evidence_id,
+            'parties': [{
+                'id': party.id,
+                'party_name': party.party_name,
+                'party_address': party.party_address
+            } for party in entry.parties],
+            'witnesses': [{
+                'id': witness.id,
+                'witness_name': witness.witness_name,
+                'witness_address': witness.witness_address
+            } for witness in entry.witnesses]
+        })
+    return jsonify({'error': 'Entry not found'}), 404
+
+# Create transaction for entry
+@notarial_entries_bp.route('/<int:entry_id>/create-transaction', methods=['POST'])
+@login_required
+def create_transaction(entry_id):
+    """Create a transaction for a notarial entry"""
+    try:
+        entry = NotarialEntryService.create_transaction_for_entry(entry_id)
+        if entry:
+            flash('Transaction created successfully!', 'success')
+        else:
+            flash('Notarial entry not found!', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+    except Exception as e:
+        flash(f'Error creating transaction: {str(e)}', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+
+# Mark entry as paid
+@notarial_entries_bp.route('/<int:entry_id>/mark-paid', methods=['POST'])
+@login_required
+def mark_as_paid(entry_id):
+    """Mark notarial entry as paid"""
+    try:
+        entry = NotarialEntryService.mark_as_paid(entry_id)
+        if entry:
+            flash('Entry marked as paid!', 'success')
+        else:
+            flash('Notarial entry not found!', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+    except Exception as e:
+        flash(f'Error updating payment status: {str(e)}', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+
 @notarial_entries_bp.route('/create-manual', methods=['POST'])
 @login_required
 def create_manual_entry():
@@ -59,40 +141,3 @@ def delete_entry(entry_id):
     except Exception as e:
         flash(f'Error deleting notarial entry: {str(e)}', 'error')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
-
-@notarial_entries_bp.route('/<int:entry_id>', methods=['GET'])
-@login_required
-def get_entry(entry_id):
-    """Get notarial entry data for editing"""
-    # Eager load the relationships
-    entry = NotarialEntry.query.options(
-        joinedload(NotarialEntry.parties),
-        joinedload(NotarialEntry.witnesses)
-    ).get(entry_id)
-    
-    if entry:
-        return jsonify({
-            'id': entry.id,
-            'not_entry_num': entry.not_entry_num,
-            'not_page_num': entry.not_page_num,
-            'not_book_num': entry.not_book_num,
-            'not_series': entry.not_series,
-            'not_title': entry.not_title,
-            'not_date': entry.not_date.strftime('%Y-%m-%dT%H:%M'),
-            'not_type_act': entry.not_type_act,
-            'not_fee': float(entry.not_fee),
-            'not_fee_or': entry.not_fee_or,
-            'not_other_place': entry.not_other_place,
-            'not_comp_evidence_id': entry.not_comp_evidence_id,
-            'parties': [{
-                'id': party.id,
-                'party_name': party.party_name,
-                'party_address': party.party_address
-            } for party in entry.parties],
-            'witnesses': [{
-                'id': witness.id,
-                'witness_name': witness.witness_name,
-                'witness_address': witness.witness_address
-            } for witness in entry.witnesses]
-        })
-    return jsonify({'error': 'Entry not found'}), 404

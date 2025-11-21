@@ -1,0 +1,18 @@
+================{{  Legal Consultation page  ]]===================
+Admin and staff page
+--------------------
+
+------------------=[  Major  ]=----------------------
+[] create entry form
+[] table
+[] clients must be added to clients table
+
+
+
+
+------------------=[  Minor  ]=----------------------
+
+
+
+
+------------------=[  Fix/Patch  ]=----------------------

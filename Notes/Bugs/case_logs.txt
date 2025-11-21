@@ -1,0 +1,15 @@
+================{{  Case Logs page  ]]===================
+Admin and staff page
+--------------------
+
+------------------=[  Major  ]=----------------------
+[] create client -> add documents
+[] clients must be added to clients table
+
+
+------------------=[  Minor  ]=----------------------
+
+
+
+
+------------------=[  Fix/Patch  ]=----------------------

@@ -7,16 +7,17 @@
     <header class="dashboard-header">
 
         <div>
-            <h1>Case Logs <span></span></h1>
-            <p>View and manage all legal cases</p>
+            <h1>Case Logs</h1>
+            <p>View and manage all legal cases and clients.</p>
         </div>
+
 
 
 
         <div class="dashboard-actions"
             style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
 
-
+            <a style="font-size: 20px; align-self: center; text-decoration: none;" href="{{ url_for('clients.clients_page') }}">View Clients</a>
 
             <div class="search-bar">
                 <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -69,11 +70,15 @@
 
     </section>
 
-        <!-- SECTION 2: Main Client Directory Table -->
+
+
+    <!-- SECTION 2: Main Client Directory Table -->
     <section class="dashboard-panels-bottom dashboard-panels-bottom--single">
+
 
         <!-- The entire table is placed inside a panel card for consistent styling -->
         <div class="panel-card" style="width: 100%;">
+
 
             <!-- Table Container (For horizontal scrolling on mobile, if needed) -->
             <div class="table-wrapper panel-card__body">
@@ -81,7 +86,7 @@
 
                     <!-- Define Column Groups for fixed widths (as per _tables.css) -->
                     <colgroup>
-                        <col class="short"> 
+                        <col class="short">
                         <col class="medium">
                         <col class="medium">
                         <col class="medium">

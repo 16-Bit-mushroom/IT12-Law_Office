@@ -1,0 +1,23 @@
+================{{  Clients page  ]]===================
+Admin and staff page
+--------------------
+
+------------------=[  Major  ]=----------------------
+[] 11-21-25: Add action button to View Clients detail like in the Notarial Page
+
+
+
+[x] 11-21-25: Filters not properly working
+[x] 11-21-25: Download file not workking; 11-21-25
+
+
+
+
+
+------------------=[  Minor  ]=----------------------
+[] 11-21-25: Error loading parties/witness modal
+[] 11-21-25: No toasts
+
+
+
+------------------=[  Fix/Patch  ]=----------------------

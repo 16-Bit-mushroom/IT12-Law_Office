@@ -3,8 +3,9 @@ Admin and staff page
 --------------------
 
 ------------------=[  Major  ]=----------------------
-[] create client -> add documents
-[] clients must be added to clients table
+[] add documents to case
+
+[x] clients must be added to clients table
 
 
 ------------------=[  Minor  ]=----------------------

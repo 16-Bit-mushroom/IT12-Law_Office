@@ -1,0 +1,131 @@
+<tr class="document-row" data-parent-type="{{ document.parent_type }}">
+    <td><strong>#{{ document.id }}</strong></td>
+    <td>
+        <div class="d-flex flex-column">
+            <span class="fw-bold text-dark" style="font-size: 0.9rem;">
+                {{ document.context_name }}
+            </span>
+
+            <div class="d-flex align-items-center mt-1">
+                {% if document.parent_type == 'notarial_entry' %}
+                <span
+                    class="badge bg-primary-subtle text-primary border border-primary-subtle me-2"
+                    style="font-size: 0.65rem;">Notarial</span>
+                {% elif document.parent_type == 'case' %}
+                <span
+                    class="badge bg-success-subtle text-success border border-success-subtle me-2"
+                    style="font-size: 0.65rem;">Case</span>
+                {% elif document.parent_type == 'consultation' %}
+                <span class="badge bg-info-subtle text-info border border-info-subtle me-2"
+                    style="font-size: 0.65rem;">Consultation</span>
+                {% endif %}
+
+                <small class="text-muted" style="font-size: 0.75rem;">
+                    {{ document.context_ref }}
+                </small>
+            </div>
+        </div>
+    </td>
+
+    <td><span class="badge bg-light text-dark border">{{ document.document_type or 'General' }}</span></td>
+
+    <td>
+        {% if document.parent_type == 'notarial_entry' %}
+        <a href="{{ url_for('documents.documents_page', entry_filter=document.parent_id) }}" 
+           class="badge bg-primary mb-1 text-decoration-none">
+            Notarial #{{ document.parent_id }}
+        </a>
+        {% elif document.parent_type == 'case' %}
+        <span class="badge bg-success mb-1">Case #{{ document.parent_id }}</span>
+        {% else %}
+        <span class="badge bg-secondary mb-1">{{ document.parent_type|title }}</span>
+        {% endif %}
+    </td>
+
+    <td>
+        <span
+            class="status-tag status-tag--{{ document.document_status|lower|replace(' ', '-') }}">
+            {{ document.document_status }}
+        </span>
+    </td>
+
+    <td>
+        <div class="d-flex align-items-center text-muted small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="me-1">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            {{ document.physical_location or 'Digital Only' }}
+        </div>
+    </td>
+    <td>
+        <div class="small">{{ document.uploaded_at.strftime('%m/%d/%Y') }}</div>
+    </td>
+    <td>
+        <div class="action-buttons">
+            <a href="{{ url_for('documents.view_document', document_id=document.id) }}"
+                target="_blank" class="btn-action btn-action--info" title="View">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </a>
+
+            <!-- Status Dropdown -->
+            <div class="dropdown status-dropdown">
+                <button class="btn-action btn-action--secondary dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown" aria-expanded="false" title="Update Status">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                </button>
+                <form
+                    action="{{ url_for('documents.update_document_status', document_id=document.id) }}"
+                    method="POST" class="dropdown-menu status-dropdown-menu p-2">
+                    {% set status_options = [
+                    ('Pending', 'pending'),
+                    ('Draft', 'draft'),
+                    ('For Signature', 'for-signature'),
+                    ('For Notarization', 'for-notarization'),
+                    ('Complete', 'complete'),
+                    ('Released', 'released'),
+                    ('Missing', 'missing'),
+                    ('Lacking', 'lacking')
+                    ] %}
+
+                    {% for status_name, status_value in status_options %}
+                    <button type="submit" name="status" value="{{ status_name }}"
+                        class="dropdown-item status-option {% if document.document_status == status_name %}active{% endif %}"
+                        data-status="{{ status_value }}">
+                        <span
+                            class="status-indicator status-indicator--{{ status_value }}"></span>
+                        {{ status_name }}
+                    </button>
+                    {% endfor %}
+                </form>
+            </div>
+
+            <form action="{{ url_for('documents.delete_document', document_id=document.id) }}"
+                method="POST" style="display:inline;"
+                onsubmit="return confirm('Are you sure you want to delete this document?');">
+                <button type="submit" class="btn-action btn-action--danger" title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                        </path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </td>
+</tr>

@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, request, jsonify, flash, redirect,
 from flask_login import login_required, current_user
 from app.models.document_mdl import Document
 from app.models.notarial_entry_mdl import NotarialEntry
+from app.models import db 
 # You need to import your Case/Client models here
 # from app.models.case_mdl import Case 
 # from app.models.client_mdl import Client 
@@ -90,12 +91,43 @@ def documents_page():
                          current_filter=document_type,
                          search_term=search_term)
 
+ # Group documents by notarial entry for grouped view
+    if view_mode == 'grouped' and (document_type == 'all' or document_type == 'notarial_entry'):
+        grouped_documents = {}
+        for doc in documents:
+            if doc.parent_type == 'notarial_entry':
+                entry_id = doc.parent_id
+                if entry_id not in grouped_documents:
+                    # Get entry details for the group header
+                    entry = NotarialEntry.query.get(entry_id)
+                    grouped_documents[entry_id] = {
+                        'entry': entry,
+                        'documents': [],
+                        'party_name': doc.context_name if hasattr(doc, 'context_name') else "Unknown"
+                    }
+                grouped_documents[entry_id]['documents'].append(doc)
+        
+        return render_template('documents_page.html', 
+                             documents=documents,
+                             grouped_documents=grouped_documents,
+                             current_filter=document_type,
+                             search_term=search_term,
+                             entry_filter=entry_filter,
+                             view_mode=view_mode)
+    
+    return render_template('documents_page.html', 
+                         documents=documents, 
+                         current_filter=document_type,
+                         search_term=search_term,
+                         entry_filter=entry_filter,
+                         view_mode=view_mode)
+
 
 @documents_bp.route('/notarial-entry/<int:entry_id>')
 @login_required
 def notarial_entry_documents(entry_id):
     """Display documents for a specific notarial entry"""
-    entry = NotarialEntryService.get_entry_by_id(entry_id)
+    entry = NotarialEntry.query.get(entry_id)  # Use model directly
     if not entry:
         flash('Notarial entry not found!', 'error')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
@@ -191,3 +223,29 @@ def view_document(document_id):
     return send_file(document.file_path, 
                     as_attachment=False, 
                     download_name=document.filename)
+
+# Add this new route to your documents_routes.py
+@documents_bp.route('/update-status/<int:document_id>', methods=['POST'])
+@login_required
+def update_document_status(document_id):
+    """Update document status"""
+    try:
+        document = Document.query.get(document_id)
+        if not document:
+            flash('Document not found!', 'error')
+            return redirect(request.referrer or url_for('documents.documents_page'))
+        
+        new_status = request.form.get('status')
+        if new_status:
+            document.document_status = new_status
+            db.session.commit()
+            flash('Document status updated successfully!', 'success')
+        else:
+            flash('No status provided!', 'error')
+            
+        return redirect(request.referrer or url_for('documents.documents_page'))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error updating status: {str(e)}', 'error')
+        return redirect(request.referrer or url_for('documents.documents_page'))

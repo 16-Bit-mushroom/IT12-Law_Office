@@ -209,7 +209,7 @@
                             <td>
                                 <div class="action-buttons">
                                     <!-- View Details Button -->
-                                    <a href="{{ url_for('notarial_entries.entry_details', entry_id=entry.id) }}"
+                                    <a href="{{ url_for('documents.notarial_entry_documents', entry_id=entry.id) }}"
                                         class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -250,7 +250,7 @@
                                     {% endif %}
 
                                     <!-- Edit Button -->
-                                    <a href="#" class="btn-action btn-action--secondary" title="Edit"
+                                    <a href="#" class="btn-action btn-action--secondary" style="background-color: rgb(99, 131, 168); color: white;" title="Edit"
                                         data-bs-toggle="modal" data-bs-target="#entryModal"
                                         onclick="loadEntryData('{{ entry.id }}')">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -266,7 +266,7 @@
                                         action="{{ url_for('notarial_entries.delete_entry', entry_id=entry.id) }}"
                                         style="display: inline;"
                                         onsubmit="return confirm('Are you sure you want to delete this entry?');">
-                                        <button type="submit" class="btn-action btn-action--danger" title="Delete">
+                                        <button type="submit" class="btn-action btn-action--danger" style="background-color: #dc3545; color: white;" title="Delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">

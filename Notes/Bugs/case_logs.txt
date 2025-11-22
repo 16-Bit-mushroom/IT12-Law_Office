@@ -4,6 +4,8 @@ Admin and staff page
 
 ------------------=[  Major  ]=----------------------
 [] add documents to case
+[] entry of case log not added to case log tables after saving form, but added on transaction table
+[]  
 
 [x] clients must be added to clients table
 

@@ -5,8 +5,10 @@ Admin and staff page
 ------------------=[  Major  ]=----------------------
 
 [] 11-21-25: Deleting an entry should also delete the documents? and entry on transactions?
-[] 11-21-25: Action button not working
+[] 11-21-25: View button not working
 [] 11-21-25: What actions can be performed in this page
+[] 11-22-25: Remove 'Status' column
+[] 11-22-25: Add tab filter --same on Documents page-- for Notarial and Case Transactions
 
 
 

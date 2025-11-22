@@ -42,6 +42,11 @@
             <li><a href="{{ url_for('documents.documents_page') }}"><span><img
                             src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Documents</a></li>
 
+            <li role="none"><a role="menuitem" href="{{ url_for('transaction.transactions_page') }}">
+                    <span><img  src="{{ url_for('static', filename='img/transaction.svg') }}"
+                            alt=""></span>Transactions
+                </a></li>
+
             <!-- REPLACE the four separate links with this block -->
             <li class="has-submenu">
                 <button class="submenu-toggle" aria-expanded="false" aria-haspopup="true">
@@ -51,22 +56,21 @@
                 </button>
 
                 <ul class="submenu" role="menu" aria-label="More links">
-                    <li role="none"><a role="menuitem" href="{{ url_for('transaction.transactions_page') }}">
-                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/transaction.svg') }}"
-                                    alt=""></span>Transactions
-                        </a></li>
+
 
                     <!-- <li role="none"><a role="menuitem" href="{{ url_for('clients.clients_page') }}">
                             <span><img style="width: 28px;" src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients
                         </a></li> -->
-                        
+
 
                     <li role="none"><a role="menuitem" href="#">
-                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/service.svg') }}" alt=""></span>Services
+                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/service.svg') }}"
+                                    alt=""></span>Services
                         </a></li>
 
                     <li role="none"><a role="menuitem" href="{{ url_for('payments.payments_page') }}">
-                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments
+                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/payments.svg') }}"
+                                    alt=""></span>Payments
                         </a></li>
                 </ul>
             </li>

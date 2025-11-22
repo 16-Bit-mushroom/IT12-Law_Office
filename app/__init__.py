@@ -37,7 +37,8 @@ def create_app():
     # ================== ROUTES =========================== #
     from .routes.clients_routes import clients_bp
     from .routes.dashboard_routes import dashboard_bp
-    from .routes.case_logs_routes import case_logs_bp
+    # from .routes.case_logs_routes import case_logs_bp
+    from app.routes.case_routes import case_bp
     from .routes.payments_routes import payments_bp
     from .routes.login_routes import auth_bp
     from .routes.admin_profile_routes import admin_bp
@@ -46,10 +47,12 @@ def create_app():
     from .routes.legal_consultation_routes import legal_consultation_bp
     from .routes.documents_routes import documents_bp
     from .routes.notarial_entries_routes import notarial_entries_bp
+    
 
     app.register_blueprint(clients_bp)
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(case_logs_bp)
+    # app.register_blueprint(case_logs_bp)
+    app.register_blueprint(case_bp)
     app.register_blueprint(documents_bp)
     app.register_blueprint(payments_bp)
     app.register_blueprint(auth_bp)

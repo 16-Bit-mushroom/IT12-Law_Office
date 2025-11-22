@@ -35,13 +35,15 @@ def submit_new_client():
         return redirect(url_for('clients.new_client_form'))
 
     try:
-        # Updated to include names
         new_client = add_client(address, email, phone, role, notes, first_name, last_name)
         flash(f'Client {first_name} {last_name} added successfully.', 'success')
         
-        # Redirect to the transaction form, passing the new client's ID
-        return redirect(url_for('transaction.new_transaction_form', pre_select_client_id=new_client.id))
+
+        return redirect(url_for('case_logs.new_case_form', pre_select_client_id=new_client.id))
+
         
     except Exception as e:
         flash(f'An error occurred while adding the client: {e}', 'error')
-        return redirect(url_for('clients.new_client_form'))
+        # Ensure we keep the return_to parameter if there is an error so they don't lose their place
+        return_to = request.args.get('return_to', '')
+        return redirect(url_for('clients.new_client_form', return_to=return_to))

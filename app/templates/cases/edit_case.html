@@ -1,0 +1,141 @@
+<!-- templates/cases/edit_case.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Edit Case - {{ case.case_number }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('case.edit_case', case_id=case.id) }}">
+                        <!-- Client Selection -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Client Information</h5>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="client_id" class="form-label">Select Client *</label>
+                                        <select class="form-control" id="client_id" name="client_id" required>
+                                            <option value="">Choose a client...</option>
+                                            {% for client in clients %}
+                                            <option value="{{ client.id }}" {% if client.id==case.client_id %}selected{%
+                                                endif %}>
+                                                {{ client.full_name }} - {{ client.email }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <a href="{{ url_for('clients.new_client_form') }}?return_to={{ url_for('case.edit_case', case_id=case.id) }}"
+                                        class="btn btn-outline-primary w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        </svg>
+                                        Add New Client
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Case Details -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Case Details</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label">Case Title *</label>
+                                        <input type="text" class="form-control" id="title" name="title" required
+                                            value="{{ case.title }}"
+                                            placeholder="e.g., Smith vs. Johnson Contract Dispute">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="case_type" class="form-label">Case Type *</label>
+                                        <select class="form-control" id="case_type" name="case_type" required>
+                                            <option value="">Select case type...</option>
+                                            <option value="civil" {% if case.case_type=='civil' %}selected{% endif %}>
+                                                Civil Case</option>
+                                            <option value="criminal" {% if case.case_type=='criminal' %}selected{% endif
+                                                %}>Criminal Case</option>
+                                            <option value="corporate" {% if case.case_type=='corporate' %}selected{%
+                                                endif %}>Corporate</option>
+                                            <option value="family" {% if case.case_type=='family' %}selected{% endif %}>
+                                                Family Law</option>
+                                            <option value="property" {% if case.case_type=='property' %}selected{% endif
+                                                %}>Property</option>
+                                            <option value="labor" {% if case.case_type=='labor' %}selected{% endif %}>
+                                                Labor</option>
+                                            <option value="other" {% if case.case_type=='other' %}selected{% endif %}>
+                                                Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="violation" class="form-label">Violation / Cause of Action</label>
+                                <input type="text" class="form-control" id="violation" name="violation"
+                                    value="{{ case.violation or '' }}"
+                                    placeholder="e.g., Breach of Contract, Theft, etc.">
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Case Dates</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="engagement_date" class="form-label">Engagement Date *</label>
+                                        <input type="date" class="form-control" id="engagement_date"
+                                            name="engagement_date" required
+                                            value="{{ case.engagement_date.strftime('%Y-%m-%d') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="filing_date" class="form-label">Filing Date (if applicable)</label>
+                                        <input type="date" class="form-control" id="filing_date" name="filing_date"
+                                            value="{% if case.filing_date %}{{ case.filing_date.strftime('%Y-%m-%d') }}{% endif %}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Case Status</h5>
+                            <div class="mb-3">
+                                <select class="form-control" id="status" name="status" required>
+                                    <option value="active" {% if case.status=='active' %}selected{% endif %}>Active
+                                    </option>
+                                    <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending
+                                    </option>
+                                    <option value="completed" {% if case.status=='completed' %}selected{% endif %}>
+                                        Completed</option>
+                                    <option value="closed" {% if case.status=='closed' %}selected{% endif %}>Closed
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('case.view_case', case_id=case.id) }}"
+                                class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Case</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

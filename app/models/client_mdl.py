@@ -4,7 +4,6 @@ class Client(db.Model):
     __tablename__ = 'clients'
 
     id = db.Column(db.Integer, primary_key=True)
-    # Add client name fields
     client_first_name = db.Column(db.String(100), nullable=False)
     client_last_name = db.Column(db.String(100), nullable=False)
     client_address = db.Column(db.String(255), nullable=False) 
@@ -13,8 +12,8 @@ class Client(db.Model):
     client_role = db.Column(db.String(50))
     notes = db.Column(db.Text)
 
-    # Relationships
-    documents = db.relationship('CaseDocument', backref='client', lazy=True)
+    # Relationships - use backref in Case model instead
+    # cases = db.relationship('Case', back_populates='client', lazy=True)
     transaction_items = db.relationship('TransactionItem', backref='client', lazy=True)
 
     # Property to get full name

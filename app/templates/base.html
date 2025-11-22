@@ -27,7 +27,7 @@
             <li><a href="{{ url_for('dashboard.dashboard_page') }}"><span><img
                             src="{{ url_for('static', filename='img/dashboard.svg') }}" alt=""></span>Dashboard</a></li>
 
-            <li><a href="{{ url_for('case_logs.case_logs_page') }}"><span><img
+            <li><a href="{{ url_for('case.list_cases') }}"><span><img
                             src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>Case Logs</a></li>
 
             <li><a href="{{ url_for('notarial_entries.notarial_entries_page') }}"><span><img
@@ -43,8 +43,7 @@
                             src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Documents</a></li>
 
             <li role="none"><a role="menuitem" href="{{ url_for('transaction.transactions_page') }}">
-                    <span><img  src="{{ url_for('static', filename='img/transaction.svg') }}"
-                            alt=""></span>Transactions
+                    <span><img src="{{ url_for('static', filename='img/transaction.svg') }}" alt=""></span>Transactions
                 </a></li>
 
             <!-- REPLACE the four separate links with this block -->
@@ -98,6 +97,20 @@
     </aside>
 
     <div class="page-container">
+
+        <!-- Add this to your base.html where flash messages should appear -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
         {% block content %}
         <!-- Page content (from child templates) goes here -->
         {% endblock %}

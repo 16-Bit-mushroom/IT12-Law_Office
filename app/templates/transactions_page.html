@@ -101,7 +101,7 @@
                         <col class="medium">
                         <col class="medium">
                         <col class="long">
-                        <col class="short">
+                        <!-- <col class="short"> -->
                         <col class="numeric">
                         <col class="short">
                         <col class="short">
@@ -114,7 +114,7 @@
                             <th data-sort-key="client">Client</th>
                             <th data-sort-key="service">Service</th>
                             <th data-sort-key="document">Document</th>
-                            <th data-sort-key="status">Status</th>
+                            <!-- <th data-sort-key="status">Status</th> -->
                             <th data-sort-key="amount">Amount</th>
                             <th data-sort-key="payment">Payment</th>
                             <th data-sort-key="date">Date</th>
@@ -136,12 +136,12 @@
                                 {% endif %}
                             </td>
                             <td>{{ transaction.document_title or 'No title' }}</td>
-                            <td>
+                            <!-- <td>
                                 <span
                                     class="status-tag status-tag--{{ transaction.transaction_status|lower|replace(' ', '-') }}">
                                     {{ transaction.transaction_status }}
                                 </span>
-                            </td>
+                            </td> -->
                             <td>₱{{ "%.2f"|format(transaction.transaction_amount) }}</td>
                             <td>
                                 <span class="status-tag status-tag--{{ transaction.payment_status|lower }}">
@@ -151,7 +151,7 @@
                             <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    {% if transaction.transaction_status == 'Draft' %}
+                                    <!-- {% if transaction.transaction_status == 'Draft' %}
                                     <form
                                         action="{{ url_for('transaction.submit_for_approval_route', transaction_id=transaction.id) }}"
                                         method="POST" style="display: inline;">
@@ -177,7 +177,7 @@
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                     </button>
-                                    {% endif %}
+                                    {% endif %} -->
 
                                     <a href="#" class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -254,7 +254,7 @@
     .action-buttons {
         display: flex;
         gap: 5px;
-        justify-content: center;
+        justify-content: start;
     }
 
     .btn-action {

@@ -1,38 +1,24 @@
-from . import db  # Import the shared db instance
-
+from . import db
+from datetime import datetime
 
 class CaseDocument(db.Model):
-    """
-    Represents a document associated with a case, tracking its name and completion status.
-    """
-    __tablename__ = 'case_document'
-
-    # Primary Key
+    __tablename__ = 'case_documents'
+    
     id = db.Column(db.Integer, primary_key=True)
-
-    # Document Name - Use a variable-length String (String) for flexibility.
-    # If you are strictly using a limited set of options (a dropdown), 
-    # you might consider a lookup table or an Enum in a more complex setup.
-    cas_doc_name = db.Column(db.String, nullable=False) 
-    # e.g., 'Initial Complaint', 'Answer to Complaint', 'Discovery Request'
-
-    # Document Status - Use a String for 'lacking' or 'completed'.
-    # A fixed-length char or an Enum might be more efficient if the values are strictly limited.
-    cas_doc_status = db.Column(db.String, nullable=False) 
-    # e.g., 'lacking', 'completed'
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    file_type = db.Column(db.String(50), nullable=True)
+    file_size = db.Column(db.Integer, nullable=True)
+    document_type = db.Column(db.String(100), nullable=True)
+    document_status = db.Column(db.String(50), default='Pending', nullable=False)
+    notes = db.Column(db.Text, nullable=True)
     
-    # Foreign Key: This is the field that creates the link.
-    # It refers to the 'id' column of the 'clients' table.
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    # Foreign Keys
+    case_id = db.Column(db.Integer, db.ForeignKey('cases.id'), nullable=False)
+    uploaded_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     
-    # NEW FOREIGN KEY: Links the document to the specific service request that generated it
-    transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=True)
-
-    # Relationship back to the TransactionItem
-    transaction_item = db.relationship('TransactionItem', backref='case_documents', lazy=True)
-
+    # Metadata
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
     def __repr__(self):
-        return f"<CaseDocument(id={self.id}, name='{self.cas_doc_name}', status='{self.cas_doc_status}', client_id={self.client_id})>"
-
-# Note: The original use of db.String(120) is perfectly valid if you need 
-# to enforce a maximum length of 120 characters for your database schema.
+        return f"<CaseDocument(id={self.id}, filename='{self.filename}', case_id={self.case_id})>"

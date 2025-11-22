@@ -1,0 +1,256 @@
+<!-- templates/cases/list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<main class="dashboard-content">
+    <header class="dashboard-header">
+        <div>
+            <h1>Case Logs</h1>
+            <p>View and manage all legal cases and clients.</p>
+        </div>
+
+        <div class="dashboard-actions"
+            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+            <a style="font-size: 20px; align-self: center; text-decoration: none;"
+                href="{{ url_for('clients.clients_page') }}">View Clients</a>
+
+            <div class="search-bar">
+                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input class="search-bar__input" type="text" placeholder="Search cases, clients, violations...">
+            </div>
+
+            <a href="{{ url_for('case.create_case') }}" class="btn btn-primary">
+                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                New Case
+            </a>
+        </div>
+    </header>
+
+    <section class="dashboard-cards">
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Total Cases</span>
+                <span class="data-card__value">{{ cases|length }}</span>
+            </div>
+            <div class="data-card__icon data-card__icon--blue"></div>
+        </div>
+
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Active Cases</span>
+                <span class="data-card__value">
+                    {{ cases|selectattr('status', 'equalto', 'active')|list|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--gold"></div>
+        </div>
+
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Completed</span>
+                <span class="data-card__value">
+                    {{ cases|selectattr('status', 'equalto', 'completed')|list|length }}
+                </span>
+            </div>
+            <div class="data-card__icon data-card__icon--green"></div>
+        </div>
+    </section>
+
+    <section class="dashboard-panels-bottom dashboard-panels-bottom--single">
+        <div class="panel-card" style="width: 100%;">
+            <div class="table-wrapper panel-card__body">
+                <table class="table client-table">
+                    <colgroup>
+                        <col class="short">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="numeric">
+                        <col class="short">
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th data-sort-key="id">ID</th>
+                            <th data-sort-key="client">Client</th>
+                            <th data-sort-key="case-title">Case Title</th>
+                            <th data-sort-key="violation">Violation</th>
+                            <th data-sort-key="case-number">Case Number</th>
+                            <th data-sort-key="engagement-date">Engagement Date</th>
+                            <th data-sort-key="filing-date">Filing Date</th>
+                            <th data-sort-key="status">Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for case in cases %}
+                        <tr>
+                            <td><strong>#{{ case.id }}</strong></td>
+                            <td>
+                                {% if case.client %}
+                                {{ case.client.full_name }}
+                                {% else %}
+                                <span class="text-muted">No Client</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ case.title }}</td>
+                            <td>{{ case.violation or 'N/A' }}</td>
+                            <td><code>{{ case.case_number }}</code></td>
+                            <td>{{ case.engagement_date.strftime('%m/%d/%Y') }}</td>
+                            <td>
+                                {% if case.filing_date %}
+                                {{ case.filing_date.strftime('%m/%d/%Y') }}
+                                {% else %}
+                                <span class="text-muted">Not filed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-tag status-tag--{{ case.status }}">
+                                    {{ case.status|title }}
+                                </span>
+                            </td>
+                            <!-- In the actions column of list.html -->
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('case.view_case', case_id=case.id) }}"
+                                        class="btn-action btn-action--info" title="View">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </a>
+                                    <a href="{{ url_for('case.edit_case', case_id=case.id) }}"
+                                        class="btn-action btn-action--secondary" title="Edit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </a>
+
+                                    <!-- Delete Button -->
+                                    <form method="POST" action="{{ url_for('case.delete_case', case_id=case.id) }}"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('Are you sure you want to delete this case? This action cannot be undone.');">
+                                        <button type="submit" class="btn-action btn-action--danger" title="Delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path
+                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </form>
+
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4">
+                                <div class="text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="1" class="mb-2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10 9 9 9 8 9"></polyline>
+                                    </svg>
+                                    <p class="mb-0">No cases found. <a href="{{ url_for('case.create_case') }}">Create
+                                            your first case</a></p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+    .status-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-tag--active {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-tag--completed {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .status-tag--pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 4px;
+        justify-content: start;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-action--info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-action--secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-action--danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+        transform: translateY(-1px);
+    }
+</style>
+
+{% endblock %}

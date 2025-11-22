@@ -4,7 +4,7 @@
 <main class="dashboard-content">
     <header class="dashboard-header">
         <div>
-            <h1><a href="{{ url_for('case_logs.case_logs_page') }}" style="color: rgba(114, 168, 212, 0.781); text-decoration: none;">Case Logs</a> > Clients <span></span></h1>
+            <h1><a href="{{ url_for('case.list_cases') }}" style="color: rgba(114, 168, 212, 0.781); text-decoration: none;">Case Logs</a> > Clients <span></span></h1>
             <p>Manage all your clients</p>
         </div>
 
@@ -125,8 +125,8 @@
                                 <span class="badge bg-primary">{{ client.transaction_items|length }}</span>
                             </td>
                             <td>
-                                <div class="action-buttons">
-                                    <a href="{{ url_for('transaction.new_transaction_form', pre_select_client_id=client.id) }}" class="btn-action btn-action--primary" title="New Transaction">
+                                <div class="action-buttons" style="justify-content: start;">
+                                    <a href="{{ url_for('case.create_case') }}" class="btn-action btn-action--primary" title="New Case">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                             <line x1="5" y1="12" x2="19" y2="12"></line>

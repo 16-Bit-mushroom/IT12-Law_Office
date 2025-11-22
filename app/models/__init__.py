@@ -9,7 +9,8 @@ from .client_mdl import Client
 from .service_mdl import Service
 from .payment_mdl import Payment
 from .transaction_mdl import TransactionItem
-from .case_doc_mdl import CaseDocument
+from .case_logs_mdl import CaseDocument
+from .case_mdl import Case
 from .notarial_entry_mdl import NotarialEntry
 from .notarial_entry_mdl import NotarialEntryParty
 from .notarial_entry_mdl import NotarialEntryWitness

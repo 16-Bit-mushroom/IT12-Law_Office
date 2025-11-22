@@ -9,6 +9,8 @@ Admin and staff page
 [] 11-21-25: What actions can be performed in this page
 [] 11-22-25: Remove 'Status' column
 [] 11-22-25: Add tab filter --same on Documents page-- for Notarial and Case Transactions
+[] 11-22-25: Transact filter buttons not working
+[] 
 
 
 

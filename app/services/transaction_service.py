@@ -1,7 +1,7 @@
 from app.models import db
 from app.models.transaction_mdl import TransactionItem
 from app.models.payment_mdl import Payment
-from app.models.case_doc_mdl import CaseDocument
+from app.models.case_logs_mdl import CaseDocument
 from app.models.notarial_entry_mdl import NotarialEntry
 from app.models.service_mdl import Service
 import uuid

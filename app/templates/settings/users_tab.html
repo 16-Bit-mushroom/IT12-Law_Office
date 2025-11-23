@@ -1,0 +1,208 @@
+<!-- templates/settings/users_tab.html -->
+<div class="panel-card">
+    <header class="panel-card__header">
+        <h3 class="panel-card__title">User Management</h3>
+        <button class="btn btn-primary" style="margin-block: 15px;">
+            <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add New User
+        </button>
+    </header>
+
+    <div class="panel-card__body">
+        <div class="user-list">
+            <div class="user-item">
+                <div class="user-item__info">
+                    <div class="user-item__avatar">JD</div>
+                    <div>
+                        <p class="user-item__name">John Doe</p>
+                        <span class="user-item__role">Administrator</span>
+                    </div>
+                </div>
+                <div class="user-item__actions">
+                    <button class="btn-action btn-action--secondary" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-action btn-action--danger" title="Deactivate">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-item">
+                <div class="user-item__info">
+                    <div class="user-item__avatar">SJ</div>
+                    <div>
+                        <p class="user-item__name">Sarah Johnson</p>
+                        <span class="user-item__role">Attorney</span>
+                    </div>
+                </div>
+                <div class="user-item__actions">
+                    <button class="btn-action btn-action--secondary" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-action btn-action--danger" title="Deactivate">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-item">
+                <div class="user-item__info">
+                    <div class="user-item__avatar">MB</div>
+                    <div>
+                        <p class="user-item__name">Michael Brown</p>
+                        <span class="user-item__role">Staff</span>
+                    </div>
+                </div>
+                <div class="user-item__actions">
+                    <button class="btn-action btn-action--secondary" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-action btn-action--danger" title="Deactivate">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .user-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .user-item:hover {
+        border-color: #cbd5e1;
+        background-color: #f8fafc;
+    }
+
+    .user-item__info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-item__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #3b82f6;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .user-item__name {
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        color: #1e293b;
+    }
+
+    .user-item__role {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .user-item__actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-action--secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-action--danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+        transform: translateY(-1px);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .btn-icon-left {
+        width: 16px;
+        height: 16px;
+    }
+</style>

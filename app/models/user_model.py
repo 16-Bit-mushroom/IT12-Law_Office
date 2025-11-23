@@ -1,3 +1,4 @@
+# user_model.py
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -17,6 +18,9 @@ class User(UserMixin, db.Model):
     
     # Security field - Stores the hashed password, NOT the plain text password
     password_hash = db.Column(db.String(128), nullable=False)
+    
+    # Contact Information
+    contact_number = db.Column(db.String(20), nullable=True)
     
     # Authorization and Status fields
     # Role: Determines access level (e.g., 'admin', 'attorney', 'paralegal')
@@ -48,6 +52,19 @@ class User(UserMixin, db.Model):
     def enable(self):
         """Sets the user's active status to True."""
         self.is_active = True
+
+    def to_dict(self):
+        """Convert user object to dictionary for JSON serialization"""
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'contact_number': self.contact_number,
+            'role': self.role,
+            'is_admin': self.is_admin,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
 
     def __repr__(self):
         return f"<User {self.username} | Role: {self.role}>"

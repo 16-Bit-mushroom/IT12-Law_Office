@@ -1,0 +1,113 @@
+<!-- templates/settings/recycle_tab.html -->
+<div class="panel-card">
+    <header class="panel-card__header">
+        <h3 class="panel-card__title">Recycle Bin</h3>
+        <button class="btn btn-danger" style="margin-block: 15px;">Empty Recycle Bin</button>
+    </header>
+
+    <div class="panel-card__body">
+        <div class="recycle-items">
+            <div class="recycle-item">
+                <div class="recycle-item__info">
+                    <h4 class="recycle-item__title">Deleted Documents (12)</h4>
+                    <p class="recycle-item__meta">Last cleaned: 2 days ago</p>
+                </div>
+                <button class="btn btn-secondary">Restore All</button>
+            </div>
+
+            <div class="recycle-item">
+                <div class="recycle-item__info">
+                    <h4 class="recycle-item__title">Deleted Cases (3)</h4>
+                    <p class="recycle-item__meta">Last cleaned: 1 week ago</p>
+                </div>
+                <button class="btn btn-secondary">Restore All</button>
+            </div>
+
+            <div class="recycle-item">
+                <div class="recycle-item__info">
+                    <h4 class="recycle-item__title">Deleted Clients (1)</h4>
+                    <p class="recycle-item__meta">Last cleaned: 3 days ago</p>
+                </div>
+                <button class="btn btn-secondary">Restore All</button>
+            </div>
+
+            <div class="recycle-item">
+                <div class="recycle-item__info">
+                    <h4 class="recycle-item__title">Deleted Notarial Entries (0)</h4>
+                    <p class="recycle-item__meta">Last cleaned: Never</p>
+                </div>
+                <button class="btn btn-secondary" disabled>Restore All</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .recycle-items {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .recycle-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+    }
+
+    .recycle-item__title {
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        color: #1e293b;
+    }
+
+    .recycle-item__meta {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background-color: #6b7280;
+        color: white;
+        border-color: #6b7280;
+    }
+
+    .btn-secondary:hover {
+        background-color: #4b5563;
+        border-color: #4b5563;
+    }
+
+    .btn-danger {
+        background-color: #dc2626;
+        color: white;
+        border-color: #dc2626;
+    }
+
+    .btn-danger:hover {
+        background-color: #b91c1c;
+        border-color: #b91c1c;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>

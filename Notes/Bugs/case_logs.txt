@@ -6,8 +6,8 @@ Admin and staff page
 
 [] search client and case
 [] soft delete 
+[] add documents(one or many) related to case. We will use the design of the notarial_entry_details
 
-[x] add documents(one or many) related to case. We will use the design of the notarial_entry_details
 [x] create client and case
 [x] update client and case details
 

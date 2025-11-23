@@ -47,6 +47,7 @@ def create_app():
     from .routes.legal_consultation_routes import legal_consultation_bp
     from .routes.documents_routes import documents_bp
     from .routes.notarial_entries_routes import notarial_entries_bp
+    from .routes.settings_route import settings_bp
     
 
     app.register_blueprint(clients_bp)
@@ -60,5 +61,6 @@ def create_app():
     app.register_blueprint(transaction_bp)
     app.register_blueprint(notarial_entries_bp)
     app.register_blueprint(legal_consultation_bp)
+    app.register_blueprint(settings_bp)
 
     return app

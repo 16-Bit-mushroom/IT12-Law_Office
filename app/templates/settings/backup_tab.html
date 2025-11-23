@@ -1,0 +1,159 @@
+<!-- templates/settings/backup_tab.html -->
+<div class="panel-card">
+    <header class="panel-card__header" style="margin-bottom: 15px;">
+        <h3 class="panel-card__title">Backup & Recovery</h3>
+    </header>
+
+    <div class="panel-card__body">
+        <div class="backup-options">
+            <div class="backup-item">
+                <div class="backup-item__info">
+                    <h4 class="backup-item__title">Database Backup</h4>
+                    <p class="backup-item__description">Download a complete SQL backup of your system data</p>
+                </div>
+                <button class="btn btn-primary">Download SQL</button>
+            </div>
+
+            <div class="backup-item">
+                <div class="backup-item__info">
+                    <h4 class="backup-item__title">Document Storage Backup</h4>
+                    <p class="backup-item__description">Download all documents and files as a ZIP archive</p>
+                </div>
+                <button class="btn btn-primary">Download ZIP</button>
+            </div>
+
+            <div class="backup-item">
+                <div class="backup-item__info">
+                    <h4 class="backup-item__title">Auto-Backup Schedule</h4>
+                    <p class="backup-item__description">Configure automatic backup frequency</p>
+                </div>
+                <select class="form-select">
+                    <option>Daily</option>
+                    <option>Weekly</option>
+                    <option>Monthly</option>
+                    <option>Disabled</option>
+                </select>
+            </div>
+
+            <div class="backup-item">
+                <div class="backup-item__info">
+                    <h4 class="backup-item__title">Restore System</h4>
+                    <p class="backup-item__description">Upload a backup file to restore your system</p>
+                </div>
+                <div class="file-upload">
+                    <input type="file" id="backup-file" class="file-upload__input">
+                    <label for="backup-file" class="btn btn-secondary">Choose File</label>
+                    <span class="file-upload__name">No file chosen</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .backup-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .backup-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+    }
+
+    .backup-item__title {
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: #1e293b;
+    }
+
+    .backup-item__description {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .file-upload {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .file-upload__input {
+        display: none;
+    }
+
+    .file-upload__name {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .form-select {
+        padding: 0.5rem 2rem 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: white;
+        font-size: 0.875rem;
+        color: #374151;
+        cursor: pointer;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .btn-secondary {
+        background-color: #6b7280;
+        color: white;
+        border-color: #6b7280;
+    }
+
+    .btn-secondary:hover {
+        background-color: #4b5563;
+        border-color: #4b5563;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File upload display
+        const fileInput = document.getElementById('backup-file');
+        const fileName = document.querySelector('.file-upload__name');
+
+        if (fileInput && fileName) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileName.textContent = this.files[0].name;
+                } else {
+                    fileName.textContent = 'No file chosen';
+                }
+            });
+        }
+    });
+</script>

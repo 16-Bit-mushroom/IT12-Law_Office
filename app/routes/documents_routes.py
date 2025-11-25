@@ -4,11 +4,9 @@ from flask import Blueprint, render_template, request, jsonify, flash, redirect,
 from flask_login import login_required, current_user
 from app.models.document_mdl import Document
 from app.models.notarial_entry_mdl import NotarialEntry
+from app.models.case_mdl import Case  # ADD THIS IMPORT
+from app.models.client_mdl import Client  # ADD THIS IMPORT
 from app.models import db 
-# You need to import your Case/Client models here
-# from app.models.case_mdl import Case 
-# from app.models.client_mdl import Client 
-# from app.models.consultation_mdl import Consultation
 from app.services.document_service import DocumentService
 from sqlalchemy import or_
 import os
@@ -63,14 +61,20 @@ def documents_page():
                 else:
                     doc.context_name = "No Party Listed"
 
-        # 2. HANDLE CASES (Assumes you have a Case model linked to Client)
+        # 2. HANDLE CASES - FIXED WITH ACTUAL CASE MODEL
         elif doc.parent_type == 'case':
-            # EXAMPLE LOGIC - Adjust based on your actual Case model
-            # case = Case.query.get(doc.parent_id)
-            # if case and case.client:
-            #     doc.context_name = f"{case.client.first_name} {case.client.last_name}"
-            #     doc.context_ref = f"Case #{case.case_number}"
-            pass # Remove this pass when you uncomment above
+            case = Case.query.get(doc.parent_id)
+            if case:
+                doc.context_ref = f"Case #{case.case_number}"
+                
+                # Get client name from case
+                if case.client:
+                    doc.context_name = f"{case.client.client_first_name} {case.client.client_last_name}"
+                else:
+                    doc.context_name = case.title  # Fallback to case title if no client
+            else:
+                doc.context_name = "Deleted Case"
+                doc.context_ref = f"ID: {doc.parent_id}"
 
         # 3. HANDLE CONSULTATIONS
         elif doc.parent_type == 'consultation':
@@ -81,46 +85,17 @@ def documents_page():
 
         # 4. HANDLE DIRECT CLIENT FILES
         elif doc.parent_type == 'client':
-            # client = Client.query.get(doc.parent_id)
-            # if client:
-            #     doc.context_name = f"{client.first_name} {client.last_name}"
-            pass
+            client = Client.query.get(doc.parent_id)
+            if client:
+                doc.context_name = f"{client.first_name} {client.last_name}"
+                doc.context_ref = "Client File"
             
     return render_template('documents_page.html', 
                          documents=documents, 
                          current_filter=document_type,
                          search_term=search_term)
 
- # Group documents by notarial entry for grouped view
-    if view_mode == 'grouped' and (document_type == 'all' or document_type == 'notarial_entry'):
-        grouped_documents = {}
-        for doc in documents:
-            if doc.parent_type == 'notarial_entry':
-                entry_id = doc.parent_id
-                if entry_id not in grouped_documents:
-                    # Get entry details for the group header
-                    entry = NotarialEntry.query.get(entry_id)
-                    grouped_documents[entry_id] = {
-                        'entry': entry,
-                        'documents': [],
-                        'party_name': doc.context_name if hasattr(doc, 'context_name') else "Unknown"
-                    }
-                grouped_documents[entry_id]['documents'].append(doc)
-        
-        return render_template('documents_page.html', 
-                             documents=documents,
-                             grouped_documents=grouped_documents,
-                             current_filter=document_type,
-                             search_term=search_term,
-                             entry_filter=entry_filter,
-                             view_mode=view_mode)
-    
-    return render_template('documents_page.html', 
-                         documents=documents, 
-                         current_filter=document_type,
-                         search_term=search_term,
-                         entry_filter=entry_filter,
-                         view_mode=view_mode)
+# ... rest of your routes remain the same
 
 
 @documents_bp.route('/notarial-entry/<int:entry_id>')

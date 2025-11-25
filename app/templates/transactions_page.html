@@ -8,70 +8,62 @@
             <p>Manage Transactions</p>
         </div>
 
-        <div class="dashboard-actions"
-            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
-            <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="search-bar__input" type="text" placeholder="Search transactions, clients...">
+        <div style="display: flex; justify-content: space-between; gap: 12px;">
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Total Services</span>
+                    <span class="data-card__value">{{ transactions|length }}</span>
+                </div>
+                <div class="data-card__icon data-card__icon--blue"></div>
             </div>
 
-            <!-- <a href="{{ url_for('transaction.new_transaction_form')}}" class="btn btn-primary">
-                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>c
-                New Legal Service
-            </a> -->
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Pending Approval</span>
+                    <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto', 'Pending
+                        Approval')|list|length }}</span>
+                </div>
+                <div class="data-card__icon data-card__icon--gold"></div>
+            </div>
+
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Approved</span>
+                    <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto',
+                        'Approved')|list|length }}</span>
+                </div>
+                <div class="data-card__icon data-card__icon--green"></div>
+            </div>
+
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Completed</span>
+                    <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto',
+                        'Completed')|list|length }}</span>
+                </div>
+                <div class="data-card__icon data-card__icon--purple"></div>
+            </div>
         </div>
+
+
     </header>
 
-    <!-- Status Summary Cards -->
-    <section class="dashboard-cards">
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Total Services</span>
-                <span class="data-card__value">{{ transactions|length }}</span>
-            </div>
-            <div class="data-card__icon data-card__icon--blue"></div>
-        </div>
 
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Pending Approval</span>
-                <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto', 'Pending
-                    Approval')|list|length }}</span>
-            </div>
-            <div class="data-card__icon data-card__icon--gold"></div>
-        </div>
-
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Approved</span>
-                <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto',
-                    'Approved')|list|length }}</span>
-            </div>
-            <div class="data-card__icon data-card__icon--green"></div>
-        </div>
-
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Completed</span>
-                <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto',
-                    'Completed')|list|length }}</span>
-            </div>
-            <div class="data-card__icon data-card__icon--purple"></div>
-        </div>
-    </section>
 
     <section class="content-section">
         <div class="panel-card">
 
-            <div class="filter-buttons mb-4">
+            <div class="filter-buttons mb-4" style="display: flex; justify-content: space-between;">
+
+                <div class="search-bar">
+                    <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input class="search-bar__input" type="text" placeholder="Search transactions, clients...">
+                </div>
                 <div class="btn-group" role="group" aria-label="Document filters">
                     <button type="button" class="btn btn-outline-primary active" data-filter="all">
                         All
@@ -95,7 +87,7 @@
                 </div> -->
 
             <div class="table-wrapper">
-                <table class="table document-table">
+                <table class="table">
                     <colgroup>
                         <col class="short">
                         <col class="medium">

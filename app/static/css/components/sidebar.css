@@ -1,7 +1,7 @@
 :root {
     --sidebar-width: 230px; /* Reduced from 260px */
     --color-royal-blue: #1D3557; /* Royal Blue */
-    --color-gold: #fbbf24; /* Gold */
+    --color-gold: #ecc56f; /* Gold */
     --color-text-dark: #374151;
     --color-text-gray: #6b7280;
     --color-bg-white: #ffffff;
@@ -23,7 +23,7 @@ body {
     left: 0;
     height: 100%;
     width: var(--sidebar-width);
-    background-color: var(--color-bg-white);
+    background-color: var(--color-royal-blue);
     padding: 20px 15px; /* Reduced padding */
     border-right: 1px solid #e5e7eb; /* Separation line */
     z-index: 1000;
@@ -45,7 +45,7 @@ body {
 .sidebar-header h2 {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-gold);
     margin: 0 0 0 12px;
 }
 
@@ -68,7 +68,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: var(--color-text-gray);
+    color: var(--color-hover-gray);
     font-weight: 500;
     padding: 10px 12px;
     border-radius: 8px; /* Rounded corners like the image */
@@ -94,9 +94,13 @@ body {
     width: 20px;
     height: 20px;
     /* Default dark gray filter for icons */
-    filter: invert(44%) sepia(8%) saturate(683%) hue-rotate(180deg) brightness(93%) contrast(88%);
     transition: filter 0.2s;
 }
+
+
+
+
+
 
 /* --- HOVER STATE --- */
 .sidebar-links li a:hover, 
@@ -107,15 +111,11 @@ body {
 
 /* --- ACTIVE STATE (The Gold & Blue) --- */
 .sidebar-links li a.active {
-    background-color: var(--color-royal-blue);
-    color: var(--color-gold); /* Gold Text */
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    background-color: var(--color-gold);
+    color: var(--color-royal-blue); /* Gold Text */
 }
 
-.sidebar-links li a.active img {
-    /* Filter to turn the icon Gold */
-    filter: invert(80%) sepia(35%) saturate(1000%) hue-rotate(359deg) brightness(101%) contrast(104%);
-}
+
 
 /* --- SUBMENU --- */
 .submenu-toggle {
@@ -157,7 +157,7 @@ body {
     margin-top: auto;
     position: relative;
     padding-top: 15px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--color-text-gray)
 }
 
 .avatar-btn {
@@ -192,7 +192,7 @@ body {
 .user-name {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-hover-gray);
 }
 
 .user-role {
@@ -239,7 +239,6 @@ body {
 /* This ensures your main content is pushed over correctly */
 .page-container {
     margin-left: var(--sidebar-width);
-    padding: 30px;
     transition: margin-left 0.3s ease;
 }
 

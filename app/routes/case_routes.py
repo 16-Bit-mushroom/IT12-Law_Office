@@ -20,8 +20,11 @@ def list_cases():
 def create_case():
     """Create a new case"""
     if request.method == 'GET':
-        clients = get_all_clients()
-        return render_template('cases/create.html', clients=clients)
+        clients = get_all_clients()  # Get all clients for dropdown
+        pre_select_client_id = request.args.get('pre_select_client_id', type=int)
+        return render_template('cases/create.html', 
+                             clients=clients,
+                             pre_select_client_id=pre_select_client_id)
     
     # Handle POST request
     try:
@@ -31,7 +34,10 @@ def create_case():
                    request.form.get('client_id')]):
             flash('Title, engagement date, and client are required!', 'error')
             clients = get_all_clients()
-            return render_template('cases/create.html', clients=clients)
+            pre_select_client_id = request.args.get('pre_select_client_id', type=int)
+            return render_template('cases/create.html', 
+                                 clients=clients,
+                                 pre_select_client_id=pre_select_client_id)
         
         # Prepare case data
         case_data = {
@@ -53,7 +59,10 @@ def create_case():
     except Exception as e:
         flash(f'Error creating case: {str(e)}', 'error')
         clients = get_all_clients()
-        return render_template('cases/create.html', clients=clients)
+        pre_select_client_id = request.args.get('pre_select_client_id', type=int)
+        return render_template('cases/create.html', 
+                             clients=clients,
+                             pre_select_client_id=pre_select_client_id)
 
 @case_bp.route('/<int:case_id>')
 @login_required

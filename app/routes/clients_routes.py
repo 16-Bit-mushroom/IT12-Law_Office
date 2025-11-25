@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from app.services.client_service import add_client, get_all_clients, get_client_by_email
+from app.models.client_mdl import Client
+from app import db
 
 clients_bp = Blueprint('clients', __name__, url_prefix='/clients')
 
@@ -38,12 +40,25 @@ def submit_new_client():
         new_client = add_client(address, email, phone, role, notes, first_name, last_name)
         flash(f'Client {first_name} {last_name} added successfully.', 'success')
         
-
-        return redirect(url_for('case_logs.new_case_form', pre_select_client_id=new_client.id))
-
+        # Redirect to case creation with pre-selected client
+        return redirect(url_for('case.create_case', pre_select_client_id=new_client.id))
         
     except Exception as e:
         flash(f'An error occurred while adding the client: {e}', 'error')
         # Ensure we keep the return_to parameter if there is an error so they don't lose their place
         return_to = request.args.get('return_to', '')
         return redirect(url_for('clients.new_client_form', return_to=return_to))
+    
+
+@clients_bp.route('/api/clients/<int:client_id>')
+@login_required
+def get_client(client_id):
+    """API endpoint to get client details"""
+    client = Client.query.get(client_id)
+    if client:
+        return jsonify({
+            'id': client.id,
+            'full_name': f"{client.first_name} {client.last_name}",
+            'email': client.email
+        })
+    return jsonify(None)

@@ -9,34 +9,12 @@
             <p>View and manage all legal cases and clients.</p>
         </div>
 
-        <div class="dashboard-actions"
-            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
-            <a style="font-size: 20px; align-self: center; text-decoration: none;"
-                href="{{ url_for('clients.clients_page') }}">View Clients</a>
+        <div style="display: flex; gap: 12px;">
 
-            <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="search-bar__input" type="text" placeholder="Search cases, clients, violations...">
-            </div>
+                    <a style="font-size: 20px; align-self: center; text-decoration: none;"
+            href="{{ url_for('clients.clients_page') }}">View Clients</a>
 
-            <a href="{{ url_for('case.create_case') }}" class="btn btn-primary">
-                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                New Case
-            </a>
-        </div>
-    </header>
-
-    <section class="dashboard-cards">
-        <div class="data-card">
+        <div class="data-card data-card--sm">
             <div class="data-card__info">
                 <span class="data-card__title">Total Cases</span>
                 <span class="data-card__value">{{ cases|length }}</span>
@@ -44,7 +22,7 @@
             <div class="data-card__icon data-card__icon--blue"></div>
         </div>
 
-        <div class="data-card">
+        <div class="data-card data-card--sm">
             <div class="data-card__info">
                 <span class="data-card__title">Active Cases</span>
                 <span class="data-card__value">
@@ -54,7 +32,7 @@
             <div class="data-card__icon data-card__icon--gold"></div>
         </div>
 
-        <div class="data-card">
+        <div class="data-card data-card--sm">
             <div class="data-card__info">
                 <span class="data-card__title">Completed</span>
                 <span class="data-card__value">
@@ -63,10 +41,41 @@
             </div>
             <div class="data-card__icon data-card__icon--green"></div>
         </div>
-    </section>
+
+        </div>
+
+
+
+
+    </header>
+
+
 
     <section class="dashboard-panels-bottom dashboard-panels-bottom--single">
         <div class="panel-card" style="width: 100%;">
+            <div class="dashboard-actions"
+                style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+
+
+                <div class="search-bar">
+                    <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input class="search-bar__input" type="text" placeholder="Search cases, clients, violations...">
+                </div>
+
+                <a href="{{ url_for('case.create_case') }}" class="btn btn-primary">
+                    <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Case
+                </a>
+            </div>
             <div class="table-wrapper panel-card__body">
                 <table class="table client-table">
                     <colgroup>

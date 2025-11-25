@@ -17,7 +17,6 @@
     justify-content: space-between; /* Pushes the title/info to the left and search to the right */
     align-items: center; /* Vertically centers items */
     margin-bottom: 24px; /* Consistent spacing below the header */
-    padding-bottom: 12px; /* Adds a bit of padding at the bottom of the header content */
     border-bottom: 1px solid var(--color-border-light); /* Adds a separating line */
 }
 

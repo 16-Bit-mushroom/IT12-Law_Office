@@ -13,7 +13,7 @@
     align-items: center;
     background-color: var(--color-bg-search);
     border-radius: var(--border-radius-s);
-    padding: 8px 12px;
+    padding-inline: 8px;
     max-width: 500px;
 
 }

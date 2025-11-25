@@ -8,90 +8,93 @@
             <p>Official notarial register - All notarial acts recorded chronologically</p>
         </div>
 
-        <div class="dashboard-actions"
-            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
-            <div class="search-bar">
-                <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="search-bar__input" type="text" placeholder="Search entries, clients, documents...">
+        <div style="display: flex; gap: 12px;">
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Total Entries</span>
+                    <span class="data-card__value">{{ entries|length }}</span>
+                </div>
+                <div class="data-card__icon data-card__icon--blue"></div>
             </div>
 
-            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entryModal">
-                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                New Manual Entry
-            </a>
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">This Month</span>
+                    <span class="data-card__value">
+                        {% set current_month = [] %}
+                        {% for entry in entries %}
+                        {% if entry.not_date.month == now.month and entry.not_date.year == now.year %}
+                        {% if current_month.append(1) %}{% endif %}
+                        {% endif %}
+                        {% endfor %}
+                        {{ current_month|length }}
+                    </span>
+                </div>
+                <div class="data-card__icon data-card__icon--gold"></div>
+            </div>
+
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Signed in Book</span>
+                    <span class="data-card__value">
+                        {% set signed_count = [] %}
+                        {% for entry in entries %}
+                        {% if entry.physical_book_signed %}
+                        {% if signed_count.append(1) %}{% endif %}
+                        {% endif %}
+                        {% endfor %}
+                        {{ signed_count|length }}
+                    </span>
+                </div>
+                <div class="data-card__icon data-card__icon--green"></div>
+            </div>
+
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Awiting Signature</span>
+                    <span class="data-card__value">
+                        {% set unsigned_count = [] %}
+                        {% for entry in entries %}
+                        {% if not entry.physical_book_signed %}
+                        {% if unsigned_count.append(1) %}{% endif %}
+                        {% endif %}
+                        {% endfor %}
+                        {{ unsigned_count|length }}
+                    </span>
+                </div>
+                <div class="data-card__icon data-card__icon--purple"></div>
+            </div>
         </div>
+
+
     </header>
 
-    <!-- Status Summary Cards -->
-    <section class="dashboard-cards">
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Total Entries</span>
-                <span class="data-card__value">{{ entries|length }}</span>
-            </div>
-            <div class="data-card__icon data-card__icon--blue"></div>
-        </div>
 
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">This Month</span>
-                <span class="data-card__value">
-                    {% set current_month = [] %}
-                    {% for entry in entries %}
-                    {% if entry.not_date.month == now.month and entry.not_date.year == now.year %}
-                    {% if current_month.append(1) %}{% endif %}
-                    {% endif %}
-                    {% endfor %}
-                    {{ current_month|length }}
-                </span>
-            </div>
-            <div class="data-card__icon data-card__icon--gold"></div>
-        </div>
-
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Signed in Book</span>
-                <span class="data-card__value">
-                    {% set signed_count = [] %}
-                    {% for entry in entries %}
-                    {% if entry.physical_book_signed %}
-                    {% if signed_count.append(1) %}{% endif %}
-                    {% endif %}
-                    {% endfor %}
-                    {{ signed_count|length }}
-                </span>
-            </div>
-            <div class="data-card__icon data-card__icon--green"></div>
-        </div>
-
-        <div class="data-card data-card--sm">
-            <div class="data-card__info">
-                <span class="data-card__title">Awiting Signature</span>
-                <span class="data-card__value">
-                    {% set unsigned_count = [] %}
-                    {% for entry in entries %}
-                    {% if not entry.physical_book_signed %}
-                    {% if unsigned_count.append(1) %}{% endif %}
-                    {% endif %}
-                    {% endfor %}
-                    {{ unsigned_count|length }}
-                </span>
-            </div>
-            <div class="data-card__icon data-card__icon--purple"></div>
-        </div>
-    </section>
 
     <section class="content-section">
         <div class="panel-card">
+
+            <div class="dashboard-actions"
+                style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+                <div class="search-bar">
+                    <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input class="search-bar__input" type="text" placeholder="Search entries, clients, documents...">
+                </div>
+
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entryModal">
+                    <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Entry
+                </a>
+            </div>
             <div class="table-wrapper">
                 <table class="table document-table">
                     <colgroup>
@@ -99,8 +102,7 @@
                         <col class="medium">
                         <col class="medium">
                         <col class="long">
-                        <col class="long">
-                        <col class="medium">
+
                         <col class="medium">
                         <col class="short">
                         <col class="actions">
@@ -115,8 +117,7 @@
                             <th data-sort-key="series">Series Of</th>
                             <th data-sort-key="title">Title/Description</th>
                             <th data-sort-key="parties">Parties</th>
-                            <th data-sort-key="witness">Witnesses</th>
-                            <th data-sort-key="not_act_type">Notarial Act Type</th>
+
                             <th>Date</th>
                             <th>Payment Status</th>
                             <th>Actions</th>
@@ -139,16 +140,21 @@
                             </td>
                             <td>
                                 <div class="clickable-list">
+
+                                    <!-- Instead of button text, show party names -->
                                     <button type="button" class="btn btn-sm btn-outline-primary view-parties-btn"
-                                        data-entry-id="{{ entry.id }}" data-bs-toggle="modal"
                                         data-bs-target="#partiesModal">
-                                        View Parties ({{ entry.parties|length }})
+
+                                        {% for party in entry.parties %}
+                                        {{ party.party_name }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
                                     </button>
+
+                                    <!-- Tooltip (unchanged) -->
                                     <div class="list-tooltip">
                                         {% for party in entry.parties %}
                                         <div class="party-item">
-                                            <strong>{{ party.party_name }}</strong>
-                                            <br>
+                                            <strong>{{ party.party_name }}</strong><br>
                                             <small class="text-muted">{{ party.party_address }}</small>
                                             {% if party.id_type %}
                                             <br>
@@ -159,39 +165,12 @@
                                         <hr class="my-1">{% endif %}
                                         {% endfor %}
                                     </div>
+
                                 </div>
                             </td>
-                            <td>
-                                <div class="clickable-list">
-                                    {% if entry.witnesses|length > 0 %}
-                                    <button type="button" class="btn btn-sm btn-outline-secondary view-witnesses-btn"
-                                        data-entry-id="{{ entry.id }}" data-bs-toggle="modal"
-                                        data-bs-target="#witnessesModal">
-                                        View Witnesses ({{ entry.witnesses|length }})
-                                    </button>
-                                    <div class="list-tooltip">
-                                        {% for witness in entry.witnesses %}
-                                        <div class="witness-item">
-                                            <strong>{{ witness.witness_name }}</strong>
-                                            {% if witness.witness_address %}
-                                            <br>
-                                            <small class="text-muted">{{ witness.witness_address }}</small>
-                                            {% endif %}
-                                        </div>
-                                        {% if not loop.last %}
-                                        <hr class="my-1">{% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    {% else %}
-                                    <span class="text-muted">No witnesses</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                <span class="status-tag status-tag--{{ entry.not_type_act|lower|replace(' ', '-') }}">
-                                    {{ entry.not_type_act }}
-                                </span>
-                            </td>
+
+
+
                             <td>
                                 <div>{{ entry.not_date.strftime('%Y-%m-%d') }}</div>
                                 <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>
@@ -250,7 +229,8 @@
                                     {% endif %}
 
                                     <!-- Edit Button -->
-                                    <a href="#" class="btn-action btn-action--secondary" style="background-color: rgb(99, 131, 168); color: white;" title="Edit"
+                                    <a href="#" class="btn-action btn-action--secondary"
+                                        style="background-color: rgb(99, 131, 168); color: white;" title="Edit"
                                         data-bs-toggle="modal" data-bs-target="#entryModal"
                                         onclick="loadEntryData('{{ entry.id }}')">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -266,7 +246,8 @@
                                         action="{{ url_for('notarial_entries.delete_entry', entry_id=entry.id) }}"
                                         style="display: inline;"
                                         onsubmit="return confirm('Are you sure you want to delete this entry?');">
-                                        <button type="submit" class="btn-action btn-action--danger" style="background-color: #dc3545; color: white;" title="Delete">
+                                        <button type="submit" class="btn-action btn-action--danger"
+                                            style="background-color: #dc3545; color: white;" title="Delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">

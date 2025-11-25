@@ -6,6 +6,7 @@
     width: 100%;
     border-collapse: collapse;
     table-layout: auto; /* Flexible column widths based on content */
+    margin-top: 16px
 }
 
 /* --- Table Header --- */
@@ -103,7 +104,7 @@
 /* Ensure the input is styled correctly for the Action Bar */
 .search-bar__input {
     width: 100%;
-    padding: 10px 10px 10px 40px; /* Extra padding on left for icon */
+    padding: 10px 10px 10px 16px; /* Extra padding on left for icon */
     border: 1px solid var(--color-border-light);
     border-radius: 8px;
     font-size: 0.95rem;

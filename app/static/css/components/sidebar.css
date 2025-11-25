@@ -1,121 +1,258 @@
-
-.sidebar-header img {
-    width: 42px;
+:root {
+    --sidebar-width: 230px; /* Reduced from 260px */
+    --color-royal-blue: #1D3557; /* Royal Blue */
+    --color-gold: #fbbf24; /* Gold */
+    --color-text-dark: #374151;
+    --color-text-gray: #6b7280;
+    --color-bg-white: #ffffff;
+    --color-hover-gray: #f3f4f6;
 }
 
 body {
     min-height: 100vh;
-    background-color: aliceblue;
+    background-color: #f9fafb; /* Light gray body background for contrast with white sidebar */
+    margin: 0;
 }
 
+/* --- SIDEBAR LAYOUT --- */
 .sidebar {
     display: flex;
     position: fixed;
     flex-direction: column;
-    justify-content: space-between;
     top: 0;
     left: 0;
     height: 100%;
-    width: 260px;
-    background-color: var(--color-card-blue);
-    padding: 25px 20px;
-
+    width: var(--sidebar-width);
+    background-color: var(--color-bg-white);
+    padding: 20px 15px; /* Reduced padding */
+    border-right: 1px solid #e5e7eb; /* Separation line */
+    z-index: 1000;
 }
 
+/* --- HEADER --- */
 .sidebar-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 30px;
-    
+    padding: 0 10px;
+}
+
+.sidebar-header img {
+    width: 32px; /* Smaller logo */
+    height: auto;
 }
 
 .sidebar-header h2 {
-    font-size: 1.25 rem;
-    font-weight: 600;
-    color: var(--color-card-gold);
-    margin-left: 23px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0 12px;
 }
 
-
-.sidebar-links h4 {
-    color:  white;
-    font-weight: 400px;
-    margin: 10px 0;
-    white-space: nowrap;
-}
-
+/* --- LINKS LIST --- */
 .sidebar-links {
     list-style: none;
-    margin-top: 20;
-    padding-left: 0;
-}
-
-
-.sidebar-links li a {
-    display: flex;
-    align-items: center;
-    gap: 0 15px;
-    color: white;
-    font-weight: 300;
-    padding: 15px 5px;
-    white-space: nowrap;
-    text-decoration: none;
-    
-}
-
-/* Footer */
-.sidebar-footer {
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    position: relative; /* for dropdown positioning */
-    margin-top: auto;
+    gap: 8px; /* Spacing between links */
 }
 
-/* Avatar button */
-.avatar-btn {
+.sidebar-links li {
+    position: relative;
+}
+
+.sidebar-links li a, 
+.submenu-toggle {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    color: var(--color-text-gray);
+    font-weight: 500;
+    padding: 10px 12px;
+    border-radius: 8px; /* Rounded corners like the image */
+    text-decoration: none;
+    transition: all 0.2s ease;
+    width: 100%;
     background: none;
     border: none;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    padding: 10px;
-    font-size: 0.95rem;
-}
-
-.avatar-btn img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-/* Dropdown menu */
-.avatar-dropdown {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    bottom: 60px; /* adjust so it pops above avatar */
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--color-bg-primary);
-    border-radius: 8px;
-    padding: 10px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    min-width: 160px;
-    z-index: 100;
-}
-
-.avatar-dropdown a {
-    padding: 8px 20px;
-    color: var(--color-card-blue);
-    text-decoration: none;
     font-size: 0.9rem;
 }
 
+/* Icons styling */
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar-links li a img,
+.submenu-toggle img {
+    width: 20px;
+    height: 20px;
+    /* Default dark gray filter for icons */
+    filter: invert(44%) sepia(8%) saturate(683%) hue-rotate(180deg) brightness(93%) contrast(88%);
+    transition: filter 0.2s;
+}
+
+/* --- HOVER STATE --- */
+.sidebar-links li a:hover, 
+.submenu-toggle:hover {
+    background-color: var(--color-hover-gray);
+    color: #111827;
+}
+
+/* --- ACTIVE STATE (The Gold & Blue) --- */
+.sidebar-links li a.active {
+    background-color: var(--color-royal-blue);
+    color: var(--color-gold); /* Gold Text */
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.sidebar-links li a.active img {
+    /* Filter to turn the icon Gold */
+    filter: invert(80%) sepia(35%) saturate(1000%) hue-rotate(359deg) brightness(101%) contrast(104%);
+}
+
+/* --- SUBMENU --- */
+.submenu-toggle {
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.submenu-toggle .chev {
+    margin-left: auto;
+    font-size: 0.8rem;
+}
+
+.has-submenu.show .submenu {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+.submenu {
+    display: none;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 4px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+}
+
+.submenu li a {
+    padding-left: 44px; /* Indent sub-items */
+    font-size: 0.85rem;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- FOOTER (AVATAR) --- */
+.sidebar-footer {
+    margin-top: auto;
+    position: relative;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.avatar-btn:hover {
+    background-color: var(--color-hover-gray);
+}
+
+.avatar-btn img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: var(--color-text-gray);
+}
+
+/* Dropdown */
+.avatar-dropdown {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    margin-bottom: 10px;
+    flex-direction: column;
+    z-index: 1001;
+}
+
+.avatar-dropdown.show {
+    display: flex;
+}
+
+.avatar-dropdown a {
+    padding: 10px;
+    color: #374151;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
 .avatar-dropdown a:hover {
-    background-color: rgba(255,255,255,0.1);
-    border-radius: 5px;
+    background-color: #f3f4f6;
+    color: var(--color-royal-blue);
+}
+
+/* --- CONTENT OFFSET --- */
+/* This ensures your main content is pushed over correctly */
+.page-container {
+    margin-left: var(--sidebar-width);
+    padding: 30px;
+    transition: margin-left 0.3s ease;
+}
+
+/* Responsive adjustment for very small screens */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .page-container {
+        margin-left: 0;
+    }
 }

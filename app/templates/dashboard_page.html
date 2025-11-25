@@ -2,14 +2,107 @@
 
 {% block content %}
 
+<style>
+    /* --- Page Specific Overrides --- */
+
+    /* 1. Center the Search Bar in the Header */
+    .dashboard-header {
+        justify-content: center; /* Centers content */
+        position: relative;
+    }
+    
+    .header-content-left {
+        position: absolute;
+        left: 0;
+    }
+
+    .search-bar {
+        width: 100%;
+        max-width: 600px; /* Make it wider as requested */
+    }
+
+    /* 2. Quick Actions Grid */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .btn-action {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        background: var(--color-bg-primary, #f9fafb);
+        border: 1px solid var(--color-border-light, #e5e7eb);
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--color-text-primary, #111827);
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-color: var(--color-primary, #007bff);
+    }
+
+    /* 3. Smarter Deadlines (Traffic Light System) */
+    .deadline-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+    .indicator-red { background-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+    .indicator-orange { background-color: #f97316; }
+    .indicator-blue { background-color: #3b82f6; }
+
+    /* 4. Full Width Span for Activity Feed */
+    .panel-full-width {
+        grid-column: 1 / -1; /* Spans all columns */
+    }
+
+    /* 5. Enhanced Table Styles for Docs Requiring Action */
+    .action-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .action-table th {
+        text-align: left;
+        color: #6b7280;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+    .action-table td {
+        padding: 12px 0;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .text-sm { font-size: 0.875rem; }
+    .text-muted { color: #6b7280; font-size: 0.75rem; }
+    
+    /* Utility for stacking cards in the right column */
+    .stack-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+</style>
+
 <main class="dashboard-content">
+    
     <header class="dashboard-header">
-
-        <div>
-            <h1>Dashboard <span></span></h1>
-            <p>Welcome back, here's your legal management overview</p>
+        <div class="header-content-left">
+            <h1>Dashboard</h1>
         </div>
-
 
         <div class="search-bar">
             <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
@@ -17,10 +110,8 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input class="search-bar__input" type="text" placeholder="Search documents, clients, cases...">
+            <input class="search-bar__input" type="text" placeholder="Search Clients, Docs, Case #, Transaction ID...">
         </div>
-
-
     </header>
 
     <section class="dashboard-cards">
@@ -28,7 +119,8 @@
         <div class="data-card">
             <div class="data-card__info">
                 <span class="data-card__title">Total Documents</span>
-                <span class="data-card__value">1243</span>
+                <span class="data-card__value">1,243</span>
+                <p class="text-muted" style="margin-top:4px;">5 Missing (Client)</p>
             </div>
             <div class="data-card__icon data-card__icon--blue"></div>
         </div>
@@ -36,117 +128,180 @@
         <div class="data-card">
             <div class="data-card__info">
                 <span class="data-card__title">Pending Review</span>
-                <span class="data-card__value">23</span>
+                <span class="data-card__value">12</span>
+                <p class="text-muted" style="margin-top:4px;">Requires Approval</p>
             </div>
             <div class="data-card__icon data-card__icon--gold"></div>
         </div>
 
         <div class="data-card">
             <div class="data-card__info">
-                <span class="data-card__title">Completed</span>
-                <span class="data-card__value">1198</span>
+                <span class="data-card__title">Unpaid Fees</span>
+                <span class="data-card__value">$4,250</span>
+                <p class="text-muted" style="margin-top:4px;">3 Overdue Invoices</p>
             </div>
             <div class="data-card__icon data-card__icon--green"></div>
+        </div>
+
+        <div class="data-card">
+            <div class="data-card__info">
+                <span class="data-card__title">Open Cases</span>
+                <span class="data-card__value">8</span>
+                <p class="text-muted" style="margin-top:4px;">2 Deadlines < 7 Days</p>
+            </div>
+            <div class="data-card__icon data-card__icon--blue"></div>
         </div>
 
     </section>
 
     <section class="dashboard-panels-bottom">
+        
         <div class="panel-card">
-
             <header class="panel-card__header">
                 <h3 class="panel-card__title">
-                    <svg class="panel-card__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    Recent Documents
+                    Documents Requiring Action
                 </h3>
             </header>
-
             <div class="panel-card__body">
+                <table class="action-table">
+                    <thead>
+                        <tr>
+                            <th>Document / Context</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="text-sm"><strong>Affidavit of Loss</strong></div>
+                                <div class="text-muted">Case #204 (Estill, Chris)</div>
+                            </td>
+                            <td><span class="status-tag status-tag--pending">Review</span></td>
+                            <td><a href="#" style="color: var(--color-primary);">Open &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="text-sm"><strong>Property Deed Transfer</strong></div>
+                                <div class="text-muted">Notarial Entry #9921</div>
+                            </td>
+                            <td><span class="status-tag status-tag--pending">Missing Sig</span></td>
+                            <td><a href="#" style="color: var(--color-primary);">Request &rarr;</a></td>
+                        </tr>
+                         <tr>
+                            <td>
+                                <div class="text-sm"><strong>Tax Declaration 2025</strong></div>
+                                <div class="text-muted">Client Uploaded</div>
+                            </td>
+                            <td><span class="status-tag status-tag--completed">Verify</span></td>
+                            <td><a href="#" style="color: var(--color-primary);">Verify &rarr;</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
+        <div class="stack-container">
+            
+            <div class="panel-card">
+                <header class="panel-card__header" style="margin-bottom: 16px;">
+                    <h3 class="panel-card__title" style="font-size: 1rem;">Quick Actions</h3>
+                </header>
+                <div class="quick-actions-grid">
+                    <a href="#" class="btn-action">
+                        <span>+ Document</span>
+                    </a>
+                    <a href="#" class="btn-action">
+                        <span>+ Case</span>
+                    </a>
+                    <a href="#" class="btn-action">
+                        <span>+ Transaction</span>
+                    </a>
+                    <a href="#" class="btn-action">
+                        <span>+ Consultation</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel-card" style="flex-grow: 1;">
+                <header class="panel-card__header">
+                    <h3 class="panel-card__title">Upcoming Deadlines</h3>
+                </header>
+
+                <div class="panel-card__body">
+                    
+                    <div class="deadline-item">
+                        <div class="deadline-item__header">
+                            <p class="deadline-item__title">
+                                <span class="deadline-indicator indicator-red"></span>
+                                Court Submission
+                            </p>
+                            <span class="deadline-item__days" style="color: #ef4444;">Overdue</span>
+                        </div>
+                        <span class="deadline-item__date">Smith v. Jones</span>
+                    </div>
+                    <hr class="deadline-divider">
+
+                    <div class="deadline-item">
+                        <div class="deadline-item__header">
+                            <p class="deadline-item__title">
+                                <span class="deadline-indicator indicator-orange"></span>
+                                Estate Settlement Fee
+                            </p>
+                            <span class="deadline-item__days">2 Days</span>
+                        </div>
+                        <span class="deadline-item__date">$1,200 Payment Due</span>
+                    </div>
+                    <hr class="deadline-divider">
+
+                    <div class="deadline-item">
+                        <div class="deadline-item__header">
+                            <p class="deadline-item__title">
+                                <span class="deadline-indicator indicator-blue"></span>
+                                Client Consultation
+                            </p>
+                            <span class="deadline-item__days">Nov 12</span>
+                        </div>
+                        <span class="deadline-item__date">Meeting with J. Doe</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card panel-full-width">
+            <header class="panel-card__header">
+                <h3 class="panel-card__title">Recent Activity Feed</h3>
+            </header>
+            <div class="panel-card__body">
                 <div class="document-row">
                     <div class="document-row__info">
-                        <p class="document-row__title">Property Deed Transfer</p>
-                        <span class="document-row__subtitle">Estill, Chris</span>
+                        <p class="document-row__title">Payment Received ($500)</p>
+                        <span class="document-row__subtitle">Transaction #4421 - Consultation Fee</span>
                     </div>
-                    <span class="document-row__date">2025-10-28</span>
-                    <span class="status-tag status-tag--pending">Pending</span>
+                    <span class="document-row__date">10 mins ago</span>
+                    <span class="status-tag status-tag--completed">Finance</span>
                 </div>
-
-                <div class="document-row document-row--highlight">
+                <div class="document-row">
                     <div class="document-row__info">
-                        <p class="document-row__title">Property Deed Transfer</p>
-                        <span class="document-row__subtitle">Quai, JJ</span>
+                        <p class="document-row__title">New Case Created: Rivera vs. State</p>
+                        <span class="document-row__subtitle">Opened by Atty. Santos</span>
                     </div>
-                    <span class="document-row__date">2025-10-26</span>
-                    <span class="status-tag status-tag--completed">Completed</span>
+                    <span class="document-row__date">2 hours ago</span>
+                    <span class="status-tag status-tag--pending">Case</span>
                 </div>
-
+                <div class="document-row">
+                    <div class="document-row__info">
+                        <p class="document-row__title">Notarial Entry #221 Finalized</p>
+                        <span class="document-row__subtitle">Deed of Absolute Sale</span>
+                    </div>
+                    <span class="document-row__date">Yesterday</span>
+                    <span class="status-tag status-tag--completed">Notary</span>
+                </div>
             </div>
         </div>
-        <div class="panel-card">
 
-            <header class="panel-card__header">
-                <h3 class="panel-card__title">
-                    <svg class="panel-card__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    Upcoming Deadlines
-                </h3>
-            </header>
-
-            <div class="panel-card__body">
-
-                <div class="deadline-item">
-                    <div class="deadline-item__header">
-                        <p class="deadline-item__title">Estate Settlement</p>
-                        <span class="deadline-item__days">6d</span>
-                    </div>
-                    <span class="deadline-item__date">Nov 10, 2028</span>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: 90%;"></div>
-                    </div>
-                </div>
-
-                <hr class="deadline-divider">
-
-                <div class="deadline-item">
-                    <div class="deadline-item__header">
-                        <p class="deadline-item__title">Property Deed Transfer</p>
-                        <span class="deadline-item__days">13d</span>
-                    </div>
-                    <span class="deadline-item__date">Nov 10, 2028</span>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: 75%;"></div>
-                    </div>
-                </div>
-
-                <hr class="deadline-divider">
-
-                <div class="deadline-item">
-                    <div class="deadline-item__header">
-                        <p class="deadline-item__title">Smith vs. Jones</p>
-                        <span class="deadline-item__days">21d</span>
-                    </div>
-                    <span class="deadline-item__date">Nov 10, 2028</span>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: 60%;"></div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
     </section>
 </main>
 
-{%endblock  %}
+{%endblock %}

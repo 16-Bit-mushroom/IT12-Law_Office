@@ -7,6 +7,7 @@
     <!-- ✅ Local Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}"> <!-- Ensure sidebar.css is linked -->
     <title>RBJ Law Office</title>
 </head>
 
@@ -18,85 +19,92 @@
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="{{ url_for('static', filename='img/scales-of-justice.svg') }}" alt="logo">
+            <!-- Added specific class for logo coloring if needed -->
+            <img src="{{ url_for('static', filename='img/scales-of-justice.svg') }}" alt="logo" class="logo-img">
             <h2>RBJ Law</h2>
         </div>
 
         <ul class="sidebar-links">
 
-            <li><a href="{{ url_for('dashboard.dashboard_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/dashboard.svg') }}" alt=""></span>Dashboard</a></li>
+            <!-- Added dynamic 'active' class logic -->
+            <li>
+                <a href="{{ url_for('dashboard.dashboard_page') }}" 
+                   class="{{ 'active' if 'dashboard' in request.endpoint else '' }}">
+                    <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/dashboard.svg') }}" alt=""></span>
+                    Dashboard
+                </a>
+            </li>
 
-            <li><a href="{{ url_for('case.list_cases') }}"><span><img
-                            src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>Case Logs</a></li>
+            <li>
+                <a href="{{ url_for('case.list_cases') }}"
+                   class="{{ 'active' if 'case' in request.endpoint else '' }}">
+                    <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/cases.svg') }}" alt=""></span>
+                    Case Logs
+                </a>
+            </li>
 
-            <li><a href="{{ url_for('notarial_entries.notarial_entries_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/book.svg') }}" alt=""></span>Notarial
-                    Entries</a> </li>
+            <li>
+                <a href="{{ url_for('notarial_entries.notarial_entries_page') }}"
+                   class="{{ 'active' if 'notarial' in request.endpoint else '' }}">
+                    <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/book.svg') }}" alt=""></span>
+                    Notarial Entries
+                </a> 
+            </li>
 
-            <!-- <li><a href="{{ url_for('legal_consultation.legal_consultation_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/consult.svg') }}" alt=""></span>Legal
-                    Consultation</a>
-            </li> -->
+            <li>
+                <a href="{{ url_for('documents.documents_page') }}"
+                   class="{{ 'active' if 'documents' in request.endpoint else '' }}">
+                    <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>
+                    Documents
+                </a>
+            </li>
 
-            <li><a href="{{ url_for('documents.documents_page') }}"><span><img
-                            src="{{ url_for('static', filename='img/documents.svg') }}" alt=""></span>Documents</a></li>
+            <li role="none">
+                <a href="{{ url_for('transaction.transactions_page') }}"
+                   class="{{ 'active' if 'transaction' in request.endpoint else '' }}">
+                    <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/transaction.svg') }}" alt=""></span>
+                    Transactions
+                </a>
+            </li>
 
-            <li role="none"><a role="menuitem" href="{{ url_for('transaction.transactions_page') }}">
-                    <span><img src="{{ url_for('static', filename='img/transaction.svg') }}" alt=""></span>Transactions
-                </a></li>
-
-            <!-- REPLACE the four separate links with this block -->
+            <!-- Submenu Example -->
             <li class="has-submenu">
                 <button class="submenu-toggle" aria-expanded="false" aria-haspopup="true">
-                    <span><img src="{{ url_for('static', filename='img/more.svg') }}" alt=""></span>
+                    <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/more.svg') }}" alt=""></span>
                     More
                     <span class="chev" aria-hidden="true">▾</span>
                 </button>
 
                 <ul class="submenu" role="menu" aria-label="More links">
-
-
-                    <!-- <li role="none"><a role="menuitem" href="{{ url_for('clients.clients_page') }}">
-                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/clients.svg') }}" alt=""></span>Clients
-                        </a></li> -->
-
-
                     <li role="none"><a role="menuitem" href="#">
-                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/service.svg') }}"
-                                    alt=""></span>Services
+                            <span class="icon-wrapper"><img style="width: 24px;" src="{{ url_for('static', filename='img/service.svg') }}" alt=""></span>Services
                         </a></li>
 
                     <li role="none"><a role="menuitem" href="{{ url_for('payments.payments_page') }}">
-                            <span><img style="width: 28px;" src="{{ url_for('static', filename='img/payments.svg') }}"
-                                    alt=""></span>Payments
+                            <span class="icon-wrapper"><img style="width: 24px;" src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments
                         </a></li>
                 </ul>
             </li>
-            </li>
-
-
 
         </ul>
 
         <div class="sidebar-footer">
             <button class="avatar-btn" id="avatarBtn">
                 <img src="{{ url_for('static', filename='img/avatar.svg') }}" alt="User Avatar">
-                <span>Atty. Chris</span>
+                <div class="user-info">
+                    <span class="user-name">Atty. Chris</span>
+                    <span class="user-role">Administrator</span>
+                </div>
             </button>
             <div class="avatar-dropdown" id="avatarDropdown">
                 <a href="{{ url_for('settings.settings_page') }}">Settings</a>
-                <li><a href="{{ url_for('auth.logout') }}"><span><img>Log Out</a>
+                <a href="{{ url_for('auth.logout') }}">Log Out</a>
             </div>
         </div>
-
-
 
     </aside>
 
     <div class="page-container">
-
-        <!-- Add this to your base.html where flash messages should appear -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flash-messages">
@@ -110,7 +118,6 @@
         {% endif %}
         {% endwith %}
         {% block content %}
-        <!-- Page content (from child templates) goes here -->
         {% endblock %}
     </div>
 
@@ -120,56 +127,32 @@
     const avatarBtn = document.getElementById('avatarBtn');
     const avatarDropdown = document.getElementById('avatarDropdown');
 
-    avatarBtn.addEventListener('click', () => {
-        avatarDropdown.style.display = avatarDropdown.style.display === 'flex' ? 'none' : 'flex';
-    });
+    if(avatarBtn) {
+        avatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            avatarDropdown.classList.toggle('show');
+        });
+    }
 
     // Close dropdown if clicked outside
     document.addEventListener('click', (e) => {
-        if (!avatarBtn.contains(e.target) && !avatarDropdown.contains(e.target)) {
-            avatarDropdown.style.display = 'none';
+        if (avatarDropdown && avatarBtn && !avatarBtn.contains(e.target) && !avatarDropdown.contains(e.target)) {
+            avatarDropdown.classList.remove('show');
         }
     });
 
-    // Submenu toggle for touch / click devices
+    // Submenu toggle
     document.addEventListener('DOMContentLoaded', () => {
         const submenuToggles = document.querySelectorAll('.submenu-toggle');
 
         submenuToggles.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // prevent link-like behavior if you later convert to <a>
                 e.preventDefault();
-
                 const li = btn.closest('.has-submenu');
-                const isShown = li.classList.toggle('show');    // toggles .show which CSS uses
-                btn.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+                li.classList.toggle('show');
+                btn.setAttribute('aria-expanded', li.classList.contains('show'));
             });
-        });
-
-        // Close any open submenu when clicking outside
-        document.addEventListener('click', (e) => {
-            submenuToggles.forEach(btn => {
-                const li = btn.closest('.has-submenu');
-                if (!li.contains(e.target)) {
-                    li.classList.remove('show');
-                    btn.setAttribute('aria-expanded', 'false');
-                }
-            });
-        });
-
-        // Close with Escape key for accessibility
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                submenuToggles.forEach(btn => {
-                    const li = btn.closest('.has-submenu');
-                    li.classList.remove('show');
-                    btn.setAttribute('aria-expanded', 'false');
-                });
-            }
         });
     });
-
 </script>
-
-
 </html>

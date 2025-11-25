@@ -20,7 +20,7 @@ class Document(db.Model):
     document_status = db.Column(db.String(50), default='Pending', nullable=False) 
     
     # Tracks where the physical copy of the document is stored
-    physical_location = db.Column(db.String(255), nullable=True) 
+    # physical_location = db.Column(db.String(255), nullable=True) 
     # ===============================
     
     # Parent reference (polymorphic)

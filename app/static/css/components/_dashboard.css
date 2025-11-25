@@ -1,99 +1,100 @@
 /* app/static/css/pages/_dashboard.css */
 
 .page-container {
-    margin-left: 260px;
     min-height: 100vh;
+    /* Reduced top/bottom padding for smaller screens */
+    padding: 1.5rem; 
 }
 
-/* This styles the main content area */
-.dashboard-content {
-    padding: 24px;
-}
-
-/* *** NEW DASHBOARD HEADER LAYOUT *** */
-/* Make the header a flex container to align the title/info and the search bar */
+/* --- Dashboard Header --- */
 .dashboard-header {
     display: flex;
-    justify-content: space-between; /* Pushes the title/info to the left and search to the right */
-    align-items: center; /* Vertically centers items */
-    margin-bottom: 24px; /* Consistent spacing below the header */
-    padding-bottom: 12px; /* Adds a bit of padding at the bottom of the header content */
-    border-bottom: 1px solid var(--color-border-light); /* Adds a separating line */
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border-light);
 }
 
 .dashboard-header h1 {
-    /* Reset margins that might conflict with flex layout */
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem; /* Reduced from 1.8rem for compactness */
     color: var(--color-text-primary);
+    font-weight: 700;
 }
 
 .dashboard-header p {
-    margin-top: 4px;
+    margin-top: 2px;
+    font-size: 0.9rem;
     color: var(--color-text-secondary);
 }
 
-.dashboard-header .info-text {
-    /* Wrapper for H1 and P */
-    display: flex;
-    flex-direction: column;
-}
-
-/* This creates the responsive card grid */
+/* --- Dashboard Cards (Top Stats) --- */
 .dashboard-cards {
     display: grid;
-    /* Creates 3 columns on large screens, 2 on medium, 1 on small.
-      Adjust minmax(280px, 1fr) as needed.
-    */
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-block: 24px;
+    /* Adjusted minmax to fit 3 cards better on 1366px screens */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    gap: 16px; /* Reduced gap from 20px */
+    margin-bottom: 20px; /* Reduced spacing */
+    margin-top: 0;
 }
 
-/* app/static/css/pages/_dashboard.css */
-
-/* ... (Your previous dashboard styles like .dashboard-content and .dashboard-cards-top) ... */
-
-
-/* --- Layout for Large Panels (dashboard-panels-bottom) --- */
-.dashboard-panels-bottom {
-    display: grid;
-    /* Creates two columns, each taking one equal fraction (1fr) of the space */
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    /* Space between the two cards */
-    margin-bottom: 24px;
-    margin-top: 24px;
-    /* Space below the panels */
-}
-
-.dashboard-panels-bottom--single {
+/* --- Data Card Styling (If not defined elsewhere, ensuring compactness) --- */
+.data-card {
+    padding: 16px 20px; /* Tighter padding */
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--color-border-light);
+}
+.data-card__title { font-size: 0.85rem; color: var(--color-text-secondary); }
+.data-card__value { font-size: 1.5rem; font-weight: 700; color: var(--color-text-primary); }
 
+/* --- Panel Layout (Bottom Section) --- */
+.dashboard-panels-bottom {
+    margin-top: 0;
 }
 
 .panel-card {
-    background-color: var(--color-bg-secondary);
-    padding: 24px;
-    border-radius: var(--border-radius-m);
-    box-shadow: var(--shadow-light);
+    background-color: white;
+    padding: 15px; /* Remove padding here, we will pad the inner sections */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--color-border-light);
+    overflow: hidden; /* Contains the internal toolbar */
 }
 
-.panel-card__title {
-    font-size: 22px;
+/* --- NEW: Panel Toolbar (Search & Buttons inside Card) --- */
+.panel-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border-light);
+    background-color: #fff;
+    gap: 16px;
 }
 
-/* --- Optional: Responsive Breakpoint --- */
-/* For smaller screens, stack the cards vertically */
-@media (max-width: 992px) {
-    .dashboard-panels-bottom {
-        /* Changes to a single column layout */
-        grid-template-columns: 1fr;
-    }
+/* Ensure the Search Bar fills available space in the toolbar */
+.panel-toolbar .search-bar {
+    flex-grow: 1;
+    max-width: 600px; /* Limit width on huge screens */
+}
+
+.panel-toolbar .search-bar__input {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+}
+
+/* --- Panel Body (Table Container) --- */
+.panel-card__body {
+    padding: 0; /* Let table fill the width */
 }
 
 /* General page setup */
 body {
     background-color: var(--color-bg-primary);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--color-text-primary);
 }

@@ -7,10 +7,11 @@
 
     /* 1. Center the Search Bar in the Header */
     .dashboard-header {
-        justify-content: center; /* Centers content */
+        justify-content: center;
+        /* Centers content */
         position: relative;
     }
-    
+
     .header-content-left {
         position: absolute;
         left: 0;
@@ -18,7 +19,8 @@
 
     .search-bar {
         width: 100%;
-        max-width: 600px; /* Make it wider as requested */
+        max-width: 600px;
+        /* Make it wider as requested */
     }
 
     /* 2. Quick Actions Grid */
@@ -46,7 +48,7 @@
 
     .btn-action:hover {
         background: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         border-color: var(--color-primary, #007bff);
     }
 
@@ -58,13 +60,24 @@
         display: inline-block;
         margin-right: 8px;
     }
-    .indicator-red { background-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
-    .indicator-orange { background-color: #f97316; }
-    .indicator-blue { background-color: #3b82f6; }
+
+    .indicator-red {
+        background-color: #ef4444;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    }
+
+    .indicator-orange {
+        background-color: #f97316;
+    }
+
+    .indicator-blue {
+        background-color: #3b82f6;
+    }
 
     /* 4. Full Width Span for Activity Feed */
     .panel-full-width {
-        grid-column: 1 / -1; /* Spans all columns */
+        grid-column: 1 / -1;
+        /* Spans all columns */
     }
 
     /* 5. Enhanced Table Styles for Docs Requiring Action */
@@ -72,6 +85,7 @@
         width: 100%;
         border-collapse: collapse;
     }
+
     .action-table th {
         text-align: left;
         color: #6b7280;
@@ -80,25 +94,32 @@
         padding-bottom: 12px;
         border-bottom: 2px solid #f3f4f6;
     }
+
     .action-table td {
         padding: 12px 0;
         vertical-align: middle;
         border-bottom: 1px solid #f3f4f6;
     }
-    .text-sm { font-size: 0.875rem; }
-    .text-muted { color: #6b7280; font-size: 0.75rem; }
-    
+
+    .text-sm {
+        font-size: 0.875rem;
+    }
+
+    .text-muted {
+        color: #6b7280;
+        font-size: 0.75rem;
+    }
+
     /* Utility for stacking cards in the right column */
     .stack-container {
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
-
 </style>
 
 <main class="dashboard-content">
-    
+
     <header class="dashboard-header">
         <div class="header-content-left">
             <h1>Dashboard</h1>
@@ -119,8 +140,10 @@
         <div class="data-card">
             <div class="data-card__info">
                 <span class="data-card__title">Total Documents</span>
-                <span class="data-card__value">1,243</span>
-                <p class="text-muted" style="margin-top:4px;">5 Missing (Client)</p>
+                <span class="data-card__value">{{ kpi.total_docs }}</span>
+                <p class="text-muted" style="margin-top:4px;">
+                    {{ kpi.missing_docs }} Missing (Client)
+                </p>
             </div>
             <div class="data-card__icon data-card__icon--blue"></div>
         </div>
@@ -128,7 +151,7 @@
         <div class="data-card">
             <div class="data-card__info">
                 <span class="data-card__title">Pending Review</span>
-                <span class="data-card__value">12</span>
+                <span class="data-card__value">{{ kpi.pending_review }}</span>
                 <p class="text-muted" style="margin-top:4px;">Requires Approval</p>
             </div>
             <div class="data-card__icon data-card__icon--gold"></div>
@@ -137,8 +160,10 @@
         <div class="data-card">
             <div class="data-card__info">
                 <span class="data-card__title">Unpaid Fees</span>
-                <span class="data-card__value">$4,250</span>
-                <p class="text-muted" style="margin-top:4px;">3 Overdue Invoices</p>
+                <span class="data-card__value">${{ kpi.total_unpaid }}</span>
+                <p class="text-muted" style="margin-top:4px;">
+                    {{ kpi.unpaid_count }} Overdue Invoices
+                </p>
             </div>
             <div class="data-card__icon data-card__icon--green"></div>
         </div>
@@ -146,8 +171,8 @@
         <div class="data-card">
             <div class="data-card__info">
                 <span class="data-card__title">Open Cases</span>
-                <span class="data-card__value">8</span>
-                <p class="text-muted" style="margin-top:4px;">2 Deadlines < 7 Days</p>
+                <span class="data-card__value">{{ kpi.open_cases }}</span>
+                <p class="text-muted" style="margin-top:4px;">Active Matters</p>
             </div>
             <div class="data-card__icon data-card__icon--blue"></div>
         </div>
@@ -155,7 +180,7 @@
     </section>
 
     <section class="dashboard-panels-bottom">
-        
+
         <div class="panel-card">
             <header class="panel-card__header">
                 <h3 class="panel-card__title">
@@ -172,37 +197,37 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for doc in action_docs %}
                         <tr>
                             <td>
-                                <div class="text-sm"><strong>Affidavit of Loss</strong></div>
-                                <div class="text-muted">Case #204 (Estill, Chris)</div>
+                                <div class="text-sm"><strong>{{ doc.title }}</strong></div>
+                                <div class="text-muted">{{ doc.context }}</div>
                             </td>
-                            <td><span class="status-tag status-tag--pending">Review</span></td>
-                            <td><a href="#" style="color: var(--color-primary);">Open &rarr;</a></td>
-                        </tr>
-                        <tr>
                             <td>
-                                <div class="text-sm"><strong>Property Deed Transfer</strong></div>
-                                <div class="text-muted">Notarial Entry #9921</div>
+                                {% if doc.status == 'Lacking' %}
+                                <span class="status-tag" style="background:#fee2e2; color:#991b1b;">Missing</span>
+                                {% elif doc.status == 'For Signature' %}
+                                <span class="status-tag" style="background:#fef3c7; color:#92400e;">Sign</span>
+                                {% else %}
+                                <span class="status-tag status-tag--pending">{{ doc.status }}</span>
+                                {% endif %}
                             </td>
-                            <td><span class="status-tag status-tag--pending">Missing Sig</span></td>
-                            <td><a href="#" style="color: var(--color-primary);">Request &rarr;</a></td>
-                        </tr>
-                         <tr>
                             <td>
-                                <div class="text-sm"><strong>Tax Declaration 2025</strong></div>
-                                <div class="text-muted">Client Uploaded</div>
+                                <a href="{{ doc.target_url }}"
+                                    style="color: var(--color-primary); text-decoration: none; font-weight:600;">
+                                    {% if doc.status == 'Lacking' %} Upload {% else %} Review {% endif %} &rarr;
+                                </a>
                             </td>
-                            <td><span class="status-tag status-tag--completed">Verify</span></td>
-                            <td><a href="#" style="color: var(--color-primary);">Verify &rarr;</a></td>
                         </tr>
+                        {% else %}
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div class="stack-container">
-            
+
             <div class="panel-card">
                 <header class="panel-card__header" style="margin-bottom: 16px;">
                     <h3 class="panel-card__title" style="font-size: 1rem;">Quick Actions</h3>
@@ -229,7 +254,7 @@
                 </header>
 
                 <div class="panel-card__body">
-                    
+
                     <div class="deadline-item">
                         <div class="deadline-item__header">
                             <p class="deadline-item__title">

@@ -5,10 +5,10 @@
     <header class="dashboard-header">
         <div>
             <h1>Notarial Entries <span></span></h1>
-            <p>Official notarial register - All notarial acts recorded chronologically</p>
         </div>
 
         <div style="display: flex; gap: 12px;">
+
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
                     <span class="data-card__title">Total Entries</span>
@@ -64,18 +64,19 @@
                 </div>
                 <div class="data-card__icon data-card__icon--purple"></div>
             </div>
-        </div>
 
+        </div>
 
     </header>
 
+    <!-- Status Summary Cards -->
+    <section class="dashboard-cards">
 
+    </section>
 
     <section class="content-section">
         <div class="panel-card">
-
-            <div class="dashboard-actions"
-                style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+            <div style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 15px;">
                 <div class="search-bar">
                     <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -102,7 +103,8 @@
                         <col class="medium">
                         <col class="medium">
                         <col class="long">
-
+                        <!-- <col class="long">
+                        <col class="medium"> -->
                         <col class="medium">
                         <col class="short">
                         <col class="actions">
@@ -117,7 +119,8 @@
                             <th data-sort-key="series">Series Of</th>
                             <th data-sort-key="title">Title/Description</th>
                             <th data-sort-key="parties">Parties</th>
-
+                            <!-- <th data-sort-key="witness">Witnesses</th>
+                            <th data-sort-key="not_act_type">Notarial Act Type</th> -->
                             <th>Date</th>
                             <th>Payment Status</th>
                             <th>Actions</th>
@@ -140,21 +143,16 @@
                             </td>
                             <td>
                                 <div class="clickable-list">
-
-                                    <!-- Instead of button text, show party names -->
                                     <button type="button" class="btn btn-sm btn-outline-primary view-parties-btn"
+                                        data-entry-id="{{ entry.id }}" data-bs-toggle="modal"
                                         data-bs-target="#partiesModal">
-
-                                        {% for party in entry.parties %}
-                                        {{ party.party_name }}{% if not loop.last %}, {% endif %}
-                                        {% endfor %}
+                                        View Parties ({{ entry.parties|length }})
                                     </button>
-
-                                    <!-- Tooltip (unchanged) -->
                                     <div class="list-tooltip">
                                         {% for party in entry.parties %}
                                         <div class="party-item">
-                                            <strong>{{ party.party_name }}</strong><br>
+                                            <strong>{{ party.party_name }}</strong>
+                                            <br>
                                             <small class="text-muted">{{ party.party_address }}</small>
                                             {% if party.id_type %}
                                             <br>
@@ -165,12 +163,40 @@
                                         <hr class="my-1">{% endif %}
                                         {% endfor %}
                                     </div>
-
                                 </div>
                             </td>
-
-
-
+                            <!-- <td>
+                                <div class="clickable-list">
+                                    {% if entry.witnesses|length > 0 %}
+                                    <button type="button" class="btn btn-sm btn-outline-secondary view-witnesses-btn"
+                                        data-entry-id="{{ entry.id }}" data-bs-toggle="modal"
+                                        data-bs-target="#witnessesModal">
+                                        View Witnesses ({{ entry.witnesses|length }})
+                                    </button>
+                                    <div class="list-tooltip">
+                                        {% for witness in entry.witnesses %}
+                                        <div class="witness-item">
+                                            <strong>{{ witness.witness_name }}</strong>
+                                            {% if witness.witness_address %}
+                                            <br>
+                                            <small class="text-muted">{{ witness.witness_address }}</small>
+                                            {% endif %}
+                                        </div>
+                                        {% if not loop.last %}
+                                        <hr class="my-1">{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">No witnesses</span>
+                                    {% endif %}
+                                </div>
+                            </td> -->
+                            <!-- <td>
+                                <span class="status-tag status-tag--{{ entry.not_type_act|lower|replace(' ', '-') }}">
+                                    {{ entry.not_type_act }}
+                                </span>s-tag--{{ entry.not_type_act|lower|replace(' ', '-') }}">
+                                    {{ entry.not_type_act }}
+                            </td> -->
                             <td>
                                 <div>{{ entry.not_date.strftime('%Y-%m-%d') }}</div>
                                 <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>

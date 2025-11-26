@@ -45,8 +45,8 @@ def get_context_url(doc):
         # Points to the Case Detail page
         return f"/cases/{doc.parent_id}" 
     elif doc.parent_type == 'notarial_entry':
-        # Points to the specific Notarial Entry page
-        return f"/notary/entry/{doc.parent_id}"
+        # FIXED: Points to the correct Notarial Entry page URL
+        return f"/notarial-entries/{doc.parent_id}"  # CHANGED THIS LINE
     elif doc.parent_type == 'client':
         # Points to Client Profile
         return f"/clients/{doc.parent_id}"
@@ -115,6 +115,3 @@ def dashboard_page():
     }
 
     return render_template('dashboard_page.html', **context)
-
-    return render_template('dashboard_page.html', kpi=kpi_data)
-

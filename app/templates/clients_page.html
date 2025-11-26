@@ -115,6 +115,7 @@
                         <col class="medium">
                         <col class="medium">
                         <col class="long">
+                        <col class="long">
                         <col class="medium">
                         <col class="short">
                         <col class="actions">
@@ -126,6 +127,7 @@
                             <th data-sort-key="name">Name</th>
                             <th data-sort-key="type">Type</th>
                             <th data-sort-key="email">Email</th>
+                            <th data-sort-key="address">Address</th>
                             <th data-sort-key="phone">Phone</th>
                             <th data-sort-key="transactions">Transactions</th>
                             <th>Actions</th>
@@ -141,6 +143,11 @@
                             </td>
                             <td>{{ client.client_role or 'Individual' }}</td>
                             <td>{{ client.client_email }}</td>
+                            <td class="address-cell">
+                                <span class="address-text" title="{{ client.client_address }}">
+                                    {{ client.client_address }}
+                                </span>
+                            </td>
                             <td>{{ client.client_phone or 'N/A' }}</td>
                             <td>
                                 <span class="badge bg-primary">{{ client.transaction_items|length }}</span>
@@ -156,14 +163,7 @@
                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                         </svg>
                                     </a>
-                                    <a href="#" class="btn-action btn-action--info" title="View Details">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    </a>
+
                                     <!-- Updated Delete Button -->
                                     <button class="btn-action btn-action--danger delete-client"
                                         data-client-id="{{ client.id }}" data-client-name="{{ client.full_name }}"
@@ -182,7 +182,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 2rem;">
+                            <td colspan="8" style="text-align: center; padding: 2rem;">
                                 No clients found. <a href="{{ url_for('clients.new_client_form') }}">Add your first
                                     client</a>
                             </td>
@@ -240,6 +240,37 @@
 
     .btn-action--danger:hover {
         background-color: #c82333;
+    }
+
+    /* Address cell styling */
+    .address-cell {
+        max-width: 200px;
+        min-width: 150px;
+    }
+
+    .address-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: help;
+    }
+
+    /* Adjust column widths for better layout */
+    col.short {
+        width: 80px;
+    }
+
+    col.medium {
+        width: 120px;
+    }
+
+    col.long {
+        width: 200px;
+    }
+
+    col.actions {
+        width: 140px;
     }
 </style>
 

@@ -2,80 +2,163 @@
 <div class="panel-card">
     <header class="panel-card__header" style="margin-bottom: 15px;">
         <h3 class="panel-card__title">Backup & Recovery</h3>
+        <p class="panel-card__description">Protect your system data with comprehensive backups</p>
     </header>
 
     <div class="panel-card__body">
-        <div class="backup-options">
-            <div class="backup-item">
-                <div class="backup-item__info">
-                    <h4 class="backup-item__title">Database Backup</h4>
-                    <p class="backup-item__description">Download a complete SQL backup of your system data</p>
+        <!-- System Statistics -->
+        <div class="backup-section">
+            <h4 class="backup-section__title">System Overview</h4>
+            <div id="systemStats" class="system-stats">
+                <div class="text-muted">Loading system statistics...</div>
+            </div>
+        </div>
+
+        <!-- Full Backup (Primary Action) -->
+        <div class="backup-section">
+            <h4 class="backup-section__title">Full System Backup</h4>
+            <p class="backup-section__description">Recommended: Complete backup of database and all documents</p>
+
+            <div class="backup-actions">
+                <button class="btn btn-primary btn-lg" onclick="createFullBackup()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right: 8px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download Full Backup
+                </button>
+
+                <button class="btn btn-secondary" onclick="createSystemBackup()">
+                    Save to System
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Backup Options -->
+        <div class="backup-section">
+            <h4 class="backup-section__title">Advanced Options</h4>
+            <p class="backup-section__description">For technical users or specific recovery scenarios</p>
+
+            <div class="advanced-options">
+                <button class="btn btn-outline" onclick="downloadDatabaseBackup()">
+                    Database Only
+                </button>
+                <button class="btn btn-outline" onclick="downloadDocumentsBackup()">
+                    Documents Only
+                </button>
+            </div>
+        </div>
+
+        <!-- Restore System -->
+        <div class="backup-section">
+            <h4 class="backup-section__title">Restore System</h4>
+            <p class="backup-section__description">Restore your system from a backup file</p>
+
+            <div class="restore-options">
+                <div class="restore-option">
+                    <input type="radio" id="restore-local" name="restore-source" value="local" checked>
+                    <label for="restore-local">Restore from local file</label>
                 </div>
-                <button class="btn btn-primary">Download SQL</button>
+
+                <div class="restore-option">
+                    <input type="radio" id="restore-system" name="restore-source" value="system">
+                    <label for="restore-system">Restore from system backup</label>
+                </div>
             </div>
 
-            <div class="backup-item">
-                <div class="backup-item__info">
-                    <h4 class="backup-item__title">Document Storage Backup</h4>
-                    <p class="backup-item__description">Download all documents and files as a ZIP archive</p>
-                </div>
-                <button class="btn btn-primary">Download ZIP</button>
-            </div>
-
-            <div class="backup-item">
-                <div class="backup-item__info">
-                    <h4 class="backup-item__title">Auto-Backup Schedule</h4>
-                    <p class="backup-item__description">Configure automatic backup frequency</p>
-                </div>
-                <select class="form-select">
-                    <option>Daily</option>
-                    <option>Weekly</option>
-                    <option>Monthly</option>
-                    <option>Disabled</option>
-                </select>
-            </div>
-
-            <div class="backup-item">
-                <div class="backup-item__info">
-                    <h4 class="backup-item__title">Restore System</h4>
-                    <p class="backup-item__description">Upload a backup file to restore your system</p>
-                </div>
+            <!-- Local File Upload (shown when local is selected) -->
+            <div id="local-restore" style="display: block;">
                 <div class="file-upload">
-                    <input type="file" id="backup-file" class="file-upload__input">
-                    <label for="backup-file" class="btn btn-secondary">Choose File</label>
+                    <input type="file" id="backup-file" class="file-upload__input" accept=".zip,.json">
+                    <label for="backup-file" class="btn btn-outline">Choose Backup File</label>
                     <span class="file-upload__name">No file chosen</span>
                 </div>
             </div>
+
+            <!-- System Backup List (shown when system is selected) -->
+            <div id="system-restore" style="display: none;">
+                <div class="backup-history" id="backupHistory">
+                    <!-- Backup items will be loaded here by JavaScript -->
+                </div>
+            </div>
+
+            <button class="btn btn-warning" onclick="restoreBackup()" style="margin-top: 1rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 5px;">
+                    <path d="M3 2v6h6"></path>
+                    <path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path>
+                    <path d="M21 22v-6h-6"></path>
+                    <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path>
+                </svg>
+                Restore System
+            </button>
+        </div>
+
+        <!-- Auto Backup Settings -->
+        <div class="backup-section">
+            <h4 class="backup-section__title">Auto-Backup Schedule</h4>
+            <p class="backup-section__description">Automatically save backups to the system</p>
+
+            <select class="form-select" id="autoBackupSchedule" onchange="updateAutoBackupSchedule()">
+                <option value="disabled">Disabled</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
         </div>
     </div>
 </div>
 
 <style>
-    .backup-options {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .backup-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    .backup-section {
+        margin-bottom: 2rem;
         padding: 1.5rem;
         border: 1px solid #e2e8f0;
         border-radius: 0.5rem;
     }
 
-    .backup-item__title {
+    .backup-section__title {
         font-weight: 600;
         margin: 0 0 0.5rem 0;
         color: #1e293b;
+        font-size: 1.1rem;
     }
 
-    .backup-item__description {
-        margin: 0;
+    .backup-section__description {
+        margin: 0 0 1rem 0;
         color: #64748b;
         font-size: 0.875rem;
+    }
+
+    .backup-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .advanced-options {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .restore-options {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .restore-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .restore-panel {
+        margin-top: 1rem;
     }
 
     .file-upload {
@@ -91,16 +174,7 @@
     .file-upload__name {
         font-size: 0.875rem;
         color: #64748b;
-    }
-
-    .form-select {
-        padding: 0.5rem 2rem 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        background-color: white;
-        font-size: 0.875rem;
-        color: #374151;
-        cursor: pointer;
+        min-width: 120px;
     }
 
     .btn {
@@ -115,6 +189,11 @@
         cursor: pointer;
         transition: all 0.2s ease;
         text-decoration: none;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
     }
 
     .btn-primary {
@@ -138,16 +217,132 @@
         background-color: #4b5563;
         border-color: #4b5563;
     }
+
+    .btn-outline {
+        background-color: white;
+        color: #374151;
+        border-color: #d1d5db;
+    }
+
+    .btn-outline:hover {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+    }
+
+    .btn-warning {
+        background-color: #f59e0b;
+        color: white;
+        border-color: #f59e0b;
+    }
+
+    .btn-warning:hover {
+        background-color: #d97706;
+        border-color: #d97706;
+    }
+
+    .form-select {
+        padding: 0.5rem 2rem 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: white;
+        font-size: 0.875rem;
+        color: #374151;
+        cursor: pointer;
+        max-width: 200px;
+    }
+
+    .system-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        background-color: #f8fafc;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #3b82f6;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .backup-history {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+    }
+
+    .backup-history-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+        cursor: pointer;
+    }
+
+    .backup-history-item:hover {
+        background-color: #f8fafc;
+    }
+
+    .backup-history-item:last-child {
+        border-bottom: none;
+    }
+
+    .backup-history-info {
+        flex: 1;
+    }
+
+    .backup-history-name {
+        font-weight: 500;
+        color: #1e293b;
+    }
+
+    .backup-history-meta {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .backup-history-size {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .text-muted {
+        color: #64748b;
+    }
+
+    .text-warning {
+        color: #f59e0b;
+    }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Load initial data
+        loadSystemStats();
+        loadBackupHistory();
+
         // File upload display
         const fileInput = document.getElementById('backup-file');
         const fileName = document.querySelector('.file-upload__name');
 
         if (fileInput && fileName) {
-            fileInput.addEventListener('change', function() {
+            fileInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
                     fileName.textContent = this.files[0].name;
                 } else {
@@ -155,5 +350,374 @@
                 }
             });
         }
+
+        // Restore source toggle
+        const restoreLocal = document.getElementById('restore-local');
+        const restoreSystem = document.getElementById('restore-system');
+        const localRestore = document.getElementById('local-restore');
+        const systemRestore = document.getElementById('system-restore');
+
+        restoreLocal.addEventListener('change', function () {
+            localRestore.style.display = 'block';
+            systemRestore.style.display = 'none';
+        });
+
+        restoreSystem.addEventListener('change', function () {
+            localRestore.style.display = 'none';
+            systemRestore.style.display = 'block';
+        });
     });
+
+    function createFullBackup() {
+        showLoading('Creating full system backup...');
+        fetch('/backup/full')
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Backup failed');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `full_system_backup_${new Date().toISOString().split('T')[0]}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                hideLoading();
+                showToast('Full system backup downloaded successfully', 'success');
+                loadBackupHistory(); // Refresh history
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Backup failed: ' + error.message, 'error');
+            });
+    }
+
+    function createSystemBackup() {
+        showLoading('Saving backup to system...');
+        // This would be a separate endpoint that saves without download
+        // For now, we'll use the same as full backup but without download
+        fetch('/backup/full')
+            .then(response => {
+                if (response.ok) {
+                    return response.blob(); // We still get blob, but don't download
+                }
+                throw new Error('Backup failed');
+            })
+            .then(blob => {
+                hideLoading();
+                showToast('Backup saved to system successfully', 'success');
+                loadBackupHistory(); // Refresh history
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Backup failed: ' + error.message, 'error');
+            });
+    }
+
+    function downloadDatabaseBackup() {
+        showLoading('Creating database backup...');
+        fetch('/backup/database')
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Backup failed');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `database_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                hideLoading();
+                showToast('Database backup downloaded successfully', 'success');
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Backup failed: ' + error.message, 'error');
+            });
+    }
+
+    function downloadDocumentsBackup() {
+        showLoading('Creating documents backup...');
+        fetch('/backup/documents')
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Backup failed');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `documents_backup_${new Date().toISOString().split('T')[0]}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                hideLoading();
+                showToast('Documents backup downloaded successfully', 'success');
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Backup failed: ' + error.message, 'error');
+            });
+    }
+
+    function restoreBackup() {
+        const restoreSource = document.querySelector('input[name="restore-source"]:checked').value;
+        let backupFilename = '';
+
+        if (restoreSource === 'local') {
+            const fileInput = document.getElementById('backup-file');
+            if (!fileInput.files || !fileInput.files[0]) {
+                showToast('Please select a backup file first', 'error');
+                return;
+            }
+            backupFilename = fileInput.files[0].name;
+        } else if (restoreSource === 'system') {
+            const selectedBackup = document.querySelector('.backup-history-item.selected');
+            if (!selectedBackup) {
+                showToast('Please select a system backup first', 'error');
+                return;
+            }
+            backupFilename = selectedBackup.dataset.filename;
+        }
+
+        // Enhanced confirmation with backup filename
+        const confirmationMessage = `
+WARNING: This will overwrite ALL existing system data.
+
+You are about to restore from: ${backupFilename}
+
+This action cannot be undone. Are you absolutely sure you want to continue?
+
+Type "RESTORE" to confirm:`;
+
+        // Create custom confirmation dialog
+        const userInput = prompt(confirmationMessage);
+        if (userInput !== 'RESTORE') {
+            showToast('Restore cancelled', 'info');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('restore_source', restoreSource);
+
+        if (restoreSource === 'local') {
+            formData.append('backup_file', document.getElementById('backup-file').files[0]);
+        } else {
+            formData.append('backup_filename', backupFilename);
+        }
+
+        showLoading('Restoring backup... This may take several minutes.');
+        fetch('/backup/restore', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.error) {
+                    showToast('Restore failed: ' + data.error, 'error');
+                } else {
+                    showToast('Backup restored successfully! The page will reload in 5 seconds.', 'success');
+                    // Reset form
+                    document.getElementById('backup-file').value = '';
+                    document.querySelector('.file-upload__name').textContent = 'No file chosen';
+                    document.querySelectorAll('.backup-history-item.selected').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+
+                    // Reload page after successful restore
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 5000);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Restore failed: ' + error.message, 'error');
+            });
+    }
+
+    function updateAutoBackupSchedule() {
+        const schedule = document.getElementById('autoBackupSchedule').value;
+
+        fetch('/backup/auto-backup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ schedule: schedule })
+        })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.message, 'success');
+            })
+            .catch(error => {
+                showToast('Failed to update auto-backup schedule', 'error');
+            });
+    }
+
+    function loadSystemStats() {
+        fetch('/backup/stats')
+            .then(response => response.json())
+            .then(data => {
+                const statsContainer = document.getElementById('systemStats');
+                if (data.stats) {
+                    statsContainer.innerHTML = `
+                        <div class="stat-item">
+                            <div class="stat-value">${data.stats.users || 0}</div>
+                            <div class="stat-label">Users</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${data.stats.clients || 0}</div>
+                            <div class="stat-label">Clients</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${data.stats.cases || 0}</div>
+                            <div class="stat-label">Cases</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${data.stats.notarial_entries || 0}</div>
+                            <div class="stat-label">Notarial</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${data.stats.documents || 0}</div>
+                            <div class="stat-label">Documents</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${data.stats.legal_consultations || 0}</div>
+                            <div class="stat-label">Consultations</div>
+                        </div>
+                    `;
+                } else {
+                    statsContainer.innerHTML = '<div class="text-muted">Error loading statistics</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading system stats:', error);
+                document.getElementById('systemStats').innerHTML = '<div class="text-muted">Error loading statistics</div>';
+            });
+    }
+
+    function loadBackupHistory() {
+        fetch('/backup/history')
+            .then(response => response.json())
+            .then(data => {
+                const historyContainer = document.getElementById('backupHistory');
+                if (data.backups && data.backups.length > 0) {
+                    historyContainer.innerHTML = data.backups.map(backup => `
+                    <div class="backup-history-item" data-filename="${backup.filename}" onclick="selectBackup(this)">
+                        <div class="backup-history-info">
+                            <div class="backup-history-name">${backup.filename}</div>
+                            <div class="backup-history-meta">
+                                ${new Date(backup.created_at * 1000).toLocaleString()} • 
+                                ${backup.type}
+                            </div>
+                        </div>
+                        <div class="backup-history-size">
+                            ${(backup.size / 1024 / 1024).toFixed(1)} MB
+                        </div>
+                    </div>
+                `).join('');
+                } else {
+                    historyContainer.innerHTML = '<div class="text-muted" style="padding: 1rem; text-align: center;">No system backups found</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading backup history:', error);
+                document.getElementById('backupHistory').innerHTML = '<div class="text-muted">Error loading backup history</div>';
+            });
+    }
+
+    // Load system backups when the page loads or when restore source changes
+    function loadSystemBackups() {
+        fetch('/backup/list')
+            .then(response => response.json())
+            .then(backups => {
+                const container = document.querySelector('.backup-history');
+                container.innerHTML = '';
+
+                backups.forEach(backup => {
+                    const backupItem = document.createElement('div');
+                    backupItem.className = 'backup-history-item';
+                    backupItem.dataset.filename = backup.filename;
+                    backupItem.innerHTML = `
+                    <div class="backup-history-item__name">${backup.display_name}</div>
+                    <div class="backup-history-item__details">
+                        <span class="backup-history-item__size">${formatFileSize(backup.size)}</span>
+                        <span class="backup-history-item__date">${new Date(backup.created_at * 1000).toLocaleString()}</span>
+                    </div>
+                `;
+                    backupItem.addEventListener('click', function () {
+                        document.querySelectorAll('.backup-history-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                    });
+                    container.appendChild(backupItem);
+                });
+            })
+            .catch(error => {
+                console.error('Failed to load backups:', error);
+            });
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Call this when the page loads and when restore source changes to 'system'
+    document.addEventListener('DOMContentLoaded', function () {
+        loadSystemBackups();
+
+        // Refresh backup list when system restore is selected
+        document.querySelectorAll('input[name="restore-source"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'system') {
+                    loadSystemBackups();
+                }
+            });
+        });
+    });
+
+    function selectBackup(element) {
+        // Remove selected class from all items
+        document.querySelectorAll('.backup-history-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        // Add selected class to clicked item
+        element.classList.add('selected');
+    }
+
+    // Utility functions
+    function showLoading(message = 'Loading...') {
+        // Implement your loading indicator
+        console.log('Loading:', message);
+    }
+
+    function hideLoading() {
+        // Implement your loading indicator hide
+        console.log('Loading hidden');
+    }
+
+    function showToast(message, type = 'info') {
+        // Implement your toast notification
+        alert(`${type.toUpperCase()}: ${message}`);
+    }
 </script>

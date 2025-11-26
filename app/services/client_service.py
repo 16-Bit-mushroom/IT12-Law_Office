@@ -21,8 +21,8 @@ def add_client(address, email, phone, role, notes, first_name, last_name):
         raise e
 
 def get_all_clients():
-    """Get all clients"""
-    return Client.query.all()
+    """Get all active clients (exclude recycle bin)"""
+    return Client.query.filter_by(is_active=True).all()  # CHANGED: only active clients
 
 def get_client_by_id(client_id):
     """Get client by ID"""

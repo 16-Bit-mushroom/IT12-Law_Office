@@ -1,4 +1,5 @@
 from . import db
+from datetime import datetime
 
 class Client(db.Model):
     __tablename__ = 'clients'
@@ -11,15 +12,28 @@ class Client(db.Model):
     client_phone = db.Column(db.String(50))
     client_role = db.Column(db.String(50))
     notes = db.Column(db.Text)
+    
+    # ADD SOFT DELETE FIELDS
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
 
-    # Relationships - use backref in Case model instead
-    # cases = db.relationship('Case', back_populates='client', lazy=True)
     transaction_items = db.relationship('TransactionItem', backref='client', lazy=True)
 
     # Property to get full name
     @property
     def full_name(self):
         return f"{self.client_first_name} {self.client_last_name}"
+
+    # ADD SOFT DELETE METHODS
+    def soft_delete(self):
+        """Soft delete the client - move to recycle bin"""
+        self.is_active = False
+        self.deleted_at = datetime.utcnow()
+
+    def restore(self):
+        """Restore client from recycle bin"""
+        self.is_active = True
+        self.deleted_at = None
 
     def __repr__(self):
         return f"<Client(id={self.id}, name='{self.full_name}', email='{self.client_email}')>"

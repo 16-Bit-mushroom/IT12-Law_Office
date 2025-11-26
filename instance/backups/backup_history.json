@@ -1,0 +1,37 @@
+[
+  {
+    "filename": "full_system_backup_20251126_113944.zip",
+    "path": "C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 Law_Office\\instance\\backups\\full_system_backup_20251126_113944.zip",
+    "type": "full_system",
+    "size": 1218379,
+    "created_at": "2025-11-26T03:39:44.146081"
+  },
+  {
+    "filename": "full_system_backup_20251126_113946.zip",
+    "path": "C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 Law_Office\\instance\\backups\\full_system_backup_20251126_113946.zip",
+    "type": "full_system",
+    "size": 1218378,
+    "created_at": "2025-11-26T03:39:46.596831"
+  },
+  {
+    "filename": "full_system_backup_20251126_123659.zip",
+    "path": "C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 Law_Office\\instance\\backups\\full_system_backup_20251126_123659.zip",
+    "type": "full_system",
+    "size": 1147,
+    "created_at": "2025-11-26T04:36:59.503142"
+  },
+  {
+    "filename": "full_system_backup_20251126_124021.zip",
+    "path": "C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 Law_Office\\instance\\backups\\full_system_backup_20251126_124021.zip",
+    "type": "full_system",
+    "size": 75889,
+    "created_at": "2025-11-26T04:40:21.900908"
+  },
+  {
+    "filename": "full_system_backup_20251126_124023.zip",
+    "path": "C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 Law_Office\\instance\\backups\\full_system_backup_20251126_124023.zip",
+    "type": "full_system",
+    "size": 75891,
+    "created_at": "2025-11-26T04:40:23.951358"
+  }
+]

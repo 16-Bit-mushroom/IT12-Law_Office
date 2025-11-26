@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="dashboard-content">
+    <header class="dashboard-header">
+        <div>
+            <h1>Recycle Bin - Clients</h1>
+            <p>Deleted clients - restore or permanently delete</p>
+        </div>
+
+        <div class="dashboard-actions"
+            style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
+            <a style="font-size: 20px; align-self: center; text-decoration: none;"
+                href="{{ url_for('clients.clients_page') }}">← Back to Clients</a>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-danger" onclick="emptyRecycleBin()">
+                    Empty Recycle Bin
+                </button>
+                <a href="{{ url_for('settings.settings_page', tab='recycle') }}" class="btn btn-secondary">
+                    View All Recycle Bins
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="dashboard-panels-bottom dashboard-panels-bottom--single">
+        <div class="panel-card" style="width: 100%;">
+            <div class="table-wrapper panel-card__body">
+                {% if clients %}
+                <table class="table client-table">
+                    <colgroup>
+                        <col class="short">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="long">
+                        <col class="medium">
+                        <col class="medium">
+                        <col class="actions">
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Email</th>
+                            <th>Deleted On</th>
+                            <th>Transactions</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for client in clients %}
+                        <tr>
+                            <td>#{{ client.id }}</td>
+                            <td>{{ client.full_name }}</td>
+                            <td>{{ client.client_role or 'Individual' }}</td>
+                            <td>{{ client.client_email }}</td>
+                            <td>{{ client.deleted_at.strftime('%Y-%m-%d %H:%M') if client.deleted_at else 'Unknown' }}
+                            </td>
+                            <td>
+                                <span
+                                    class="badge {% if client.transaction_items %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ client.transaction_items|length }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons" style="justify-content: start;">
+                                    <button class="btn-action btn-action--success restore-client"
+                                        data-client-id="{{ client.id }}" data-client-name="{{ client.full_name }}"
+                                        title="Restore Client">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 2v6h6"></path>
+                                            <path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path>
+                                            <path d="M21 22v-6h-6"></path>
+                                            <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-action btn-action--danger permanent-delete-client"
+                                        data-client-id="{{ client.id }}" data-client-name="{{ client.full_name }}"
+                                        data-transaction-count="{{ client.transaction_items|length }}"
+                                        title="Permanently Delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path
+                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <h3 style="margin: 1rem 0 0.5rem 0;">Recycle Bin is Empty</h3>
+                    <p>No deleted clients found</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-action--success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-action--danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+    }
+
+    .badge {
+        font-size: 0.75em;
+        padding: 0.25em 0.4em;
+    }
+
+    .bg-warning {
+        background-color: #ffc107 !important;
+        color: #000 !important;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d !important;
+        color: #fff !important;
+    }
+</style>
+
+<script>
+    function emptyRecycleBin() {
+        if (!confirm('Are you sure you want to empty the recycle bin? This will permanently delete all clients that don\'t have transactions. This action cannot be undone.')) {
+            return;
+        }
+
+        showLoading('Emptying recycle bin...');
+
+        fetch('/clients/recycle-bin/empty', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.error) {
+                    showToast('Empty recycle bin failed: ' + data.error, 'error');
+                } else {
+                    showToast(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Empty recycle bin failed: ' + error.message, 'error');
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Restore client
+        document.querySelectorAll('.restore-client').forEach(button => {
+            button.addEventListener('click', function () {
+                const clientId = this.getAttribute('data-client-id');
+                const clientName = this.getAttribute('data-client-name');
+                restoreClient(clientId, clientName);
+            });
+        });
+
+        // Permanent delete client
+        document.querySelectorAll('.permanent-delete-client').forEach(button => {
+            button.addEventListener('click', function () {
+                const clientId = this.getAttribute('data-client-id');
+                const clientName = this.getAttribute('data-client-name');
+                const transactionCount = this.getAttribute('data-transaction-count');
+                permanentDeleteClient(clientId, clientName, transactionCount);
+            });
+        });
+    });
+
+    function restoreClient(clientId, clientName) {
+        if (!confirm(`Restore client "${clientName}" from recycle bin?`)) {
+            return;
+        }
+
+        showLoading('Restoring client...');
+
+        fetch(`/clients/${clientId}/restore`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.error) {
+                    showToast('Restore failed: ' + data.error, 'error');
+                } else {
+                    showToast(data.message, 'success');
+                    // Remove the row from the table
+                    const row = document.querySelector(`.restore-client[data-client-id="${clientId}"]`).closest('tr');
+                    row.style.opacity = '0.5';
+                    setTimeout(() => {
+                        row.remove();
+                        // If no more clients, show empty state
+                        if (document.querySelectorAll('.client-table tbody tr').length === 0) {
+                            window.location.reload();
+                        }
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Restore failed: ' + error.message, 'error');
+            });
+    }
+
+    function permanentDeleteClient(clientId, clientName, transactionCount) {
+        if (parseInt(transactionCount) > 0) {
+            showToast(`Cannot delete client with ${transactionCount} transaction(s). Transactions must be preserved.`, 'error');
+            return;
+        }
+
+        if (!confirm(`Permanently delete client "${clientName}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        showLoading('Permanently deleting client...');
+
+        fetch(`/clients/${clientId}/permanent-delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.error) {
+                    showToast('Permanent delete failed: ' + data.error, 'error');
+                } else {
+                    showToast(data.message, 'success');
+                    // Remove the row from the table
+                    const row = document.querySelector(`.permanent-delete-client[data-client-id="${clientId}"]`).closest('tr');
+                    row.style.opacity = '0.5';
+                    setTimeout(() => {
+                        row.remove();
+                        // If no more clients, show empty state
+                        if (document.querySelectorAll('.client-table tbody tr').length === 0) {
+                            window.location.reload();
+                        }
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('Permanent delete failed: ' + error.message, 'error');
+            });
+    }
+
+    // Utility functions
+    function showLoading(message = 'Loading...') {
+        console.log('Loading:', message);
+    }
+
+    function hideLoading() {
+        console.log('Loading hidden');
+    }
+
+    function showToast(message, type = 'info') {
+        alert(`${type.toUpperCase()}: ${message}`);
+    }
+
+    function getCSRFToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+</script>
+{% endblock %}

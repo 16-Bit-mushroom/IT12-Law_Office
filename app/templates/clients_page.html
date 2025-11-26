@@ -10,10 +10,9 @@
 
         <div class="dashboard-actions"
             style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
-
-
             <a style="font-size: 20px; align-self: center; text-decoration: none;"
                 href="{{ url_for('case.list_cases') }}">return to Cases</a>
+
             <div class="search-bar">
                 <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -24,15 +23,28 @@
                 <input class="search-bar__input" type="text" placeholder="Search clients...">
             </div>
 
-            <a href="{{ url_for('clients.new_client_form') }}" class="btn btn-primary">
-                <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20"
-                    height="20">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                New Client
-            </a>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <!-- Recycle Bin Link -->
+                <a href="{{ url_for('clients.recycle_bin') }}" class="btn btn-outline"
+                    style="display: flex; align-items: center; gap: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Recycle Bin
+                </a>
+
+                <a href="{{ url_for('clients.new_client_form') }}" class="btn btn-primary">
+                    <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20"
+                        height="20">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Client
+                </a>
+            </div>
         </div>
     </header>
 
@@ -152,6 +164,19 @@
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </a>
+                                    <!-- Updated Delete Button -->
+                                    <button class="btn-action btn-action--danger delete-client"
+                                        data-client-id="{{ client.id }}" data-client-name="{{ client.full_name }}"
+                                        title="Move to Recycle Bin">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path
+                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                            </path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -206,6 +231,15 @@
     .badge {
         font-size: 0.75em;
         padding: 0.25em 0.4em;
+    }
+
+    .btn-action--danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-action--danger:hover {
+        background-color: #c82333;
     }
 </style>
 

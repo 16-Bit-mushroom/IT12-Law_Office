@@ -33,5 +33,19 @@
     "type": "full_system",
     "size": 75891,
     "created_at": "2025-11-26T04:40:23.951358"
+  },
+  {
+    "filename": "full_system_backup_20251128_001212.zip",
+    "path": "/home/chrischros_0/Projects/IT12-Law_Office/instance/backups/full_system_backup_20251128_001212.zip",
+    "type": "full_system",
+    "size": 507938,
+    "created_at": "2025-11-27T16:12:12.179471"
+  },
+  {
+    "filename": "full_system_backup_20251128_001224.zip",
+    "path": "/home/chrischros_0/Projects/IT12-Law_Office/instance/backups/full_system_backup_20251128_001224.zip",
+    "type": "full_system",
+    "size": 507939,
+    "created_at": "2025-11-27T16:12:24.600112"
   }
 ]

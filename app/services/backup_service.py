@@ -278,6 +278,15 @@ class BackupService:
                                         continue
                                     except:
                                         pass
+
+                                if '-' in value and ':' not in value and len(value) == 10:
+                                    try:
+                                        # .date() converts the datetime object to a python date object
+                                        cleaned_data[key] = datetime.fromisoformat(value).date()
+                                        continue
+                                    except:
+                                        pass
+                                        
                             cleaned_data[key] = value
                         
                         try:
@@ -297,7 +306,7 @@ class BackupService:
         except Exception as e:
             db.session.rollback()
             try:
-                db.session.execute(text('PRAGMA foreign_keys=ON'))
+                db.session.execute(text('PRAGMA foreign_keys=ON'))  
             except:
                 pass
             current_app.logger.error(f"Database restore error: {str(e)}")

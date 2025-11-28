@@ -1,5 +1,5 @@
 # routes/case_routes.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from datetime import datetime
 
@@ -39,16 +39,34 @@ def create_case():
                                  clients=clients,
                                  pre_select_client_id=pre_select_client_id)
         
+        # Parse representatives data
+        representatives = []
+        rep_names = request.form.getlist('representative_name[]')
+        rep_emails = request.form.getlist('representative_email[]')
+        rep_phones = request.form.getlist('representative_phone[]')
+        rep_roles = request.form.getlist('representative_role[]')
+        
+        for i in range(len(rep_names)):
+            if rep_names[i].strip():  # Only add if name is not empty
+                representatives.append({
+                    'full_name': rep_names[i],
+                    'email': rep_emails[i] if i < len(rep_emails) else '',
+                    'phone': rep_phones[i] if i < len(rep_phones) else '',
+                    'role': rep_roles[i] if i < len(rep_roles) else ''
+                })
+        
         # Prepare case data
         case_data = {
             'title': request.form.get('title'),
+            'case_category': request.form.get('case_category', 'individual'),
             'case_type': request.form.get('case_type'),
             'violation': request.form.get('violation'),
             'engagement_date': datetime.strptime(request.form.get('engagement_date'), '%Y-%m-%d').date(),
             'filing_date': datetime.strptime(request.form.get('filing_date'), '%Y-%m-%d').date() if request.form.get('filing_date') else None,
             'client_id': int(request.form.get('client_id')),
             'assigned_attorney_id': current_user.id,
-            'status': 'active'
+            'status': 'active',
+            'representatives': representatives
         }
         
         # Create case
@@ -74,12 +92,16 @@ def view_case(case_id):
             flash('Case not found!', 'error')
             return redirect(url_for('case.list_cases'))
         
+        # Get representatives for this case
+        representatives = CaseService.get_case_representatives(case_id)
+        
         # Get documents for this case
         from app.services.document_service import DocumentService
         documents = DocumentService.get_documents_by_parent('case', case_id)
         
         return render_template('cases/case_detail.html', 
                              case=case, 
+                             representatives=representatives,
                              documents=documents)
     except Exception as e:
         flash(f'Error loading case: {str(e)}', 'error')
@@ -96,9 +118,11 @@ def edit_case(case_id):
     
     if request.method == 'GET':
         clients = get_all_clients()
+        representatives = CaseService.get_case_representatives(case_id)
         return render_template('cases/edit_case.html', 
                              case=case, 
-                             clients=clients)
+                             clients=clients,
+                             representatives=representatives)
     
     # Handle POST request
     try:
@@ -108,20 +132,40 @@ def edit_case(case_id):
                    request.form.get('client_id')]):
             flash('Title, engagement date, and client are required!', 'error')
             clients = get_all_clients()
+            representatives = CaseService.get_case_representatives(case_id)
             return render_template('cases/edit_case.html', 
                                  case=case, 
-                                 clients=clients)
+                                 clients=clients,
+                                 representatives=representatives)
+        
+        # Parse representatives data
+        representatives = []
+        rep_names = request.form.getlist('representative_name[]')
+        rep_emails = request.form.getlist('representative_email[]')
+        rep_phones = request.form.getlist('representative_phone[]')
+        rep_roles = request.form.getlist('representative_role[]')
+        
+        for i in range(len(rep_names)):
+            if rep_names[i].strip():  # Only add if name is not empty
+                representatives.append({
+                    'full_name': rep_names[i],
+                    'email': rep_emails[i] if i < len(rep_emails) else '',
+                    'phone': rep_phones[i] if i < len(rep_phones) else '',
+                    'role': rep_roles[i] if i < len(rep_roles) else ''
+                })
         
         # Prepare case data
         case_data = {
             'title': request.form.get('title'),
+            'case_category': request.form.get('case_category', 'individual'),
             'case_type': request.form.get('case_type'),
             'violation': request.form.get('violation'),
             'engagement_date': datetime.strptime(request.form.get('engagement_date'), '%Y-%m-%d').date(),
             'filing_date': datetime.strptime(request.form.get('filing_date'), '%Y-%m-%d').date() if request.form.get('filing_date') else None,
             'client_id': int(request.form.get('client_id')),
             'assigned_attorney_id': current_user.id,
-            'status': request.form.get('status', 'active')
+            'status': request.form.get('status', 'active'),
+            'representatives': representatives
         }
         
         # Update case
@@ -132,9 +176,11 @@ def edit_case(case_id):
     except Exception as e:
         flash(f'Error updating case: {str(e)}', 'error')
         clients = get_all_clients()
+        representatives = CaseService.get_case_representatives(case_id)
         return render_template('cases/edit_case.html', 
                              case=case, 
-                             clients=clients)
+                             clients=clients,
+                             representatives=representatives)
 
 @case_bp.route('/<int:case_id>/delete', methods=['POST'])
 @login_required

@@ -17,3 +17,4 @@ from .notarial_entry_mdl import NotarialEntryWitness
 
 from .legal_consultation_mdl import LegalConsultation
 from .document_mdl import Document
+from .representative_mdl import Representative

@@ -1,4 +1,4 @@
-<!-- templates/cases/case_details.html -->
+<!-- templates/cases/case_detail.html -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -28,6 +28,14 @@
                         <div class="detail-item">
                             <span class="detail-label">Case Number</span>
                             <span class="detail-value"><code>{{ case.case_number }}</code></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Case Category</span>
+                            <span class="detail-value">
+                                <span class="badge {% if case.case_category == 'corporate' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                    {{ case.case_category|title }}
+                                </span>
+                            </span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Status</span>
@@ -89,6 +97,50 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Representatives Section -->
+                {% if representatives %}
+                <div class="panel-card">
+                    <h5 class="panel-card__title">Representatives ({{ representatives|length }})</h5>
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Contact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rep in representatives %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ rep.full_name }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if rep.role %}
+                                        <span class="badge bg-info">{{ rep.role }}</span>
+                                        {% else %}
+                                        <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            {% if rep.email %}
+                                            <div>{{ rep.email }}</div>
+                                            {% endif %}
+                                            {% if rep.phone %}
+                                            <div>{{ rep.phone }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
             </section>
         </div>
 
@@ -202,10 +254,7 @@
                             <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
                         <p class="text-muted">No documents attached to this case yet.</p>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#documentModal">
-                            Add First Document
-                        </button>
+
                     </div>
                     {% endif %}
                 </div>
@@ -340,14 +389,19 @@
         color: #0f5132;
     }
 
-    /* .status-tag--completed {
-        background-color: #f8d7da;
-        color: #842029;
-    } */
-
     .status-tag--pending {
         background-color: #fff3cd;
         color: #856404;
+    }
+
+    .status-tag--completed {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-tag--closed {
+        background-color: #f8d7da;
+        color: #721c24;
     }
 </style>
 {% endblock %}

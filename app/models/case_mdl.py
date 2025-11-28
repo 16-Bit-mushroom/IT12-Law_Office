@@ -8,6 +8,7 @@ class Case(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     case_number = db.Column(db.String(100), unique=True, nullable=False)
     title = db.Column(db.String(255), nullable=False)
+    case_category = db.Column(db.String(50), default='individual', nullable=False)  # 'individual' or 'corporate'
     case_type = db.Column(db.String(100), nullable=False)
     violation = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(50), default='active', nullable=False)

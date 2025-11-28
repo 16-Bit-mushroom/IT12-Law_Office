@@ -14,6 +14,7 @@ from app.models.service_mdl import Service
 from app.models.payment_mdl import Payment
 from app.models.transaction_mdl import TransactionItem
 from app.models.case_mdl import Case
+from app.models.representative_mdl import Representative  # ADD THIS IMPORT
 from app.models.notarial_entry_mdl import NotarialEntry, NotarialEntryParty, NotarialEntryWitness
 from app.models.legal_consultation_mdl import LegalConsultation
 from app.models.document_mdl import Document
@@ -52,7 +53,7 @@ class BackupService:
                 metadata = {
                     'backup_type': 'full_system',
                     'backup_date': datetime.utcnow().isoformat(),
-                    'version': '2.0', # Bumped version for new structure
+                    'version': '2.1',  # Bumped version for new models
                     'file_count': len(zipf.namelist())
                 }
                 zipf.writestr('metadata.json', json.dumps(metadata, indent=2))
@@ -226,11 +227,11 @@ class BackupService:
             db.session.execute(text('PRAGMA foreign_keys=OFF'))
 
             # Clear existing data in reverse dependency order
-            # (Note: With FKs OFF, order is less critical but still good practice)
+            # UPDATED: Added Representative to the clear order
             tables_to_clear = [
                 Document, NotarialEntryWitness, NotarialEntryParty, 
-                NotarialEntry, LegalConsultation, Case, 
-                TransactionItem, Payment, Service, Client, User
+                NotarialEntry, LegalConsultation, Representative,  # ADDED Representative
+                Case, TransactionItem, Payment, Service, Client, User
             ]
             
             for model in tables_to_clear:
@@ -242,6 +243,7 @@ class BackupService:
             db.session.commit()
             
             # Restore data
+            # UPDATED: Added Representative to the restore order
             models_restore_order = [
                 (User, 'users'),
                 (Client, 'clients'),
@@ -249,6 +251,7 @@ class BackupService:
                 (Payment, 'payments'),
                 (TransactionItem, 'transaction_items'),
                 (Case, 'cases'),
+                (Representative, 'representatives'),  # ADDED Representative
                 (NotarialEntry, 'notarial_entries'),
                 (NotarialEntryParty, 'notarial_entry_parties'),
                 (NotarialEntryWitness, 'notarial_entry_witnesses'),
@@ -312,15 +315,14 @@ class BackupService:
             current_app.logger.error(f"Database restore error: {str(e)}")
             raise e
 
-    # ... (Keep the rest of your helper methods like _create_database_backup, _save_backup_info, etc. unchanged) ...
-    
     @staticmethod
     def _create_database_backup():
         """Internal method to create database backup data"""
+        # UPDATED: Added representatives to backup data
         backup_data = {
             'metadata': {
                 'backup_date': datetime.utcnow().isoformat(),
-                'version': '1.0'
+                'version': '2.1'  # Updated version
             },
             'users': [BackupService.serialize_model(user) for user in User.query.all()],
             'clients': [BackupService.serialize_model(client) for client in Client.query.all()],
@@ -328,6 +330,7 @@ class BackupService:
             'payments': [BackupService.serialize_model(payment) for payment in Payment.query.all()],
             'transaction_items': [BackupService.serialize_model(item) for item in TransactionItem.query.all()],
             'cases': [BackupService.serialize_model(case) for case in Case.query.all()],
+            'representatives': [BackupService.serialize_model(rep) for rep in Representative.query.all()],  # ADDED
             'notarial_entries': [BackupService.serialize_model(entry) for entry in NotarialEntry.query.all()],
             'notarial_entry_parties': [BackupService.serialize_model(party) for party in NotarialEntryParty.query.all()],
             'notarial_entry_witnesses': [BackupService.serialize_model(witness) for witness in NotarialEntryWitness.query.all()],
@@ -386,6 +389,7 @@ class BackupService:
     @staticmethod
     def get_system_stats():
         try:
+            # UPDATED: Added representatives count
             stats = {
                 'users': User.query.count(),
                 'clients': Client.query.count(),
@@ -393,6 +397,7 @@ class BackupService:
                 'payments': Payment.query.count(),
                 'transaction_items': TransactionItem.query.count(),
                 'cases': Case.query.count(),
+                'representatives': Representative.query.count(),  # ADDED
                 'notarial_entries': NotarialEntry.query.count(),
                 'notarial_entry_parties': NotarialEntryParty.query.count(),
                 'notarial_entry_witnesses': NotarialEntryWitness.query.count(),

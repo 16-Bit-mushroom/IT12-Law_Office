@@ -204,30 +204,28 @@
                                     </a>
 
                                     <!-- Transaction Actions -->
-                                    {% if not entry.has_transaction %}
-                                    <form method="POST"
-                                        action="{{ url_for('notarial_entries.create_transaction', entry_id=entry.id) }}"
-                                        style="display: inline;">
-                                        <button type="submit" class="btn-action btn-action--success"
-                                            title="Create Transaction">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                    {% elif not entry.is_paid %}
+                                    {% if entry.transaction_status == 'paid' or entry.not_fee_or %}
+                                    <span class="badge badge-success"
+                                        style="padding: 8px; background-color: #28a745; color: white; border-radius: 4px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Paid
+                                    </span>
+                                    {% else %}
                                     <form method="POST"
                                         action="{{ url_for('notarial_entries.mark_as_paid', entry_id=entry.id) }}"
                                         style="display: inline;">
                                         <button type="submit" class="btn-action btn-action--warning"
-                                            title="Mark as Paid">
+                                            title="Mark as Paid (Amount: {{ entry.not_fee }})"
+                                            onclick="return confirm('Confirm payment of {{ entry.not_fee }} for this entry?');">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                                             </svg>
                                         </button>
                                     </form>

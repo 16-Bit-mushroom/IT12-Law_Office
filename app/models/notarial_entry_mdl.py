@@ -33,7 +33,7 @@ class NotarialEntry(db.Model):
     # Competent evidence of identity
     not_comp_evidence_id = db.Column(db.String(150), nullable=True)
     
-    # Transaction reference - CORRECTED: Only one foreign key
+    # Transaction reference
     transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=True)
     
     # Transaction status - Store as string, not foreign key
@@ -42,7 +42,7 @@ class NotarialEntry(db.Model):
     # Relationship with explicit foreign_keys - CORRECTED
     transaction_item = db.relationship('TransactionItem', 
                                      foreign_keys=[transaction_item_id],
-                                     backref='notary_entries', 
+                                     backref='notarial_entries',  # Changed from 'notary_entries'
                                      lazy=True)
 
     def __repr__(self):
@@ -58,8 +58,6 @@ class NotarialEntry(db.Model):
         return self.transaction_status == 'paid'
 
 
-# ... existing imports ...
-
 class NotarialEntryParty(db.Model):
     __tablename__ = 'notarial_entry_parties'
     
@@ -68,14 +66,12 @@ class NotarialEntryParty(db.Model):
     party_name = db.Column(db.String(150), nullable=False)
     party_address = db.Column(db.String(150), nullable=False)
     
-    # [NEW] ID Details for the party
+    # ID Details for the party
     party_id_type = db.Column(db.String(50), nullable=True) # e.g., Passport, Drivers License
     party_id_number = db.Column(db.String(50), nullable=True)
     party_id_expiry = db.Column(db.Date, nullable=True)
 
     notarial_entry = db.relationship('NotarialEntry', backref='parties', lazy=True)
-
-# ... NotarialEntryWitness remains unchanged unless you want IDs for them too ...
 
 
 class NotarialEntryWitness(db.Model):

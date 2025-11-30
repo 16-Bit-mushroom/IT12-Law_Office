@@ -7,21 +7,48 @@ from app.models.service_mdl import Service
 import uuid
 from datetime import datetime
 
-def create_transaction(transaction_data):
-    """Create a new transaction with automated workflow connections"""
+
+def create_transaction_from_notarial_entry(notarial_entry, client_id, service_id):
+    """Automatically create transaction when notarial entry is created"""
     try:
         transaction = TransactionItem(
-            client_id=transaction_data['client_id'],
-            service_id=transaction_data['service_id'],
-            transaction_amount=transaction_data['amount'],
-            document_title=transaction_data.get('document_title'),
-            document_purpose=transaction_data.get('document_purpose'),
-            transaction_status='Draft'
+            client_id=client_id,
+            service_id=service_id,
+            transaction_type='Notarial',
+            purpose=notarial_entry.not_title,
+            transaction_amount=notarial_entry.not_fee,
+            payment_status='Pending'
         )
         db.session.add(transaction)
         db.session.commit()
         
-        # Auto-create pending payment (Conditional Automation from your analysis)
+        # Auto-create pending payment
+        create_pending_payment(transaction)
+        
+        # Link notarial entry to transaction
+        notarial_entry.transaction_item_id = transaction.id
+        db.session.commit()
+        
+        return transaction
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+def create_transaction_from_case(case, client_id, service_id, purpose, amount):
+    """Automatically create transaction when case service is performed"""
+    try:
+        transaction = TransactionItem(
+            client_id=client_id,
+            service_id=service_id,
+            transaction_type='Case',
+            purpose=purpose,
+            transaction_amount=amount,
+            payment_status='Pending'
+        )
+        db.session.add(transaction)
+        db.session.commit()
+        
+        # Auto-create pending payment
         create_pending_payment(transaction)
         
         return transaction
@@ -30,17 +57,39 @@ def create_transaction(transaction_data):
         raise e
 
 def create_pending_payment(transaction):
-    """Auto-create a pending payment record for a transaction"""
+    """Auto-create a pending payment record"""
     try:
         payment = Payment(
             pay_method='Pending',
             pay_ref=f"INV-{transaction.id}-{uuid.uuid4().hex[:8].upper()}",
-            pay_type='Document Service',
+            pay_type=transaction.transaction_type,
             pay_amount=transaction.transaction_amount,
             payment_status='Pending'
         )
         db.session.add(payment)
-        db.session.flush()  # Get the payment ID without committing
+        db.session.flush()
+        
+        # Link payment to transaction
+        transaction.payment_id = payment.id
+        db.session.commit()
+        
+        return payment
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+def create_pending_payment(transaction):
+    """Auto-create a pending payment record"""
+    try:
+        payment = Payment(
+            pay_method='Pending',
+            pay_ref=f"INV-{transaction.id}-{uuid.uuid4().hex[:8].upper()}",
+            pay_type=transaction.transaction_type,
+            pay_amount=transaction.transaction_amount,
+            payment_status='Pending'
+        )
+        db.session.add(payment)
+        db.session.flush()
         
         # Link payment to transaction
         transaction.payment_id = payment.id
@@ -55,90 +104,75 @@ def submit_for_approval(transaction_id):
     """Submit transaction for lawyer approval"""
     transaction = TransactionItem.query.get(transaction_id)
     if transaction:
-        transaction.transaction_status = 'Pending Approval'
+        # For case transactions, create document and set status
+        if transaction.transaction_type == 'Case':
+            create_case_document(transaction)
         db.session.commit()
     return transaction
 
 def approve_transaction(transaction_id, lawyer_notes=None):
-    """Lawyer approves transaction and auto-creates documents"""
+    """Lawyer approves transaction"""
     transaction = TransactionItem.query.get(transaction_id)
     if transaction:
-        transaction.transaction_status = 'Approved'
-        transaction.approved_date = datetime.utcnow()
-        transaction.lawyer_notes = lawyer_notes
-        db.session.commit()
-        
-        # Auto-create CaseDocument upon approval (Conditional Automation)
-        create_case_document(transaction)
-        
-        # Auto-create NotarialEntry if service is notarization
-        if is_notarization_service(transaction.service_id):
+        # Auto-create NotarialEntry if notarial transaction
+        if transaction.transaction_type == 'Notarial':
             create_notarial_entry(transaction)
-    
+        db.session.commit()
     return transaction
 
 def complete_transaction(transaction_id):
-    """Mark transaction as completed after printing/signing"""
+    """Mark transaction as completed"""
     transaction = TransactionItem.query.get(transaction_id)
     if transaction:
-        transaction.transaction_status = 'Completed'
-        transaction.completed_date = datetime.utcnow()
+        # Update any related documents
+        if transaction.transaction_type == 'Case':
+            document = CaseDocument.query.filter_by(transaction_item_id=transaction.id).first()
+            if document:
+                document.cas_doc_status = 'Completed'
         db.session.commit()
     return transaction
 
-def mark_payment_paid(payment_id, payment_method, payment_reference):
-    """Mark payment as paid and update transaction status"""
-    payment = Payment.query.get(payment_id)
-    if payment:
-        payment.payment_status = 'Paid'
-        payment.pay_method = payment_method
-        payment.pay_ref = payment_reference
-        payment.pay_date = datetime.utcnow()
-        
-        # Update related transaction payment status
-        transaction = TransactionItem.query.filter_by(payment_id=payment_id).first()
-        if transaction:
-            transaction.payment_status = 'Paid'
+def mark_payment_paid(transaction_id, payment_method, payment_reference):
+    """Mark payment as paid and update transaction"""
+    transaction = TransactionItem.query.get(transaction_id)
+    if transaction and transaction.payment:
+        transaction.payment.payment_status = 'Paid'
+        transaction.payment.pay_method = payment_method
+        transaction.payment.pay_ref = payment_reference
+        transaction.payment.pay_date = datetime.utcnow()
+        transaction.payment_status = 'Paid'
+        transaction.payment_date = datetime.utcnow()
         
         db.session.commit()
-    return payment
+    return transaction
 
 def create_case_document(transaction):
-    """Auto-create CaseDocument when transaction is approved"""
+    """Auto-create CaseDocument for case transactions"""
     try:
         document = CaseDocument(
-            cas_doc_name=transaction.document_title or f"Document for Transaction #{transaction.id}",
+            cas_doc_name=transaction.purpose,
             cas_doc_status='Draft',
             client_id=transaction.client_id,
             transaction_item_id=transaction.id
         )
         db.session.add(document)
-        db.session.commit()
         return document
     except Exception as e:
         db.session.rollback()
         raise e
 
 def create_notarial_entry(transaction):
-    """Auto-create NotarialEntry for notarization services"""
+    """Auto-create NotarialEntry for notarial transactions"""
     try:
         client = transaction.client
         entry = NotarialEntry(
             not_entry_num=f"NOTARY-{transaction.id}-{datetime.utcnow().strftime('%Y%m%d')}",
-            not_title=transaction.document_title or "Notarized Document",
+            not_title=transaction.purpose,
             not_date=datetime.utcnow(),
             not_party_name=client.full_name,
             transaction_item_id=transaction.id
         )
         db.session.add(entry)
-        db.session.commit()
-        
-        # Auto-update document status to "Notarized" (Automatic connection)
-        document = CaseDocument.query.filter_by(transaction_item_id=transaction.id).first()
-        if document:
-            document.cas_doc_status = 'Notarized'
-            db.session.commit()
-            
         return entry
     except Exception as e:
         db.session.rollback()
@@ -147,12 +181,11 @@ def create_notarial_entry(transaction):
 def is_notarization_service(service_id):
     """Check if service is a notarization service"""
     service = Service.query.get(service_id)
-    if service and service.service_name:
-        # Check if the service name contains 'notarization' or related terms
-        notary_terms = ['notarization', 'notary', 'notarial']
-        return any(term in service.service_name.lower() for term in notary_terms)
-    return False
+    return service and service.is_notarization
 
 def get_all_transactions():
     """Get all transactions with client and service info"""
-    return TransactionItem.query.all()
+    return TransactionItem.query.options(
+        db.joinedload(TransactionItem.client),
+        db.joinedload(TransactionItem.service)
+    ).all()

@@ -1,18 +1,21 @@
 # app/routes/backup_routes.py
 from flask import Blueprint, request, jsonify, send_file, current_app
-from flask_login import login_required, current_user
+from flask_login import login_required
 import os
 import json
-import tempfile # Moved to top level
-import shutil   # Moved to top level
+import tempfile
+import shutil
 from datetime import datetime
-from sqlalchemy import text # Required for PRAGMA commands
+from sqlalchemy import text
 
 from app.services.backup_service import BackupService
 from app import db 
-# UPDATED IMPORTS: Added TransactionItem, Service, Payment. 
-# Also using NotarialEntry to match your import list (renamed from NotarialRecord if needed).
-from app.models import User, Client, Case, Document, NotarialEntry, LegalConsultation, TransactionItem, Service, Payment
+# UPDATED IMPORTS: Added Representative, NotarialEntryParty, NotarialEntryWitness
+from app.models import (
+    User, Client, Case, Document, NotarialEntry, LegalConsultation, 
+    TransactionItem, Service, Payment, Representative,
+    NotarialEntryParty, NotarialEntryWitness
+)
 
 backup_bp = Blueprint('backup', __name__, url_prefix='/backup')
 
@@ -76,7 +79,7 @@ def restore_backup():
     """Restore system from backup file"""
     try:
         restore_source = request.form.get('restore_source')  # 'local' or 'system'
-        backup_file_path = None # Initialize variable
+        backup_file_path = None
         
         # 1. DETERMINE BACKUP SOURCE
         if restore_source == 'local':
@@ -87,7 +90,6 @@ def restore_backup():
             if file.filename == '':
                 return jsonify({'error': 'No file selected'}), 400
             
-            # Save uploaded file to temporary location
             temp_dir = tempfile.gettempdir()
             backup_file_path = os.path.join(temp_dir, file.filename)
             file.save(backup_file_path)
@@ -108,7 +110,6 @@ def restore_backup():
         try:
             backup_type = BackupService.validate_backup_file(backup_file_path)
         except Exception as e:
-            # Clean up temp file if validation failed
             if restore_source == 'local' and os.path.exists(backup_file_path):
                 os.remove(backup_file_path)
             return jsonify({'error': f'Invalid backup file: {str(e)}'}), 400
@@ -118,20 +119,26 @@ def restore_backup():
             # Disable Foreign Keys
             db.session.execute(text('PRAGMA foreign_keys=OFF'))
 
-            # Clear all tables (Added TransactionItem to fix IntegrityError)
-            TransactionItem.query.delete()
-            Payment.query.delete() # Assuming Payment exists based on TransactionItem logic
+            # Clear all tables (Updated Order & Included missing models)
+            # Delete children first
+            NotarialEntryWitness.query.delete()
+            NotarialEntryParty.query.delete()
             Document.query.delete()
+            
+            # Delete parents
+            NotarialEntry.query.delete()
+            Representative.query.delete() # Added
             LegalConsultation.query.delete()
-            NotarialEntry.query.delete() # Changed from NotarialRecord to match your imports
             Case.query.delete()
+            TransactionItem.query.delete()
+            Payment.query.delete()
+            Service.query.delete()
             Client.query.delete()
             User.query.delete()
-            # Service.query.delete() # Uncomment if needed
 
             db.session.commit()
 
-            # Perform Restore (while FKs are OFF)
+            # Perform Restore
             if backup_type == 'full_system':
                 success = BackupService.restore_full_system(backup_file_path)
                 message = 'Full system restore completed successfully'
@@ -139,11 +146,9 @@ def restore_backup():
                 success = BackupService.restore_database_only(backup_file_path)
                 message = 'Database restore completed successfully'
             elif backup_type == 'documents_only':
-                # Re-enable FKs before return
                 db.session.execute(text('PRAGMA foreign_keys=ON'))
                 return jsonify({'error': 'Documents-only restore not yet implemented'}), 501
             else:
-                # Re-enable FKs before return
                 db.session.execute(text('PRAGMA foreign_keys=ON'))
                 return jsonify({'error': 'Unknown backup type'}), 400
 
@@ -182,22 +187,19 @@ def restore_backup():
 def list_backups():
     """Get list of system-stored backups"""
     try:
-        # Check if BackupService has get_backup_history, if not fallback to manual listing
         if hasattr(BackupService, 'get_backup_history'):
             backup_files = BackupService.get_backup_history()
             return jsonify({'backups': backup_files})
         else:
-             # Fallback logic if method doesn't exist
             return backup_history()
     except Exception as e:
         current_app.logger.error(f"Backup list error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-# Helper route for history (kept from your original code)
-@backup_bp.route('/history_manual') # Renamed to avoid collision if you had duplicates
+@backup_bp.route('/history_manual')
 @login_required
 def backup_history():
-    """Get list of system backups"""
+    """Get list of system backups (Manual Fallback)"""
     try:
         backup_dir = current_app.config.get('BACKUP_DIR', 'backups')
         backups = []

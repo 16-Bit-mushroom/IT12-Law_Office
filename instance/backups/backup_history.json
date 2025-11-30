@@ -1,16 +1,16 @@
 [
   {
-    "filename": "full_system_backup_20251128_100551.zip",
-    "path": "/home/chrischros_0/Projects/IT12-Law_Office/instance/backups/full_system_backup_20251128_100551.zip",
+    "filename": "full_system_backup_20251130_104052.zip",
+    "path": "/home/cachychris/Desktop/Projects/IT12-Law_Office/instance/backups/full_system_backup_20251130_104052.zip",
     "type": "full_system",
-    "size": 507462,
-    "created_at": "2025-11-28T02:05:51.120833"
+    "size": 833968,
+    "created_at": "2025-11-30T02:40:52.191373"
   },
   {
-    "filename": "full_system_backup_20251128_100555.zip",
-    "path": "/home/chrischros_0/Projects/IT12-Law_Office/instance/backups/full_system_backup_20251128_100555.zip",
+    "filename": "full_system_backup_20251130_104112.zip",
+    "path": "/home/cachychris/Desktop/Projects/IT12-Law_Office/instance/backups/full_system_backup_20251130_104112.zip",
     "type": "full_system",
-    "size": 507464,
-    "created_at": "2025-11-28T02:05:55.537772"
+    "size": 833970,
+    "created_at": "2025-11-30T02:41:12.373678"
   }
 ]

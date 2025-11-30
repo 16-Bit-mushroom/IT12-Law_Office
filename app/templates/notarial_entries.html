@@ -150,15 +150,22 @@
                                         {% endfor %}
                                     </button>
 
-                                    <!-- Tooltip (unchanged) -->
                                     <div class="list-tooltip">
                                         {% for party in entry.parties %}
                                         <div class="party-item">
                                             <strong>{{ party.party_name }}</strong><br>
                                             <small class="text-muted">{{ party.party_address }}</small>
-                                            {% if party.id_type %}
-                                            <br>
-                                            <small>ID: {{ party.id_type }} - {{ party.id_number }}</small>
+
+                                            {% if party.party_id_type %}
+                                            <div
+                                                style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ddd;">
+                                                <small class="text-primary">
+                                                    {{ party.party_id_type }}: {{ party.party_id_number }}
+                                                    {% if party.party_id_expiry %}
+                                                    <br>Valid until: {{ party.party_id_expiry.strftime('%Y-%m-%d') }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
                                             {% endif %}
                                         </div>
                                         {% if not loop.last %}
@@ -178,10 +185,8 @@
                             <td>
                                 {% if entry.is_paid %}
                                 <span class="status-tag status-tag--signed">Paid</span>
-                                {% elif entry.has_transaction %}
-                                <span class="status-tag status-tag--unsigned">Unpaid</span>
                                 {% else %}
-                                <span class="status-tag status-tag--other">No Transaction</span>
+                                <span class="status-tag status-tag--unsigned">Unpaid</span>
                                 {% endif %}
                             </td>
 
@@ -424,7 +429,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">O.R. Number *</label>
-                                <input type="text" class="form-control" name="notarial_fee_or" required>
+                                <input type="text" class="form-control" name="notarial_fee_or">
                             </div>
                         </div>
                     </div>
@@ -817,29 +822,69 @@
     }
 
     // Function to add a new party field (SIMPLIFIED - No ID fields)
+    // Function to add a new party field with ID details
     function addPartyField(partyData = null) {
         const container = document.getElementById('partiesContainer');
         const index = container.children.length;
 
+        // Helper for selecting options
+        const isSel = (val, target) => val === target ? 'selected' : '';
+        const curType = partyData ? partyData.party_id_type : '';
+
         const partyHtml = `
-        <div class="party-field border p-3 mb-3 rounded">
+        <div class="party-field border p-3 mb-3 rounded" style="background-color: #f8f9fa;">
+            <div class="d-flex justify-content-between mb-2">
+                <strong>Party #${index + 1}</strong>
+                ${index > 0 ? '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removePartyField(this)">Remove</button>' : ''}
+            </div>
+            
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label">Party Name *</label>
+                        <label class="form-label small">Party Name *</label>
                         <input type="text" class="form-control" name="party_name" value="${partyData ? partyData.party_name : ''}" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label">Party Address *</label>
-                        <textarea class="form-control" name="party_address" rows="2" required>${partyData ? partyData.party_address : ''}</textarea>
+                        <label class="form-label small">Party Address *</label>
+                        <textarea class="form-control" name="party_address" rows="1" required>${partyData ? partyData.party_address : ''}</textarea>
                     </div>
                 </div>
             </div>
-            ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removePartyField(this)">Remove Party</button>' : ''}
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label small">ID Type *</label>
+                        <select class="form-control" name="party_id_type" required>
+                            <option value="">Select ID...</option>
+                            <option value="Passport" ${isSel(curType, 'Passport')}>Passport</option>
+                            <option value="Driver's License" ${isSel(curType, "Driver's License")}>Driver's License</option>
+                            <option value="SSS ID" ${isSel(curType, 'SSS ID')}>SSS ID</option>
+                            <option value="UMID" ${isSel(curType, 'UMID')}>UMID</option>
+                            <option value="PhilHealth ID" ${isSel(curType, 'PhilHealth ID')}>PhilHealth ID</option>
+                            <option value="TIN ID" ${isSel(curType, 'TIN ID')}>TIN ID</option>
+                            <option value="Voter's ID" ${isSel(curType, "Voter's ID")}>Voter's ID</option>
+                            <option value="Other" ${isSel(curType, 'Other')}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label small">ID Number *</label>
+                        <input type="text" class="form-control" name="party_id_number" value="${partyData && partyData.party_id_number ? partyData.party_id_number : ''}" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label small">Expiry Date</label>
+                        <input type="date" class="form-control" name="party_id_expiry" value="${partyData && partyData.party_id_expiry ? partyData.party_id_expiry : ''}">
+                    </div>
+                </div>
+            </div>
         </div>
-    `;
+        `;
 
         container.insertAdjacentHTML('beforeend', partyHtml);
     }
@@ -921,8 +966,8 @@
     });
 
     // Handle form submission
+    // Handle form submission
     document.getElementById('entryForm')?.addEventListener('submit', function (e) {
-        // Basic validation
         const parties = document.querySelectorAll('.party-field');
         if (parties.length === 0) {
             e.preventDefault();
@@ -930,14 +975,16 @@
             return;
         }
 
-        // Validate each party has name and address
+        // Validate each party has name, address AND ID details
         for (let party of parties) {
             const name = party.querySelector('input[name="party_name"]').value.trim();
             const address = party.querySelector('textarea[name="party_address"]').value.trim();
+            const idType = party.querySelector('select[name="party_id_type"]').value;
+            const idNum = party.querySelector('input[name="party_id_number"]').value.trim();
 
-            if (!name || !address) {
+            if (!name || !address || !idType || !idNum) {
                 e.preventDefault();
-                alert('All parties must have both name and address');
+                alert('All parties must have Name, Address, ID Type, and ID Number.');
                 return;
             }
         }

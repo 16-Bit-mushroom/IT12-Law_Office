@@ -56,7 +56,11 @@ def get_entry_json(entry_id):  # CHANGED FUNCTION NAME
             'parties': [{
                 'id': party.id,
                 'party_name': party.party_name,
-                'party_address': party.party_address
+                'party_address': party.party_address,
+                'party_id_type': party.party_id_type,
+                'party_id_number': party.party_id_number,
+                # Handle date object serialization safely
+                'party_id_expiry': party.party_id_expiry.strftime('%Y-%m-%d') if party.party_id_expiry else None
             } for party in entry.parties],
             'witnesses': [{
                 'id': witness.id,

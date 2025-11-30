@@ -25,7 +25,7 @@ class NotarialEntry(db.Model):
     
     # Fees & O.R No
     not_fee = db.Column(Numeric(10, 2), nullable=False)
-    not_fee_or = db.Column(db.String(255), nullable=False)
+    not_fee_or = db.Column(db.String(255), nullable=True)
     
     # Other place of notarization
     not_other_place = db.Column(db.String(255), nullable=True)
@@ -58,6 +58,8 @@ class NotarialEntry(db.Model):
         return self.transaction_status == 'paid'
 
 
+# ... existing imports ...
+
 class NotarialEntryParty(db.Model):
     __tablename__ = 'notarial_entry_parties'
     
@@ -66,7 +68,14 @@ class NotarialEntryParty(db.Model):
     party_name = db.Column(db.String(150), nullable=False)
     party_address = db.Column(db.String(150), nullable=False)
     
+    # [NEW] ID Details for the party
+    party_id_type = db.Column(db.String(50), nullable=True) # e.g., Passport, Drivers License
+    party_id_number = db.Column(db.String(50), nullable=True)
+    party_id_expiry = db.Column(db.Date, nullable=True)
+
     notarial_entry = db.relationship('NotarialEntry', backref='parties', lazy=True)
+
+# ... NotarialEntryWitness remains unchanged unless you want IDs for them too ...
 
 
 class NotarialEntryWitness(db.Model):

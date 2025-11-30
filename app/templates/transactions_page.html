@@ -11,7 +11,7 @@
         <div style="display: flex; justify-content: space-between; gap: 12px;">
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
-                    <span class="data-card__title">Total Services</span>
+                    <span class="data-card__title">Total Transactions</span>
                     <span class="data-card__value">{{ transactions|length }}</span>
                 </div>
                 <div class="data-card__icon data-card__icon--blue"></div>
@@ -19,42 +19,36 @@
 
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
-                    <span class="data-card__title">Pending Approval</span>
-                    <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto', 'Pending
-                        Approval')|list|length }}</span>
+                    <span class="data-card__title">Pending Payment</span>
+                    <span class="data-card__value">{{ transactions|selectattr('payment_status', 'equalto',
+                        'Pending')|list|length }}</span>
                 </div>
                 <div class="data-card__icon data-card__icon--gold"></div>
             </div>
 
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
-                    <span class="data-card__title">Approved</span>
-                    <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto',
-                        'Approved')|list|length }}</span>
+                    <span class="data-card__title">Paid</span>
+                    <span class="data-card__value">{{ transactions|selectattr('payment_status', 'equalto',
+                        'Paid')|list|length }}</span>
                 </div>
                 <div class="data-card__icon data-card__icon--green"></div>
             </div>
 
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
-                    <span class="data-card__title">Completed</span>
-                    <span class="data-card__value">{{ transactions|selectattr('transaction_status', 'equalto',
-                        'Completed')|list|length }}</span>
+                    <span class="data-card__title">Notarial</span>
+                    <span class="data-card__value">{{ transactions|selectattr('transaction_type', 'equalto',
+                        'Notarial')|list|length }}</span>
                 </div>
                 <div class="data-card__icon data-card__icon--purple"></div>
             </div>
         </div>
-
-
     </header>
-
-
 
     <section class="content-section">
         <div class="panel-card">
-
             <div class="filter-buttons mb-4" style="display: flex; justify-content: space-between;">
-
                 <div class="search-bar">
                     <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -64,36 +58,32 @@
                     </svg>
                     <input class="search-bar__input" type="text" placeholder="Search transactions, clients...">
                 </div>
-                <div class="btn-group" role="group" aria-label="Document filters">
+                <div class="btn-group" role="group" aria-label="Transaction filters">
                     <button type="button" class="btn btn-outline-primary active" data-filter="all">
                         All
                     </button>
-                    <button type="button" class="btn btn-outline-primary" data-filter="notarial_entry">
+                    <button type="button" class="btn btn-outline-primary" data-filter="notarial">
                         Notarial
                     </button>
                     <button type="button" class="btn btn-outline-primary" data-filter="case">
                         Case Logs
                     </button>
-                    <!-- <button type="button" class="btn btn-outline-primary" data-filter="consultation">
-                        Consultation
-                    </button> -->
-
+                    <button type="button" class="btn btn-outline-primary" data-filter="pending">
+                        Pending Payment
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="paid">
+                        Paid
+                    </button>
                 </div>
             </div>
-            <!-- <div class="alert alert-info">
-                    <strong>Note:</strong> For notarization services, please use the <a
-                        href="{{ url_for('notarial_entries.notarial_entries_page') }}" class="alert-link">Notarial
-                        Entries page</a>.
-                </div> -->
 
             <div class="table-wrapper">
                 <table class="table">
                     <colgroup>
                         <col class="short">
                         <col class="medium">
-                        <col class="medium">
+                        <col class="short">
                         <col class="long">
-                        <!-- <col class="short"> -->
                         <col class="numeric">
                         <col class="short">
                         <col class="short">
@@ -104,9 +94,8 @@
                         <tr>
                             <th data-sort-key="id">ID</th>
                             <th data-sort-key="client">Client</th>
-                            <th data-sort-key="service">Service</th>
-                            <th data-sort-key="document">Document</th>
-                            <!-- <th data-sort-key="status">Status</th> -->
+                            <th data-sort-key="type">Type</th>
+                            <th data-sort-key="purpose">Purpose</th>
                             <th data-sort-key="amount">Amount</th>
                             <th data-sort-key="payment">Payment</th>
                             <th data-sort-key="date">Date</th>
@@ -115,25 +104,18 @@
                     </thead>
                     <tbody>
                         {% for transaction in transactions %}
-                        <tr>
+                        <tr data-type="{{ transaction.transaction_type|lower }}"
+                            data-status="{{ transaction.payment_status|lower }}">
                             <td>#{{ transaction.id }}</td>
                             <td>
                                 <a href="#" class="table-link">{{ transaction.client.full_name }}</a>
                             </td>
                             <td>
-                                {% if transaction.service %}
-                                {{ transaction.service.service_name }}
-                                {% else %}
-                                Service #{{ transaction.service_id }}
-                                {% endif %}
-                            </td>
-                            <td>{{ transaction.document_title or 'No title' }}</td>
-                            <!-- <td>
-                                <span
-                                    class="status-tag status-tag--{{ transaction.transaction_status|lower|replace(' ', '-') }}">
-                                    {{ transaction.transaction_status }}
+                                <span class="type-tag type-tag--{{ transaction.transaction_type|lower }}">
+                                    {{ transaction.transaction_type }}
                                 </span>
-                            </td> -->
+                            </td>
+                            <td>{{ transaction.purpose }}</td>
                             <td>₱{{ "%.2f"|format(transaction.transaction_amount) }}</td>
                             <td>
                                 <span class="status-tag status-tag--{{ transaction.payment_status|lower }}">
@@ -143,34 +125,7 @@
                             <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <!-- {% if transaction.transaction_status == 'Draft' %}
-                                    <form
-                                        action="{{ url_for('transaction.submit_for_approval_route', transaction_id=transaction.id) }}"
-                                        method="POST" style="display: inline;">
-                                        <button type="submit" class="btn-action btn-action--primary"
-                                            title="Submit for Approval">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                    {% endif %}
-
-                                    {% if transaction.transaction_status == 'Pending Approval' and
-                                    current_user.is_admin %}
-                                    <button type="button" class="btn-action btn-action--success" title="Approve"
-                                        data-bs-toggle="modal" data-bs-target="#approveModal{{ transaction.id }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
-                                    </button>
-                                    {% endif %} -->
-
+                                    <!-- View Details -->
                                     <a href="#" class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -179,45 +134,130 @@
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </a>
+
+                                    <!-- Mark as Paid -->
+                                    {% if transaction.payment_status == 'Paid' %}
+                                    <span class="badge badge-success">Paid</span>
+                                    {% else %}
+                                    <form method="POST"
+                                        action="{{ url_for('transaction.mark_payment_paid_route', transaction_id=transaction.id) }}"
+                                        style="display:inline;">
+
+                                        <input type="hidden" name="payment_method" value="Cash">
+
+                                        <button type="submit" class="btn-action btn-action--warning"
+                                            title="Mark as Paid"
+                                            onclick="return confirm('Mark this transaction as Paid?');">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+
+                                    <!-- Case-specific actions -->
+                                    {% if transaction.transaction_type == 'Case' %}
+                                    <button type="button" class="btn-action btn-action--primary"
+                                        title="Submit for Approval" data-bs-toggle="modal"
+                                        data-bs-target="#approvalModal{{ transaction.id }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    {% endif %}
                                 </div>
 
-                                <!-- Approve Modal -->
-                                {% if transaction.transaction_status == 'Pending Approval' %}
-                                <div class="modal fade" id="approveModal{{ transaction.id }}" tabindex="-1"
-                                    aria-labelledby="approveModalLabel{{ transaction.id }}" aria-hidden="true">
+                                <!-- Payment Modal -->
+                                <div class="modal fade" id="paymentModal{{ transaction.id }}" tabindex="-1"
+                                    aria-labelledby="paymentModalLabel{{ transaction.id }}" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="approveModalLabel{{ transaction.id }}">
-                                                    Approve Transaction #{{ transaction.id }}</h5>
+                                                <h5 class="modal-title" id="paymentModalLabel{{ transaction.id }}">
+                                                    Mark Payment as Paid - #{{ transaction.id }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
                                             <form
-                                                action="{{ url_for('transaction.approve_transaction_route', transaction_id=transaction.id) }}"
+                                                action="{{ url_for('transaction.mark_payment_paid_route', transaction_id=transaction.id) }}"
                                                 method="POST">
                                                 <div class="modal-body">
-                                                    <p><strong>Client:</strong> {{ transaction.client.full_name }}
-                                                    </p>
-                                                    <p><strong>Document:</strong> {{ transaction.document_title or
-                                                        'No title' }}</p>
-                                                    <p><strong>Purpose:</strong> {{ transaction.document_purpose or
-                                                        'No description' }}</p>
+                                                    <p><strong>Client:</strong> {{ transaction.client.full_name }}</p>
+                                                    <p><strong>Purpose:</strong> {{ transaction.purpose }}</p>
+                                                    <p><strong>Amount:</strong> ₱{{
+                                                        "%.2f"|format(transaction.transaction_amount) }}</p>
 
                                                     <div class="mb-3">
-                                                        <label for="lawyer_notes{{ transaction.id }}"
-                                                            class="form-label">Lawyer Notes (Optional)</label>
-                                                        <textarea class="form-control"
-                                                            id="lawyer_notes{{ transaction.id }}" name="lawyer_notes"
-                                                            rows="3"
-                                                            placeholder="Add any notes or instructions..."></textarea>
+                                                        <label for="payment_method{{ transaction.id }}"
+                                                            class="form-label">Payment Method</label>
+                                                        <select class="form-control"
+                                                            id="payment_method{{ transaction.id }}"
+                                                            name="payment_method" required>
+                                                            <option value="">Select payment method</option>
+                                                            <option value="Cash">Cash</option>
+                                                            <option value="Bank Transfer">Bank Transfer</option>
+                                                            <option value="Credit Card">Credit Card</option>
+                                                            <option value="Check">Check</option>
+                                                            <option value="Online Payment">Online Payment</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="payment_reference{{ transaction.id }}"
+                                                            class="form-label">Reference Number (Optional)</label>
+                                                        <input type="text" class="form-control"
+                                                            id="payment_reference{{ transaction.id }}"
+                                                            name="payment_reference"
+                                                            placeholder="Enter reference number...">
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-success">Approve
-                                                        Transaction</button>
+                                                    <button type="submit" class="btn btn-success">Mark as Paid</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Approval Modal (for Case transactions) -->
+                                {% if transaction.transaction_type == 'Case' %}
+                                <div class="modal fade" id="approvalModal{{ transaction.id }}" tabindex="-1"
+                                    aria-labelledby="approvalModalLabel{{ transaction.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="approvalModalLabel{{ transaction.id }}">
+                                                    Submit for Approval - #{{ transaction.id }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form
+                                                action="{{ url_for('transaction.submit_for_approval_route', transaction_id=transaction.id) }}"
+                                                method="POST">
+                                                <div class="modal-body">
+                                                    <p><strong>Client:</strong> {{ transaction.client.full_name }}</p>
+                                                    <p><strong>Purpose:</strong> {{ transaction.purpose }}</p>
+                                                    <p><strong>Amount:</strong> ₱{{
+                                                        "%.2f"|format(transaction.transaction_amount) }}</p>
+
+                                                    <div class="alert alert-info">
+                                                        This will create a case document and submit it for lawyer
+                                                        approval.
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Submit for
+                                                        Approval</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -228,10 +268,8 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 2rem;">
-                                No legal service transactions found. <a
-                                    href="{{ url_for('transaction.new_transaction_form') }}">Create your first legal
-                                    service</a>
+                            <td colspan="8" style="text-align: center; padding: 2rem;">
+                                No transactions found.
                             </td>
                         </tr>
                         {% endfor %}
@@ -280,36 +318,82 @@
         opacity: 0.8;
     }
 
-    .status-tag--draft {
-        background-color: #6c757d;
+    .type-tag {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
     }
 
-    .status-tag--pending-approval {
-        background-color: #ffc107;
-        color: #000;
+    .type-tag--notarial {
+        background-color: #e8f5e8;
+        color: #2d5a2d;
     }
 
-    .status-tag--approved {
-        background-color: #60f43663;
-        color: #2a6a2a;
+    .type-tag--case {
+        background-color: #e8f0f8;
+        color: #2c5282;
     }
 
-    .status-tag--completed {
-        background-color: #007bff;
+    .status-tag {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
     }
 
     .status-tag--paid {
-        background-color: #28a745;
+        background-color: #d4edda;
+        color: #155724;
     }
 
     .status-tag--pending {
-        background-color: #ffe390;
-        color: #956900;
+        background-color: #fff3cd;
+        color: #856404;
     }
 </style>
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/documents/document_table.js') }}"></script>
+<script>
+    // Filter functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterButtons = document.querySelectorAll('.btn-group .btn');
+        const tableRows = document.querySelectorAll('tbody tr');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const filter = this.getAttribute('data-filter');
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter rows
+                tableRows.forEach(row => {
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else if (filter === 'notarial' || filter === 'case') {
+                        row.style.display = row.getAttribute('data-type') === filter ? '' : 'none';
+                    } else if (filter === 'pending' || filter === 'paid') {
+                        row.style.display = row.getAttribute('data-status') === filter ? '' : 'none';
+                    }
+                });
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-bar__input');
+        searchInput.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    });
+</script>
 {% endblock scripts %}
 
 {% endblock content %}

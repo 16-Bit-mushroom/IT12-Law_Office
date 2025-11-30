@@ -17,7 +17,6 @@ class Client(db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
 
-    transaction_items = db.relationship('TransactionItem', backref='client', lazy=True)
 
     # Property to get full name
     @property

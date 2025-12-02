@@ -75,16 +75,8 @@
         <div class="panel-card">
 
             <div class="dashboard-actions"
-                style="display: flex; justify-content: space-between; flex-shrink: 0; gap: 50px;">
-                <div class="search-bar">
-                    <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input class="search-bar__input" type="text" placeholder="Search entries, clients, documents...">
-                </div>
+                style="display: flex; justify-content: start; flex-shrink: 0; gap: 50px;">
+
 
                 <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entryModal">
                     <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -205,14 +197,13 @@
 
                                     <!-- Transaction Actions -->
                                     {% if entry.transaction_status == 'paid' or entry.not_fee_or %}
-                                    <span class="badge badge-success"
+                                    <span class="badge badge-success" title="Paid"
                                         style="padding: 8px; background-color: #28a745; color: white; border-radius: 4px;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0px;">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
-                                        Paid
                                     </span>
                                     {% else %}
                                     <form method="POST"

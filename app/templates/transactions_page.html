@@ -49,15 +49,7 @@
     <section class="content-section">
         <div class="panel-card">
             <div class="filter-buttons mb-4" style="display: flex; justify-content: space-between;">
-                <div class="search-bar">
-                    <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input class="search-bar__input" type="text" placeholder="Search transactions, clients...">
-                </div>
+
                 <div class="btn-group" role="group" aria-label="Transaction filters">
                     <button type="button" class="btn btn-outline-primary active" data-filter="all">
                         All
@@ -136,7 +128,7 @@
                                     </a>
 
                                     <!-- Mark as Paid -->
-                                    {% if transaction.payment_status == 'Paid' %}
+                                    <!-- {% if transaction.payment_status == 'Paid' %}
                                     <span class="badge badge-success">Paid</span>
                                     {% else %}
                                     <form method="POST"
@@ -156,10 +148,10 @@
                                             </svg>
                                         </button>
                                     </form>
-                                    {% endif %}
+                                    {% endif %} -->
 
                                     <!-- Case-specific actions -->
-                                    {% if transaction.transaction_type == 'Case' %}
+                                    <!-- {% if transaction.transaction_type == 'Case' %}
                                     <button type="button" class="btn-action btn-action--primary"
                                         title="Submit for Approval" data-bs-toggle="modal"
                                         data-bs-target="#approvalModal{{ transaction.id }}">
@@ -170,7 +162,7 @@
                                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                         </svg>
                                     </button>
-                                    {% endif %}
+                                    {% endif %} -->
                                 </div>
 
                                 <!-- Payment Modal -->

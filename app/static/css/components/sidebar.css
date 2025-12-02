@@ -33,7 +33,7 @@ body {
 .sidebar-header {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     padding: 0 10px;
 }
 
@@ -233,6 +233,49 @@ body {
 .avatar-dropdown a:hover {
     background-color: #f3f4f6;
     color: var(--color-royal-blue);
+}
+
+/* Sidebar Search Styling */
+.sidebar-search {
+    margin-bottom: 30px;
+
+}
+
+.sidebar-search .search-group {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px; /* Soft corners */
+    padding: 4px 10px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-search .search-group:focus-within {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Override Bootstrap input styles for the sidebar */
+.sidebar-search input {
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important; /* White text */
+    font-size: 0.9rem;
+    box-shadow: none !important;
+    padding-left: 10px;
+    width: 100%;
+}
+
+.sidebar-search input::placeholder {
+    color: rgba(255, 255, 255, 0.6); /* Muted placeholder text */
+}
+
+.sidebar-search .search-icon {
+    opacity: 0.7;
+    width: 16px;
+    height: 16px;
+    filter: invert(1); /* Ensures icon is white if you use a black SVG */
 }
 
 /* --- CONTENT OFFSET --- */

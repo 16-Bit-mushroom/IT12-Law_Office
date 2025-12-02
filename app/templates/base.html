@@ -4,15 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- ✅ Local Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
-    <!-- Ensure sidebar.css is linked -->
+    
     <title>RBJ Law Office</title>
+
+    <style>
+        .sidebar-search .input-group { background: rgba(255,255,255,0.1); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-search input { background: transparent !important; border: none !important; color: #fff !important; box-shadow: none !important; font-size: 14px; }
+        .sidebar-search input::placeholder { color: rgba(255,255,255,0.5); }
+        .sidebar-search svg { fill: rgba(255,255,255,0.6); }
+    </style>
 </head>
 
-<!-- ✅ Bootstrap JS Bundle (includes Popper) -->
 <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
@@ -20,14 +25,24 @@
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <!-- Added specific class for logo coloring if needed -->
             <img src="{{ url_for('static', filename='img/scales-of-justice.svg') }}" alt="logo" class="logo-img">
             <h2>RBJ Law</h2>
         </div>
 
+        <div class="sidebar-search">
+            <form action="#" method="GET"> 
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-0 pe-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" name="q" class="form-control" placeholder="Search anything..." aria-label="Search">
+                </div>
+            </form>
+        </div>
         <ul class="sidebar-links">
 
-            <!-- Added dynamic 'active' class logic -->
             <li>
                 <a href="{{ url_for('dashboard.dashboard_page') }}"
                     class="{{ 'active' if 'dashboard' in request.endpoint else '' }}">

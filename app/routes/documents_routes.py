@@ -98,19 +98,12 @@ def documents_page():
 # ... rest of your routes remain the same
 
 
+# documents_routes.py - Remove or redirect the duplicate route
 @documents_bp.route('/notarial-entry/<int:entry_id>')
 @login_required
 def notarial_entry_documents(entry_id):
-    """Display documents for a specific notarial entry"""
-    entry = NotarialEntry.query.get(entry_id)  # Use model directly
-    if not entry:
-        flash('Notarial entry not found!', 'error')
-        return redirect(url_for('notarial_entries.notarial_entries_page'))
-    
-    documents = DocumentService.get_documents_by_parent('notarial_entry', entry_id)
-    return render_template('notarial_entry_details.html', 
-                         entry=entry, 
-                         documents=documents)
+    """Redirect to the main notarial entry details page"""
+    return redirect(url_for('notarial_entries.entry_details', entry_id=entry_id))
 
 # ... rest of your routes remain the same
 

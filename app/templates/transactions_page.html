@@ -99,9 +99,7 @@
                         <tr data-type="{{ transaction.transaction_type|lower }}"
                             data-status="{{ transaction.payment_status|lower }}">
                             <td>#{{ transaction.id }}</td>
-                            <td>
-                                <a href="#" class="table-link">{{ transaction.client.full_name }}</a>
-                            </td>
+                            <td>{{ transaction.client.full_name if transaction.client else 'Unknown Client' }}</td>
                             <td>
                                 <span class="type-tag type-tag--{{ transaction.transaction_type|lower }}">
                                     {{ transaction.transaction_type }}
@@ -118,7 +116,10 @@
                             <td>
                                 <div class="action-buttons">
                                     <!-- View Details -->
-                                    <a href="#" class="btn-action btn-action--info" title="View Details">
+                                    <!-- Replace the view button with this -->
+                                    <!-- Replace the view button with this -->
+                                    <a href="{{ url_for('transaction.view_transaction_details', transaction_id=transaction.id) }}"
+                                        class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">

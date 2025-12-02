@@ -121,7 +121,7 @@
 <main class="dashboard-content">
 
     <header class="dashboard-header" style="justify-content: start;">
-            <h1>Dashboard</h1>
+        <h1>Dashboard</h1>
 
 
     </header>
@@ -204,6 +204,7 @@
                                 {% endif %}
                             </td>
                             <td>
+                                <!-- FIXED: Use doc.target_url instead of entry.id -->
                                 <a href="{{ doc.target_url }}"
                                     style="color: var(--color-primary); text-decoration: none; font-weight:600;">
                                     {% if doc.status == 'Lacking' %} Upload {% else %} Review {% endif %} &rarr;
@@ -211,6 +212,12 @@
                             </td>
                         </tr>
                         {% else %}
+                        <!-- You might want to add a "no documents" message here -->
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 20px; color: #6b7280;">
+                                No documents requiring action.
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>

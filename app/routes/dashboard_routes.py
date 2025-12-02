@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, url_for
 from flask_login import login_required
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+from app.models.notarial_entry_mdl import NotarialEntry
+
 
 # Adjust these imports to match your actual folder structure
 # e.g., from app.models.document_mdl import Document
@@ -27,15 +30,28 @@ def resolve_document_context(doc):
         elif doc.parent_type == 'client':
             client = Client.query.get(doc.parent_id)
             return f"Client: {client.last_name}, {client.first_name}" if client else "Unknown Client"
+        elif doc.parent_type == 'notarial_entry':  # ADD THIS SECTION
+            from app.models.notarial_entry_mdl import NotarialEntry
+            entry = NotarialEntry.query.get(doc.parent_id)
+            if entry:
+                # Get first party name or use entry number as fallback
+                if entry.parties and len(entry.parties) > 0:
+                    return f"Notary: {entry.parties[0].party_name}"
+                else:
+                    return f"Notary Entry #{entry.not_entry_num}"
+            else:
+                return "Unknown Notarial Entry"
         elif doc.parent_type == 'transaction':
             # hypothetical, based on your system structure
             return f"Transaction #{doc.parent_id}"
-    except:
+    except Exception as e:
+        print(f"Error resolving context: {e}")  # For debugging
         return f"{doc.parent_type.title()} #{doc.parent_id}"
     
     return f"{doc.parent_type} #{doc.parent_id}"
 
 # --- Helper 2: Smart URL Routing ---
+# dashboard_routes.py - Fix get_context_url function
 def get_context_url(doc):
     """
     Returns the URL to the PARENT view (Case Detail / Notary Detail)
@@ -45,8 +61,8 @@ def get_context_url(doc):
         # Points to the Case Detail page
         return f"/cases/{doc.parent_id}" 
     elif doc.parent_type == 'notarial_entry':
-        # FIXED: Points to the correct Notarial Entry page URL
-        return f"/notarial-entries/{doc.parent_id}"  # CHANGED THIS LINE
+        # FIXED: Use the notarial_entries.entry_details route
+        return url_for('notarial_entries.entry_details', entry_id=doc.parent_id)  # CHANGED THIS LINE
     elif doc.parent_type == 'client':
         # Points to Client Profile
         return f"/clients/{doc.parent_id}"
@@ -121,15 +137,24 @@ def dashboard_page():
             'target_url': get_context_url(doc)
         })
 
+    # In dashboard_routes.py, update the section for pending transactions:
+
     # Add recent pending transactions to action items
-    pending_transactions = TransactionItem.query.filter_by(payment_status='Pending')\
+    pending_transactions = TransactionItem.query\
+        .filter_by(payment_status='Pending')\
+        .options(joinedload(TransactionItem.client))\
         .order_by(TransactionItem.transaction_date.desc())\
         .limit(5).all()
-    
+
     action_transactions_data = []
     for transaction in pending_transactions:
+        # SAFELY get client name - handle the case where client might be None
+        client_name = "Unknown Client"
+        if transaction.client and hasattr(transaction.client, 'full_name'):
+            client_name = transaction.client.full_name
+        
         action_transactions_data.append({
-            'title': f"{transaction.purpose} - {transaction.client.full_name}",
+            'title': f"{transaction.purpose} - {client_name}",
             'context': f"{transaction.transaction_type} Transaction",
             'status': 'Pending Payment',
             'id': transaction.id,

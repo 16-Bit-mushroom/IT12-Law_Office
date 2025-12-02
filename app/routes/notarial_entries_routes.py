@@ -16,6 +16,7 @@ def notarial_entries_page():
     entries = NotarialEntryService.get_all_entries()
     return render_template('notarial_entries.html', entries=entries, now=datetime.utcnow())
 
+# notarial_entries_routes.py - Update the entry_details route
 @notarial_entries_bp.route('/<int:entry_id>')
 @login_required
 def entry_details(entry_id):
@@ -25,7 +26,13 @@ def entry_details(entry_id):
         flash('Notarial entry not found!', 'error')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
     
-    return render_template('notarial_entry_details.html', entry=entry)
+    # ADD THIS: Load documents for this entry
+    from app.services.document_service import DocumentService
+    documents = DocumentService.get_documents_by_parent('notarial_entry', entry_id)
+    
+    return render_template('notarial_entry_details.html', 
+                         entry=entry, 
+                         documents=documents)  # ADD documents here
 
 @notarial_entries_bp.route('/<int:entry_id>/json', methods=['GET'])
 @login_required

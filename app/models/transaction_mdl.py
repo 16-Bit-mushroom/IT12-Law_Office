@@ -10,6 +10,9 @@ class TransactionItem(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
     
+    # Link to Case for Case transactions
+    case_id = db.Column(db.Integer, db.ForeignKey('cases.id'), nullable=True)
+    
     # Optimized status tracking
     transaction_type = db.Column(db.String(50), nullable=False)  # 'Notarial' or 'Case'
     purpose = db.Column(db.String(255), nullable=False)  # Replaces document_title + document_purpose
@@ -27,6 +30,7 @@ class TransactionItem(db.Model):
     client = db.relationship('Client', backref='transaction_items', lazy=True)
     service = db.relationship('Service', backref='transactions')
     payment = db.relationship('Payment', backref='transaction_item', foreign_keys=[payment_id])
+    case = db.relationship('Case', backref='transactions', lazy=True)  # Add this relationship
 
     def __repr__(self):
         return f"<Transaction(id={self.id}, type='{self.transaction_type}', client='{self.client.full_name}')>"

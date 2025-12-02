@@ -6,6 +6,10 @@ from app.services.transaction_service import (
     approve_transaction, complete_transaction, mark_payment_paid
 )
 from app.services.client_service import get_all_clients
+# Add this import at the top of your transaction routes file
+from app.models.notarial_entry_mdl import NotarialEntry
+from app.models.transaction_mdl import TransactionItem
+from app.models.case_logs_mdl import CaseDocument  # Assuming you have this model
 
 transaction_bp = Blueprint('transaction', __name__, url_prefix='/transactions')
 
@@ -69,4 +73,37 @@ def complete_transaction_route(transaction_id):
         return redirect(url_for('transaction.transactions_page'))
     except Exception as e:
         flash(f'Error completing transaction: {str(e)}', 'error')
+        return redirect(url_for('transaction.transactions_page'))
+
+@transaction_bp.route('/<int:transaction_id>/view')
+@login_required
+def view_transaction_details(transaction_id):
+    """Redirect to the appropriate detail page based on transaction type"""
+    transaction = TransactionItem.query.get_or_404(transaction_id)
+    
+    if transaction.transaction_type == 'Notarial':
+        # Get the notarial entry linked to this transaction
+        notarial_entry = NotarialEntry.query.filter_by(
+            transaction_item_id=transaction.id
+        ).first()
+        
+        if notarial_entry:
+            # FIXED: Use the correct endpoint name
+            return redirect(url_for('notarial_entries.entry_details', 
+                                   entry_id=notarial_entry.id))
+        else:
+            flash('No notarial entry found for this transaction', 'error')
+            return redirect(url_for('transaction.transactions_page'))
+    
+    elif transaction.transaction_type == 'Case':
+        # Check if transaction has a direct case_id link
+        if transaction.case_id:
+            return redirect(url_for('case.view_case', 
+                                   case_id=transaction.case_id))
+        else:
+            flash('No case found for this transaction', 'error')
+            return redirect(url_for('transaction.transactions_page'))
+    
+    else:
+        flash('Unknown transaction type', 'error')
         return redirect(url_for('transaction.transactions_page'))

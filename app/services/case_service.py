@@ -18,6 +18,7 @@ class CaseService:
         """Get a specific case by ID"""
         return Case.query.get(case_id)
     
+    # app/services/case_service.py - Update the create_case method
     @staticmethod
     def create_case(case_data):
         """Create a new case with automatic transaction"""
@@ -25,6 +26,14 @@ class CaseService:
             # 1. Generate case number (Fixed call)
             case_number = CaseService._generate_case_number()
             
+            # Helper to handle date parsing safely
+            def parse_date(date_val):
+                if not date_val:
+                    return None
+                if isinstance(date_val, str):
+                    return datetime.strptime(date_val, '%Y-%m-%d')
+                return date_val
+
             # 2. Create case
             case = Case(
                 case_number=case_number,
@@ -33,8 +42,8 @@ class CaseService:
                 case_type=case_data.get('case_type'),
                 violation=case_data.get('violation'),
                 status=case_data.get('status', 'active'),
-                engagement_date=datetime.strptime(case_data['engagement_date'], '%Y-%m-%d') if isinstance(case_data['engagement_date'], str) else case_data['engagement_date'],
-                filing_date=datetime.strptime(case_data['filing_date'], '%Y-%m-%d') if case_data.get('filing_date') else None,
+                engagement_date=parse_date(case_data.get('engagement_date')),
+                filing_date=parse_date(case_data.get('filing_date')),
                 client_id=case_data['client_id'],
                 assigned_attorney_id=case_data.get('assigned_attorney_id')
             )
@@ -56,7 +65,6 @@ class CaseService:
                         db.session.add(representative)
             
             # 4. Get or Create Case Service
-            # We need a Service ID for the transaction.
             case_service = Service.query.filter_by(is_notarization=False).first()
             if not case_service:
                 case_service = Service(
@@ -67,14 +75,14 @@ class CaseService:
                 db.session.add(case_service)
                 db.session.flush()
             
-            # 5. Automatically Create TransactionItem
-            # (Matches the logic used in Notarial Entries)
+            # 5. Automatically Create TransactionItem WITH case_id
             transaction = TransactionItem(
                 client_id=case.client_id,
                 service_id=case_service.id,
-                transaction_type='Case',           # REQUIRED by your model
-                purpose=f"Case: {case.title}",     # Mapped from title
-                transaction_amount=0.00,           # Default 0.00 for new cases?
+                case_id=case.id,  # ADD THIS LINE - CRITICAL!
+                transaction_type='Case',
+                purpose=f"Case: {case.title}",
+                transaction_amount=0.00,
                 payment_status='Pending'
             )
             
@@ -134,6 +142,11 @@ class CaseService:
 
             case.client_id = case_data['client_id']
             case.assigned_attorney_id = case_data.get('assigned_attorney_id')
+            
+            # Update the transaction purpose if exists
+            if hasattr(case, 'transactions') and case.transactions:
+                for transaction in case.transactions:
+                    transaction.purpose = f"Case: {case.title}"
             
             # Update representatives if provided
             if 'representatives' in case_data:

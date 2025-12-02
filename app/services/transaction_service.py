@@ -4,6 +4,8 @@ from app.models.payment_mdl import Payment
 from app.models.case_logs_mdl import CaseDocument
 from app.models.notarial_entry_mdl import NotarialEntry
 from app.models.service_mdl import Service
+# Add this import at the top of transaction_service.py
+from app.models.case_mdl import Case
 import uuid
 from datetime import datetime
 
@@ -43,7 +45,8 @@ def create_transaction_from_case(case, client_id, service_id, purpose, amount):
             transaction_type='Case',
             purpose=purpose,
             transaction_amount=amount,
-            payment_status='Pending'
+            payment_status='Pending',
+            case_id=case.id
         )
         db.session.add(transaction)
         db.session.commit()
@@ -56,27 +59,8 @@ def create_transaction_from_case(case, client_id, service_id, purpose, amount):
         db.session.rollback()
         raise e
 
-def create_pending_payment(transaction):
-    """Auto-create a pending payment record"""
-    try:
-        payment = Payment(
-            pay_method='Pending',
-            pay_ref=f"INV-{transaction.id}-{uuid.uuid4().hex[:8].upper()}",
-            pay_type=transaction.transaction_type,
-            pay_amount=transaction.transaction_amount,
-            payment_status='Pending'
-        )
-        db.session.add(payment)
-        db.session.flush()
-        
-        # Link payment to transaction
-        transaction.payment_id = payment.id
-        db.session.commit()
-        
-        return payment
-    except Exception as e:
-        db.session.rollback()
-        raise e
+# Remove the duplicate create_pending_payment function
+# Keep only one version
 
 def create_pending_payment(transaction):
     """Auto-create a pending payment record"""
@@ -128,7 +112,7 @@ def complete_transaction(transaction_id):
         if transaction.transaction_type == 'Case':
             document = CaseDocument.query.filter_by(transaction_item_id=transaction.id).first()
             if document:
-                document.cas_doc_status = 'Completed'
+                document.document_status = 'Completed'  # Use the correct field name
         db.session.commit()
     return transaction
 
@@ -150,10 +134,12 @@ def create_case_document(transaction):
     """Auto-create CaseDocument for case transactions"""
     try:
         document = CaseDocument(
-            cas_doc_name=transaction.purpose,
-            cas_doc_status='Draft',
-            client_id=transaction.client_id,
-            transaction_item_id=transaction.id
+            filename=f"Case_Transaction_{transaction.id}",  # Create a meaningful filename
+            file_path=f"/transactions/case_{transaction.id}",  # Temporary path
+            document_type='Transaction Record',
+            document_status='Draft',
+            case_id=transaction.case_id,  # Use the case_id from transaction
+            transaction_item_id=transaction.id  # Link to transaction
         )
         db.session.add(document)
         return document

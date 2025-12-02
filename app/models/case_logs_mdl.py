@@ -16,9 +16,13 @@ class CaseDocument(db.Model):
     # Foreign Keys
     case_id = db.Column(db.Integer, db.ForeignKey('cases.id'), nullable=False)
     uploaded_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=True)  # Add this
     
     # Metadata
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    transaction = db.relationship('TransactionItem', backref='case_documents', lazy=True)
     
     def __repr__(self):
         return f"<CaseDocument(id={self.id}, filename='{self.filename}', case_id={self.case_id})>"

@@ -116,7 +116,7 @@ class NotarialEntryService:
     def update_entry(entry_id, form_data):
         try:
             entry = NotarialEntry.query.get(entry_id)
-            if not entry:
+            if not entry:   
                 return None
             
             entry.not_entry_num = form_data['entry_number']
@@ -129,18 +129,55 @@ class NotarialEntryService:
             entry.not_fee = float(form_data.get('notarial_fee', 0))
             entry.not_fee_or = form_data.get('notarial_fee_or', '')
             entry.not_other_place = form_data.get('other_place', '')
-            entry.not_comp_evidence_id = form_data.get('not_comp_evidence_id', '')
+            entry.not_comp_evidence_id = form_data.get('not_comp_evidence_id', '')  # This might be empty
             
             # Update related transaction if fee/title changes
             if hasattr(entry, 'transaction_item') and entry.transaction_item:
                 entry.transaction_item.transaction_amount = entry.not_fee
                 entry.transaction_item.purpose = entry.not_title
 
-            # Re-process parties/witnesses (simplified for brevity - keep your existing logic here)
+            # Delete existing parties and witnesses
             NotarialEntryParty.query.filter_by(notarial_entry_id=entry_id).delete()
             NotarialEntryWitness.query.filter_by(notarial_entry_id=entry_id).delete()
             
-            # ... (re-add party logic same as create) ...
+            # Re-add Parties
+            party_names = form_data.getlist('party_name')
+            party_addresses = form_data.getlist('party_address')
+            party_id_types = form_data.getlist('party_id_type')
+            party_id_numbers = form_data.getlist('party_id_number')
+            party_id_expiries = form_data.getlist('party_id_expiry')
+            
+            for i in range(len(party_names)):
+                if party_names[i].strip():
+                    p_expiry = None
+                    if i < len(party_id_expiries) and party_id_expiries[i].strip():
+                        try:
+                            p_expiry = datetime.strptime(party_id_expiries[i], '%Y-%m-%d').date()
+                        except ValueError:
+                            p_expiry = None
+
+                    party = NotarialEntryParty(
+                        notarial_entry_id=entry.id,
+                        party_name=party_names[i],
+                        party_address=party_addresses[i] if i < len(party_addresses) else '',
+                        party_id_type=party_id_types[i] if i < len(party_id_types) else None,
+                        party_id_number=party_id_numbers[i] if i < len(party_id_numbers) else None,
+                        party_id_expiry=p_expiry
+                    )
+                    db.session.add(party)
+
+            # Re-add Witnesses
+            witness_names = form_data.getlist('witness_name')
+            witness_addresses = form_data.getlist('witness_address')
+            
+            for i in range(min(len(witness_names), 2)):
+                if witness_names[i].strip():
+                    witness = NotarialEntryWitness(
+                        notarial_entry_id=entry.id,
+                        witness_name=witness_names[i],
+                        witness_address=witness_addresses[i] if i < len(witness_addresses) else None
+                    )
+                    db.session.add(witness)
             
             db.session.commit()
             return entry

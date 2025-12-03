@@ -85,25 +85,31 @@ class NotarialEntryService:
             # 4. Automatically Create TransactionItem
             # IMPORTANT: Ensure Client ID 1 and Service ID 1 exist in your DB, or adjust these defaults.
             transaction = TransactionItem(
-                client_id=1,        # Default 'Walk-in' or similar
-                service_id=1,       # Default 'Notarial Service'
-                transaction_type='Notarial',  # REQUIRED by your model
-                purpose=entry.not_title,      # Mapped from entry title
-                transaction_amount=entry.not_fee,
-                payment_status='Pending'
+            client_id=1,
+            service_id=1,
+            transaction_type='Notarial',
+            purpose=entry.not_title,
+            transaction_amount=entry.not_fee,
+            payment_status='Pending'  # Will be updated below
             )
             
             db.session.add(transaction)
             db.session.flush()
             
             # 5. Link Transaction to Entry
-            # (Assuming you have a foreign key on NotarialEntry or a linking table)
             if hasattr(entry, 'transaction_item_id'):
                 entry.transaction_item_id = transaction.id
             
-            # Local status helper
-            if hasattr(entry, 'transaction_status'):
+            # 6. Check if OR number is provided, update both entry and transaction
+            or_number = form_data.get('notarial_fee_or', '').strip()
+            if or_number:
+                entry.transaction_status = 'paid'
+                entry.not_fee_or = or_number
+                transaction.payment_status = 'Paid'
+                transaction.payment_date = datetime.now(timezone.utc)
+            else:
                 entry.transaction_status = 'unpaid'
+                transaction.payment_status = 'Pending'
             
             db.session.commit()
             return entry
@@ -135,6 +141,18 @@ class NotarialEntryService:
             if hasattr(entry, 'transaction_item') and entry.transaction_item:
                 entry.transaction_item.transaction_amount = entry.not_fee
                 entry.transaction_item.purpose = entry.not_title
+                
+            or_number = form_data.get('notarial_fee_or', '')
+            if or_number and or_number.strip():
+                entry.transaction_status = 'paid'
+                if hasattr(entry, 'transaction_item') and entry.transaction_item:
+                    entry.transaction_item.payment_status = 'Paid'
+                    entry.transaction_item.payment_date = datetime.now(timezone.utc)
+            else:
+                entry.transaction_status = 'unpaid'
+                if hasattr(entry, 'transaction_item') and entry.transaction_item:
+                    entry.transaction_item.payment_status = 'Pending'
+                    entry.transaction_item.payment_date = None
 
             # Delete existing parties and witnesses
             NotarialEntryParty.query.filter_by(notarial_entry_id=entry_id).delete()
@@ -187,18 +205,20 @@ class NotarialEntryService:
             raise e
 
     @staticmethod
-    def mark_as_paid(entry_id):
-        """Mark notarial entry as paid"""
+    def mark_as_paid(entry_id, or_number=None):
+        """Mark notarial entry as paid with optional OR number"""
         try:
             entry = NotarialEntry.query.get(entry_id)
             if not entry:
                 return None
             
-            if hasattr(entry, 'transaction_status'):
-                entry.transaction_status = 'paid'
+            # Update OR number if provided
+            if or_number and or_number.strip():
+                entry.not_fee_or = or_number
+            
+            entry.transaction_status = 'paid'
             
             # Update the actual TransactionItem
-            # This assumes a relationship `transaction_item` exists on NotarialEntry
             if hasattr(entry, 'transaction_item') and entry.transaction_item:
                 entry.transaction_item.payment_status = 'Paid'
                 entry.transaction_item.payment_date = datetime.now(timezone.utc)

@@ -117,15 +117,31 @@ def complete_transaction(transaction_id):
     return transaction
 
 def mark_payment_paid(transaction_id, payment_method, payment_reference):
-    """Mark payment as paid and update transaction"""
+    """Mark payment as paid and update transaction AND notarial entry"""
     transaction = TransactionItem.query.get(transaction_id)
-    if transaction and transaction.payment:
-        transaction.payment.payment_status = 'Paid'
-        transaction.payment.pay_method = payment_method
-        transaction.payment.pay_ref = payment_reference
-        transaction.payment.pay_date = datetime.utcnow()
+    if transaction:
+        # Update transaction
         transaction.payment_status = 'Paid'
         transaction.payment_date = datetime.utcnow()
+        
+        # If this is a notarial transaction, also update the notarial entry
+        if transaction.transaction_type == 'Notarial':
+            notarial_entry = NotarialEntry.query.filter_by(
+                transaction_item_id=transaction.id
+            ).first()
+            
+            if notarial_entry:
+                notarial_entry.transaction_status = 'paid'
+                # Also update OR number if provided in payment reference
+                if payment_reference and 'OR' in payment_reference:
+                    notarial_entry.not_fee_or = payment_reference
+        
+        # Update payment record if exists
+        if transaction.payment:
+            transaction.payment.payment_status = 'Paid'
+            transaction.payment.pay_method = payment_method
+            transaction.payment.pay_ref = payment_reference
+            transaction.payment.pay_date = datetime.utcnow()
         
         db.session.commit()
     return transaction
@@ -171,7 +187,65 @@ def is_notarization_service(service_id):
 
 def get_all_transactions():
     """Get all transactions with client and service info"""
-    return TransactionItem.query.options(
+    transactions = TransactionItem.query.options(
         db.joinedload(TransactionItem.client),
         db.joinedload(TransactionItem.service)
     ).all()
+    
+    # For notarial transactions, check if they're linked to a paid entry
+    for transaction in transactions:
+        if transaction.transaction_type == 'Notarial':
+            # Check if there's a linked notarial entry that's paid
+            notarial_entry = NotarialEntry.query.filter_by(
+                transaction_item_id=transaction.id
+            ).first()
+            
+            if notarial_entry and notarial_entry.transaction_status == 'paid':
+                # Override the transaction payment status if entry is paid
+                transaction.payment_status = 'Paid'
+    
+    return transactions
+
+def sync_notarial_entry_payment_status(transaction_id):
+    """Sync payment status from notarial entry to transaction"""
+    transaction = TransactionItem.query.get(transaction_id)
+    if not transaction or transaction.transaction_type != 'Notarial':
+        return None
+    
+    notarial_entry = NotarialEntry.query.filter_by(
+        transaction_item_id=transaction.id
+    ).first()
+    
+    if notarial_entry:
+        # Sync payment status from entry to transaction
+        if notarial_entry.transaction_status == 'paid':
+            transaction.payment_status = 'Paid'
+            if not transaction.payment_date:
+                transaction.payment_date = datetime.now(timezone.utc)
+        else:
+            transaction.payment_status = 'Pending'
+        
+        db.session.commit()
+    
+    return transaction
+
+def sync_existing_notarial_payments():
+    """Sync payment status for all existing notarial entries and transactions"""
+    notarial_entries = NotarialEntry.query.all()
+    
+    for entry in notarial_entries:
+        if entry.transaction_item_id:
+            transaction = TransactionItem.query.get(entry.transaction_item_id)
+            if transaction:
+                # Sync based on OR number
+                if entry.not_fee_or and entry.not_fee_or.strip():
+                    entry.transaction_status = 'paid'
+                    transaction.payment_status = 'Paid'
+                    if not transaction.payment_date:
+                        transaction.payment_date = entry.not_date or datetime.now(timezone.utc)
+                else:
+                    entry.transaction_status = 'unpaid'
+                    transaction.payment_status = 'Pending'
+    
+    db.session.commit()
+    print(f"Synced {len(notarial_entries)} notarial entries with transactions")

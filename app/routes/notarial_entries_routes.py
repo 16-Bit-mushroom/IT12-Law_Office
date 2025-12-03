@@ -79,9 +79,15 @@ def get_entry_json(entry_id):
 @login_required
 def mark_as_paid(entry_id):
     try:
-        entry = NotarialEntryService.mark_as_paid(entry_id)
+        # Get OR number from form if provided
+        or_number = request.form.get('or_number', '')
+        
+        entry = NotarialEntryService.mark_as_paid(entry_id, or_number)
         if entry:
-            flash('Entry marked as paid!', 'success')
+            if or_number:
+                flash(f'Entry marked as paid with OR# {or_number}!', 'success')
+            else:
+                flash('Entry marked as paid! (No OR number provided)', 'warning')
         else:
             flash('Entry not found!', 'error')
     except Exception as e:

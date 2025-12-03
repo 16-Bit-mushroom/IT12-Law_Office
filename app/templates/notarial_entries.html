@@ -74,8 +74,7 @@
     <section class="content-section">
         <div class="panel-card">
 
-            <div class="dashboard-actions"
-                style="display: flex; justify-content: start; flex-shrink: 0; gap: 50px;">
+            <div class="dashboard-actions" style="display: flex; justify-content: start; flex-shrink: 0; gap: 50px;">
 
 
                 <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entryModal">
@@ -175,7 +174,7 @@
                                 <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>
                             </td>
                             <td>
-                                {% if entry.is_paid %}
+                                {% if entry.not_fee_or %}
                                 <span class="status-tag status-tag--signed">Paid</span>
                                 {% else %}
                                 <span class="status-tag status-tag--unsigned">Unpaid</span>
@@ -196,12 +195,13 @@
                                     </a>
 
                                     <!-- Transaction Actions -->
-                                    {% if entry.transaction_status == 'paid' or entry.not_fee_or %}
-                                    <span class="badge badge-success" title="Paid"
-                                        style="padding: 8px; background-color: #28a745; color: white; border-radius: 4px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                    {% if entry.not_fee_or %}
+                                    <span class="btn-action btn-action--success"
+                                        title="Paid (OR: {{ entry.not_fee_or }})"
+                                        style="background-color: #28a745; color: white; border-color: #28a745; cursor: default;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0px;">
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                     </span>
@@ -418,7 +418,9 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">O.R. Number *</label>
-                                <input type="text" class="form-control" name="notarial_fee_or">
+                                <input type="text" class="form-control" name="notarial_fee_or" pattern="[A-Za-z0-9\-]+"
+                                    title="Enter BIR OR number">
+                                <small class="form-text text-muted">Enter official receipt number from BIR</small>
                             </div>
                         </div>
                     </div>

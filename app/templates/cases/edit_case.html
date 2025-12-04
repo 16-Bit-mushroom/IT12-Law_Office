@@ -7,29 +7,33 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="mb-0">Edit Case - {{ case.case_number }}</h4>
+                    <h4 class="mb-0">Edit Case: {{ case.case_number }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('case.edit_case', case_id=case.id) }}" id="caseForm">
-                        <!-- Client Selection -->
+                        <!-- Client Selection with Auto-suggest -->
                         <div class="mb-4">
                             <h5 class="border-bottom pb-2">Client Information</h5>
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="mb-3">
-                                        <label for="client_id" class="form-label">Select Client *</label>
-                                        <select class="form-control" id="client_id" name="client_id" required>
-                                            <option value="">Choose a client...</option>
-                                            {% for client in clients %}
-                                            <option value="{{ client.id }}" {% if client.id==case.client_id %}selected{% endif %}>
-                                                {{ client.full_name }} - {{ client.email }}
-                                            </option>
-                                            {% endfor %}
-                                        </select>
+                                        <label for="client_search" class="form-label">Search Client *</label>
+                                        <div class="autocomplete-wrapper">
+                                            <input type="text" class="form-control" id="client_search"
+                                                name="client_search" placeholder="Type client name or email..."
+                                                autocomplete="off" oninput="searchClients(this.value)"
+                                                value="{% if case.client %}{{ case.client.full_name }} ({{ case.client.email }}){% endif %}">
+                                            <div id="client_suggestions" class="autocomplete-dropdown"></div>
+                                        </div>
+                                        <input type="hidden" id="client_id" name="client_id" required
+                                            value="{{ case.client_id }}">
+                                        <div class="form-text text-muted">
+                                            Start typing to search for existing clients
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-end">
-                                    <a href="{{ url_for('clients.new_client_form') }}?return_to={{ url_for('case.edit_case', case_id=case.id) }}"
+                                    <a href="{{ url_for('clients.new_client_form') }}"
                                         class="btn btn-outline-primary w-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -49,15 +53,17 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="case_category" id="individual" value="individual" 
-                                            {% if case.case_category == 'individual' %}checked{% endif %}>
+                                        <input class="form-check-input" type="radio" name="case_category"
+                                            id="individual" value="individual" {% if case.case_category=='individual'
+                                            %}checked{% endif %}>
                                         <label class="form-check-label" for="individual">
                                             Individual Case
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="case_category" id="corporate" value="corporate"
-                                            {% if case.case_category == 'corporate' %}checked{% endif %}>
+                                        <input class="form-check-input" type="radio" name="case_category" id="corporate"
+                                            value="corporate" {% if case.case_category=='corporate' %}checked{% endif
+                                            %}>
                                         <label class="form-check-label" for="corporate">
                                             Corporate Case
                                         </label>
@@ -66,7 +72,7 @@
                             </div>
                         </div>
 
-                        <!-- Case Details -->
+                        <!-- Case Details with Auto-suggest -->
                         <div class="mb-4">
                             <h5 class="border-bottom pb-2">Case Details</h5>
                             <div class="row">
@@ -74,201 +80,307 @@
                                     <div class="mb-3">
                                         <label for="title" class="form-label">Case Title *</label>
                                         <input type="text" class="form-control" id="title" name="title" required
-                                            value="{{ case.title }}"
-                                            placeholder="e.g., Smith vs. Johnson Contract Dispute">
+                                            placeholder="e.g., Smith vs. Johnson Contract Dispute"
+                                            value="{{ case.title }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="case_type" class="form-label">Case Type *</label>
-                                        <select class="form-control" id="case_type" name="case_type" required>
-                                            <option value="">Select case type...</option>
-                                            <option value="civil" {% if case.case_type=='civil' %}selected{% endif %}>
-                                                Civil Case</option>
-                                            <option value="criminal" {% if case.case_type=='criminal' %}selected{% endif %}>
-                                                Criminal Case</option>
-                                            <option value="corporate" {% if case.case_type=='corporate' %}selected{% endif %}>
-                                                Corporate</option>
-                                            <option value="family" {% if case.case_type=='family' %}selected{% endif %}>
-                                                Family Law</option>
-                                            <option value="property" {% if case.case_type=='property' %}selected{% endif %}>
-                                                Property</option>
-                                            <option value="labor" {% if case.case_type=='labor' %}selected{% endif %}>
-                                                Labor</option>
-                                            <option value="other" {% if case.case_type=='other' %}selected{% endif %}>
-                                                Other</option>
-                                        </select>
+                                        <div class="autocomplete-wrapper">
+                                            <input type="text" class="form-control" id="case_type" name="case_type"
+                                                required placeholder="Type or select case type..." autocomplete="off"
+                                                oninput="getSuggestions('case_type', this.value)"
+                                                value="{{ case.case_type }}">
+                                            <div id="case_type_suggestions" class="autocomplete-dropdown"></div>
+                                            <input type="hidden" id="case_type_id" name="case_type_id">
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <small class="text-muted">Previous entries will appear as you type</small>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="removeSuggestion('case_type', document.getElementById('case_type').value)"
+                                                style="display: none;" id="remove_case_type_btn">
+                                                Remove Suggestion
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="violation" class="form-label">Violation / Cause of Action</label>
-                                <input type="text" class="form-control" id="violation" name="violation"
-                                    value="{{ case.violation or '' }}"
-                                    placeholder="e.g., Breach of Contract, Theft, etc.">
-                            </div>
-                        </div>
-
-                        <!-- Representatives Section -->
-                        <div class="mb-4" id="representativesSection">
-                            <h5 class="border-bottom pb-2">Representatives</h5>
-                            <p class="text-muted">Add representatives for this case (optional)</p>
-                            
-                            <div id="representativesContainer">
-                                {% if representatives %}
-                                    {% for rep in representatives %}
-                                    <div class="representative-entry card mb-3">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Full Name</label>
-                                                        <input type="text" class="form-control" name="representative_name[]" 
-                                                            value="{{ rep.full_name }}" placeholder="Full name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Email</label>
-                                                        <input type="email" class="form-control" name="representative_email[]" 
-                                                            value="{{ rep.email or '' }}" placeholder="Email">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Phone</label>
-                                                        <input type="text" class="form-control" name="representative_phone[]" 
-                                                            value="{{ rep.phone or '' }}" placeholder="Phone">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Role</label>
-                                                        <input type="text" class="form-control" name="representative_role[]" 
-                                                            value="{{ rep.role or '' }}" placeholder="Role">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                {% else %}
-                                <!-- Empty representative template -->
-                                <div class="representative-entry card mb-3">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Full Name</label>
-                                                    <input type="text" class="form-control" name="representative_name[]" placeholder="Full name">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Email</label>
-                                                    <input type="email" class="form-control" name="representative_email[]" placeholder="Email">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Phone</label>
-                                                    <input type="text" class="form-control" name="representative_phone[]" placeholder="Phone">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Role</label>
-                                                    <input type="text" class="form-control" name="representative_role[]" placeholder="Role">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
-                                    </div>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" class="form-control" id="violation" name="violation"
+                                        placeholder="e.g., Breach of Contract, Theft, etc." autocomplete="off"
+                                        oninput="getSuggestions('violation', this.value)"
+                                        value="{{ case.violation or '' }}">
+                                    <div id="violation_suggestions" class="autocomplete-dropdown"></div>
+                                    <input type="hidden" id="violation_id" name="violation_id">
                                 </div>
-                                {% endif %}
-                            </div>
-                            
-                            <button type="button" class="btn btn-outline-primary" id="addRepresentative">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Add Representative
-                            </button>
-                        </div>
-
-                        <!-- Dates -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Case Dates</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="engagement_date" class="form-label">Engagement Date *</label>
-                                        <input type="date" class="form-control" id="engagement_date"
-                                            name="engagement_date" required
-                                            value="{{ case.engagement_date.strftime('%Y-%m-%d') }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="filing_date" class="form-label">Filing Date (if applicable)</label>
-                                        <input type="date" class="form-control" id="filing_date" name="filing_date"
-                                            value="{% if case.filing_date %}{{ case.filing_date.strftime('%Y-%m-%d') }}{% endif %}">
-                                    </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">Previous entries will appear as you type</small>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="removeSuggestion('violation', document.getElementById('violation').value)"
+                                        style="display: none;" id="remove_violation_btn">
+                                        Remove Suggestion
+                                    </button>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Status -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Case Status</h5>
                             <div class="mb-3">
-                                <select class="form-control" id="status" name="status" required>
-                                    <option value="active" {% if case.status=='active' %}selected{% endif %}>Active</option>
-                                    <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending</option>
-                                    <option value="completed" {% if case.status=='completed' %}selected{% endif %}>Completed</option>
-                                    <option value="closed" {% if case.status=='closed' %}selected{% endif %}>Closed</option>
-                                </select>
+                                <label for="cause_of_action" class="form-label">Cause of Action</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" class="form-control" id="cause_of_action" name="cause_of_action"
+                                        placeholder="e.g., Negligence, Fraud, etc." autocomplete="off"
+                                        oninput="getSuggestions('cause_of_action', this.value)"
+                                        value="{{ case.cause_of_action or '' }}">
+                                    <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
+                                    <input type="hidden" id="cause_of_action_id" name="cause_of_action_id">
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">Previous entries will appear as you type</small>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="removeSuggestion('cause_of_action', document.getElementById('cause_of_action').value)"
+                                        style="display: none;" id="remove_cause_of_action_btn">
+                                        Remove Suggestion
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('case.list_cases') }}"
-                                class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Update Case</button>
-                        </div>
-                    </form>
+                <!-- Case Status -->
+                <div class="mb-3">
+                    <label for="status" class="form-label">Case Status</label>
+                    <select class="form-control" id="status" name="status">
+                        <option value="active" {% if case.status=='active' %}selected{% endif %}>Active</option>
+                        <option value="completed" {% if case.status=='completed' %}selected{% endif %}>Completed
+                        </option>
+                        <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending</option>
+                        <option value="closed" {% if case.status=='closed' %}selected{% endif %}>Closed</option>
+                    </select>
                 </div>
             </div>
+
+            <!-- Representatives Section -->
+            <div class="mb-4" id="representativesSection">
+                <h5 class="border-bottom pb-2">Representatives</h5>
+                <p class="text-muted">Add representatives for this case (optional)</p>
+
+                <div id="representativesContainer">
+                    {% for rep in representatives %}
+                    <div class="representative-entry card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" name="representative_name[]"
+                                            placeholder="Full name" value="{{ rep.full_name }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="representative_email[]"
+                                            placeholder="Email" value="{{ rep.email }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Phone</label>
+                                        <input type="text" class="form-control" name="representative_phone[]"
+                                            placeholder="Phone" value="{{ rep.phone }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label class="form-label">Role</label>
+                                        <input type="text" class="form-control" name="representative_role[]"
+                                            placeholder="Role" value="{{ rep.role }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button"
+                                class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Empty template for adding new -->
+                    <div class="representative-entry card mb-3" style="display: none;">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" name="representative_name[]"
+                                            placeholder="Full name">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="representative_email[]"
+                                            placeholder="Email">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Phone</label>
+                                        <input type="text" class="form-control" name="representative_phone[]"
+                                            placeholder="Phone">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label class="form-label">Role</label>
+                                        <input type="text" class="form-control" name="representative_role[]"
+                                            placeholder="Role">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button"
+                                class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary" id="addRepresentative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right: 5px;">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Representative
+                </button>
+            </div>
+
+            <!-- Dates -->
+            <div class="mb-4">
+                <h5 class="border-bottom pb-2">Case Dates</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="engagement_date" class="form-label">Engagement Date *</label>
+                            <input type="date" class="form-control" id="engagement_date" name="engagement_date" required
+                                value="{{ case.engagement_date.strftime('%Y-%m-%d') if case.engagement_date else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="filing_date" class="form-label">Filing Date (if applicable)</label>
+                            <input type="date" class="form-control" id="filing_date" name="filing_date"
+                                value="{{ case.filing_date.strftime('%Y-%m-%d') if case.filing_date else '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('case.view_case', case_id=case.id) }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Case</button>
+            </div>
+            </form>
         </div>
     </div>
 </div>
+</div>
+</div>
+
+<style>
+    .autocomplete-wrapper {
+        position: relative;
+    }
+
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .autocomplete-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .autocomplete-item.selected {
+        background-color: #e9ecef;
+        font-weight: 600;
+    }
+
+    .suggestion-actions {
+        float: right;
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .remove-suggestion-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .remove-suggestion-btn:hover {
+        color: #b02a37;
+        text-decoration: underline;
+    }
+</style>
 
 <script>
+
+
+
+    // Add these variables at the beginning
+    const searchClientsUrl = "{{ url_for('case.search_clients_api') }}";
+    const getSuggestionsUrl = "{{ url_for('case.get_suggestions_api', field='FIELD') }}";
+    const searchSuggestionsUrl = "{{ url_for('case.search_suggestions_api', field='FIELD') }}";
+    const removeSuggestionUrl = "{{ url_for('case.remove_suggestion_api', field='FIELD') }}";
+
     document.addEventListener('DOMContentLoaded', function () {
         // Representatives management
         const representativesContainer = document.getElementById('representativesContainer');
         const addRepresentativeBtn = document.getElementById('addRepresentative');
 
         // Add representative
-        addRepresentativeBtn.addEventListener('click', function() {
-            const newEntry = representativesContainer.children[0].cloneNode(true);
+        addRepresentativeBtn.addEventListener('click', function () {
+            const template = representativesContainer.querySelector('.representative-entry:last-child');
+            const newEntry = template.cloneNode(true);
+            newEntry.style.display = 'block';
             // Clear input values
             newEntry.querySelectorAll('input').forEach(input => input.value = '');
-            representativesContainer.appendChild(newEntry);
+            representativesContainer.insertBefore(newEntry, template);
             updateRemoveButtons();
         });
 
         // Remove representative
         function updateRemoveButtons() {
             document.querySelectorAll('.remove-representative').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (representativesContainer.children.length > 1) {
+                button.addEventListener('click', function () {
+                    const entries = representativesContainer.querySelectorAll('.representative-entry');
+                    if (entries.length > 2) { // Keep at least one visible + template
                         this.closest('.representative-entry').remove();
-                    } else {
-                        // If it's the last one, just clear the inputs
+                    } else if (entries.length === 2) {
+                        // If it's the last visible one, just clear the inputs
                         this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
                     }
                 });
@@ -277,6 +389,236 @@
 
         // Initial setup for remove buttons
         updateRemoveButtons();
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.autocomplete-wrapper')) {
+                closeAllDropdowns();
+            }
+        });
     });
+
+    // Rest of the functions (searchClients, getSuggestions, etc.) remain the same as in create.html
+    // Copy the functions from create.html
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Representatives management
+        const representativesContainer = document.getElementById('representativesContainer');
+        const addRepresentativeBtn = document.getElementById('addRepresentative');
+
+        // Add representative
+        addRepresentativeBtn.addEventListener('click', function () {
+            const template = representativesContainer.querySelector('.representative-entry:last-child');
+            const newEntry = template.cloneNode(true);
+            newEntry.style.display = 'block';
+            // Clear input values
+            newEntry.querySelectorAll('input').forEach(input => input.value = '');
+            representativesContainer.insertBefore(newEntry, template);
+            updateRemoveButtons();
+        });
+
+        // Remove representative
+        function updateRemoveButtons() {
+            document.querySelectorAll('.remove-representative').forEach(button => {
+                button.addEventListener('click', function () {
+                    const entries = representativesContainer.querySelectorAll('.representative-entry');
+                    if (entries.length > 2) { // Keep at least one visible + template
+                        this.closest('.representative-entry').remove();
+                    } else if (entries.length === 2) {
+                        // If it's the last visible one, just clear the inputs
+                        this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
+                    }
+                });
+            });
+        }
+
+        // Initial setup for remove buttons
+        updateRemoveButtons();
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.autocomplete-wrapper')) {
+                closeAllDropdowns();
+            }
+        });
+
+        // Load initial suggestions for case type
+        getSuggestions('case_type', '');
+    });
+
+    // Close all autocomplete dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+    }
+
+    // Search clients for auto-suggest
+    async function searchClients(query) {
+        if (query.length < 2) {
+            closeAllDropdowns();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/clients/search?q=${encodeURIComponent(query)}`);
+            const clients = await response.json();
+
+            const dropdown = document.getElementById('client_suggestions');
+            dropdown.innerHTML = '';
+
+            if (clients.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No clients found</div>';
+            } else {
+                clients.forEach(client => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `
+                        <strong>${client.full_name}</strong><br>
+                        <small class="text-muted">${client.email || 'No email'} | ${client.phone || 'No phone'}</small>
+                    `;
+                    item.onclick = () => selectClient(client);
+                    dropdown.appendChild(item);
+                });
+            }
+
+            dropdown.style.display = 'block';
+        } catch (error) {
+            console.error('Error searching clients:', error);
+        }
+    }
+
+    // Select a client from suggestions
+    function selectClient(client) {
+        document.getElementById('client_search').value = `${client.full_name} (${client.email || 'No email'})`;
+        document.getElementById('client_id').value = client.id;
+        closeAllDropdowns();
+    }
+
+    // Get suggestions for case type, violation, or cause of action
+    async function getSuggestions(field, query) {
+        const dropdownId = `${field}_suggestions`;
+        const dropdown = document.getElementById(dropdownId);
+        const removeBtn = document.getElementById(`remove_${field}_btn`);
+
+        // Show remove button if there's text
+        if (removeBtn) {
+            removeBtn.style.display = query.trim() ? 'inline-block' : 'none';
+        }
+
+        if (query.length < 1) {
+            // Show recent suggestions when field is empty
+            try {
+                const response = await fetch(`/api/cases/suggestions/${field}`);
+                const suggestions = await response.json();
+
+                dropdown.innerHTML = '';
+
+                if (suggestions.length === 0) {
+                    dropdown.innerHTML = '<div class="autocomplete-item text-muted">No previous entries</div>';
+                } else {
+                    suggestions.forEach(suggestion => {
+                        const item = document.createElement('div');
+                        item.className = 'autocomplete-item';
+                        item.innerHTML = `
+                            ${suggestion.value}
+                            <span class="suggestion-actions">
+                                <button class="remove-suggestion-btn" 
+                                        onclick="event.stopPropagation(); removeSuggestion('${field}', '${suggestion.value.replace(/'/g, "\\'")}')">
+                                    Remove
+                                </button>
+                            </span>
+                        `;
+                        item.onclick = () => selectSuggestion(field, suggestion.value);
+                        dropdown.appendChild(item);
+                    });
+                }
+
+                dropdown.style.display = 'block';
+            } catch (error) {
+                console.error('Error getting suggestions:', error);
+            }
+            return;
+        }
+
+        // Search for matching suggestions
+        try {
+            const response = await fetch(`/api/cases/suggestions/${field}/search?q=${encodeURIComponent(query)}`);
+            const suggestions = await response.json();
+
+            dropdown.innerHTML = '';
+
+            if (suggestions.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No matching suggestions</div>';
+            } else {
+                suggestions.forEach(suggestion => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `
+                        ${suggestion.value}
+                        <span class="suggestion-actions">
+                            <button class="remove-suggestion-btn" 
+                                    onclick="event.stopPropagation(); removeSuggestion('${field}', '${suggestion.value.replace(/'/g, "\\'")}')">
+                                Remove
+                            </button>
+                        </span>
+                    `;
+                    item.onclick = () => selectSuggestion(field, suggestion.value);
+                    dropdown.appendChild(item);
+                });
+            }
+
+            dropdown.style.display = 'block';
+        } catch (error) {
+            console.error('Error searching suggestions:', error);
+        }
+    }
+
+    // Select a suggestion
+    function selectSuggestion(field, value) {
+        const input = document.getElementById(field);
+        input.value = value;
+
+        // Hide the remove button since this is a selected suggestion
+        const removeBtn = document.getElementById(`remove_${field}_btn`);
+        if (removeBtn) {
+            removeBtn.style.display = 'none';
+        }
+
+        closeAllDropdowns();
+    }
+
+    // Remove a suggestion
+    async function removeSuggestion(field, value) {
+        if (!confirm(`Remove "${value}" from suggestions? This won't delete any cases using this value.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cases/suggestions/${field}/remove`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ value: value })
+            });
+
+            if (response.ok) {
+                alert('Suggestion removed successfully');
+                // Clear the field
+                document.getElementById(field).value = '';
+                const removeBtn = document.getElementById(`remove_${field}_btn`);
+                if (removeBtn) {
+                    removeBtn.style.display = 'none';
+                }
+            } else {
+                alert('Error removing suggestion');
+            }
+        } catch (error) {
+            console.error('Error removing suggestion:', error);
+            alert('Error removing suggestion');
+        }
+    }
 </script>
 {% endblock %}

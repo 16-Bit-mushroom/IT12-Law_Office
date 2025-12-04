@@ -5,6 +5,7 @@ from app.models.case_mdl import Case
 from app.models.representative_mdl import Representative
 from app.models.service_mdl import Service
 from app.models.transaction_mdl import TransactionItem
+from app.services.suggestion_service import SuggestionService
 
 class CaseService:
     
@@ -18,12 +19,12 @@ class CaseService:
         """Get a specific case by ID"""
         return Case.query.get(case_id)
     
-    # app/services/case_service.py - Update the create_case method
+    # Update the create_case method to handle null filing_date
     @staticmethod
     def create_case(case_data):
         """Create a new case with automatic transaction"""
         try:
-            # 1. Generate case number (Fixed call)
+            # 1. Generate case number
             case_number = CaseService._generate_case_number()
             
             # Helper to handle date parsing safely
@@ -31,27 +32,31 @@ class CaseService:
                 if not date_val:
                     return None
                 if isinstance(date_val, str):
-                    return datetime.strptime(date_val, '%Y-%m-%d')
+                    if date_val.strip():  # Check if not empty string
+                        return datetime.strptime(date_val, '%Y-%m-%d')
+                    else:
+                        return None
                 return date_val
 
-            # 2. Create case
+            # 2. Create case with cause_of_action
             case = Case(
                 case_number=case_number,
                 title=case_data['title'],
                 case_category=case_data.get('case_category', 'individual'),
                 case_type=case_data.get('case_type'),
                 violation=case_data.get('violation'),
+                cause_of_action=case_data.get('cause_of_action'),
                 status=case_data.get('status', 'active'),
                 engagement_date=parse_date(case_data.get('engagement_date')),
-                filing_date=parse_date(case_data.get('filing_date')),
+                filing_date=parse_date(case_data.get('filing_date')),  # This can be None
                 client_id=case_data['client_id'],
                 assigned_attorney_id=case_data.get('assigned_attorney_id')
             )
-            
+                
             db.session.add(case)
             db.session.flush() # Flush to get case.id
             
-            # 3. Create representatives if any (Fixed Class Name)
+            # 3. Create representatives if any
             if case_data.get('representatives'):
                 for rep_data in case_data['representatives']:
                     if rep_data.get('full_name'):
@@ -87,6 +92,14 @@ class CaseService:
             )
             
             db.session.add(transaction)
+            
+            # 6. Record suggestions for auto-complete
+            if case_data.get('case_type'):
+                SuggestionService.add_suggestion('case', 'case_type', case_data['case_type'])
+            if case_data.get('violation'):
+                SuggestionService.add_suggestion('case', 'violation', case_data['violation'])
+            if case_data.get('cause_of_action'):
+                SuggestionService.add_suggestion('case', 'cause_of_action', case_data['cause_of_action'])
             
             db.session.commit()
             return case
@@ -129,19 +142,21 @@ class CaseService:
             case.case_category = case_data.get('case_category', case.case_category)
             case.case_type = case_data.get('case_type', case.case_type)
             case.violation = case_data.get('violation')
+            case.cause_of_action = case_data.get('cause_of_action')
             case.status = case_data.get('status', case.status)
             
             # Handle date conversions safely
             if 'engagement_date' in case_data:
                 e_date = case_data['engagement_date']
-                case.engagement_date = datetime.strptime(e_date, '%Y-%m-%d') if isinstance(e_date, str) else e_date
+                case.engagement_date = datetime.strptime(e_date, '%Y-%m-%d') if isinstance(e_date, str) and e_date.strip() else e_date
                 
-            if 'filing_date' in case_data and case_data['filing_date']:
+            if 'filing_date' in case_data:
                 f_date = case_data['filing_date']
-                case.filing_date = datetime.strptime(f_date, '%Y-%m-%d') if isinstance(f_date, str) else f_date
-
-            case.client_id = case_data['client_id']
-            case.assigned_attorney_id = case_data.get('assigned_attorney_id')
+                # Handle empty filing date
+                if f_date and isinstance(f_date, str) and f_date.strip():
+                    case.filing_date = datetime.strptime(f_date, '%Y-%m-%d')
+                else:
+                    case.filing_date = None  # Set to None if empty
             
             # Update the transaction purpose if exists
             if hasattr(case, 'transactions') and case.transactions:
@@ -151,6 +166,14 @@ class CaseService:
             # Update representatives if provided
             if 'representatives' in case_data:
                 CaseService._update_representatives(case_id, case_data['representatives'])
+            
+            # Record suggestions for auto-complete
+            if case_data.get('case_type'):
+                SuggestionService.add_suggestion('case', 'case_type', case_data['case_type'])
+            if case_data.get('violation'):
+                SuggestionService.add_suggestion('case', 'violation', case_data['violation'])
+            if case_data.get('cause_of_action'):
+                SuggestionService.add_suggestion('case', 'cause_of_action', case_data['cause_of_action'])
             
             db.session.commit()
             return case
@@ -201,3 +224,11 @@ class CaseService:
     def get_case_representatives(case_id):
         """Get all representatives for a case"""
         return Representative.query.filter_by(case_id=case_id).all()
+    
+    @staticmethod
+    def get_cases_by_status(status):
+        """Get cases filtered by status"""
+        if status == 'all':
+            return Case.query.order_by(Case.created_at.desc()).all()
+        else:
+            return Case.query.filter_by(status=status).order_by(Case.created_at.desc()).all()

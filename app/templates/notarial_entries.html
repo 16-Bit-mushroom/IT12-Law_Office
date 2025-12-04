@@ -74,7 +74,7 @@
     <section class="content-section">
         <div class="panel-card">
 
-            <div class="dashboard-actions" style="display: flex; justify-content: start; flex-shrink: 0; gap: 50px;">
+            <div class="dashboard-actions" style="display: flex; justify-content: end; flex-shrink: 0; gap: 50px;">
 
 
                 <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entryModal">
@@ -580,7 +580,8 @@
         border-radius: 6px;
         padding: 12px;
         position: absolute;
-        z-index: 1050; /* Increased z-index */
+        z-index: 1050;
+        /* Increased z-index */
         bottom: 125%;
         left: 50%;
         transform: translateX(-50%);
@@ -635,9 +636,55 @@
     }
 
     /* Specific fix for the parties column */
-    td:nth-child(4) { /* This targets the 4th column (Parties column) */
+    td:nth-child(4) {
+        /* This targets the 4th column (Parties column) */
         overflow: visible !important;
         position: relative;
+    }
+
+
+    /* Auto-suggestion styles */
+    datalist {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    datalist option {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    datalist option:hover {
+        background-color: #f8f9fa;
+    }
+
+    .input-with-suggestions {
+        position: relative;
+    }
+
+    .auto-increment-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+    }
+
+    /* Print button styles */
+    .btn-action--primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-action--primary:hover {
+        background-color: #0056b3;
+        color: white;
     }
 </style>
 
@@ -1052,6 +1099,195 @@
             form.submit();
         }
     }
+
+    // ===== AUTO-SUGGESTION FUNCTIONALITY =====
+    function initAutoSuggestions() {
+        // Fields with suggestions
+        const suggestionFields = {
+            'document_title': 'title',
+            'notarial_act_type': 'notarial_act',
+            'entry_book_num': 'book',
+            'entry_page_num': 'page',
+            'entry_number': 'entry'
+        };
+
+        // Initialize each field
+        Object.keys(suggestionFields).forEach(fieldName => {
+            const input = document.querySelector(`[name="${fieldName}"]`);
+            if (input) {
+                // Create datalist
+                const datalistId = `suggestions_${suggestionFields[fieldName]}`;
+                let datalist = document.getElementById(datalistId);
+                if (!datalist) {
+                    datalist = document.createElement('datalist');
+                    datalist.id = datalistId;
+                    document.body.appendChild(datalist);
+                }
+                input.setAttribute('list', datalistId);
+
+                // Load suggestions
+                loadSuggestions(suggestionFields[fieldName], datalistId);
+            }
+        });
+
+        // For party_id_type (dynamic fields)
+        initDynamicFieldSuggestions();
+    }
+
+    function loadSuggestions(fieldType, datalistId) {
+        fetch(`/notarial-entries/suggestions/${fieldType}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                const datalist = document.getElementById(datalistId);
+                datalist.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const option = document.createElement('option');
+                    option.value = suggestion;
+                    datalist.appendChild(option);
+                });
+            })
+            .catch(error => console.error(`Error loading ${fieldType} suggestions:`, error));
+    }
+
+    function initDynamicFieldSuggestions() {
+        // For party_id_type in dynamic party fields
+        const partyIdTypeDatalistId = 'suggestions_party_id';
+        let datalist = document.getElementById(partyIdTypeDatalistId);
+        if (!datalist) {
+            datalist = document.createElement('datalist');
+            datalist.id = partyIdTypeDatalistId;
+            document.body.appendChild(datalist);
+        }
+
+        // Load party_id suggestions
+        loadSuggestions('party_id', partyIdTypeDatalistId);
+
+        // Set up observer for dynamically added party fields
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && node.classList && node.classList.contains('party-field')) {
+                        const partyIdInput = node.querySelector('[name="party_id_type"]');
+                        if (partyIdInput) {
+                            partyIdInput.setAttribute('list', partyIdTypeDatalistId);
+                        }
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.getElementById('partiesContainer'), {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // ===== AUTO-INCREMENT FUNCTIONALITY =====
+    function initAutoIncrement() {
+        // Load last entry values
+        fetch('/notarial-entries/last-entry')
+            .then(response => response.json())
+            .then(data => {
+                // Set as placeholder or value for new entries
+                document.querySelector('[name="entry_book_num"]').placeholder = data.book;
+                document.querySelector('[name="entry_page_num"]').placeholder = data.page;
+                document.querySelector('[name="entry_number"]').placeholder = data.entry;
+
+                // Add auto-increment button
+                addAutoIncrementButton();
+            })
+            .catch(error => console.error('Error loading last entry:', error));
+    }
+
+    function addAutoIncrementButton() {
+        const entryNumberInput = document.querySelector('[name="entry_number"]');
+        if (entryNumberInput && !entryNumberInput.parentElement.querySelector('.auto-increment-btn')) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-sm btn-outline-secondary auto-increment-btn';
+            button.innerHTML = '↻';
+            button.title = 'Auto-increment from last entry';
+            button.style.marginLeft = '5px';
+
+            button.addEventListener('click', function () {
+                fetch('/notarial-entries/increment-entry')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.querySelector('[name="entry_book_num"]').value = data.book;
+                        document.querySelector('[name="entry_page_num"]').value = data.page;
+                        document.querySelector('[name="entry_number"]').value = data.entry;
+                    })
+                    .catch(error => console.error('Error incrementing entry:', error));
+            });
+
+            entryNumberInput.parentElement.style.display = 'flex';
+            entryNumberInput.parentElement.appendChild(button);
+        }
+    }
+
+    // ===== INITIALIZE WHEN MODAL OPENS =====
+    document.getElementById('entryModal')?.addEventListener('show.bs.modal', function (event) {
+        if (!event.relatedTarget || !event.relatedTarget.hasAttribute('onclick')) {
+            // New entry - initialize auto features
+            setTimeout(() => {
+                initAutoSuggestions();
+                initAutoIncrement();
+            }, 100);
+        }
+    });
+
+    // Add print button to entry details page
+    function addPrintButton() {
+        const dashboardHeader = document.querySelector('.dashboard-header');
+        if (dashboardHeader && window.location.pathname.includes('/notarial-entries/')) {
+            const entryId = window.location.pathname.split('/').pop();
+            const printBtn = document.createElement('a');
+            printBtn.href = `/notarial-entries/${entryId}/print`;
+            printBtn.className = 'btn btn-primary';
+            printBtn.target = '_blank';
+            printBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Print Entry
+        `;
+
+            const actionsDiv = dashboardHeader.querySelector('.dashboard-actions');
+            if (actionsDiv) {
+                actionsDiv.appendChild(printBtn);
+            }
+        }
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        addPrintButton();
+
+        // Add print button to table actions
+        document.querySelectorAll('.action-buttons').forEach(actions => {
+            const row = actions.closest('tr');
+            if (row) {
+                const entryId = row.querySelector('a[href*="/notarial-entries/"]')?.href.split('/').pop();
+                if (entryId) {
+                    const printBtn = document.createElement('a');
+                    printBtn.href = `/notarial-entries/${entryId}/print`;
+                    printBtn.className = 'btn-action btn-action--primary';
+                    printBtn.title = 'Print';
+                    printBtn.target = '_blank';
+                    printBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                `;
+                    actions.insertBefore(printBtn, actions.firstChild);
+                }
+            }
+        });
+    });
 </script>
 
 {% block scripts %}

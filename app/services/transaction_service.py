@@ -186,23 +186,33 @@ def is_notarization_service(service_id):
     return service and service.is_notarization
 
 def get_all_transactions():
-    """Get all transactions with client and service info"""
+    """Get all transactions with proper display logic"""
     transactions = TransactionItem.query.options(
         db.joinedload(TransactionItem.client),
-        db.joinedload(TransactionItem.service)
+        db.joinedload(TransactionItem.service),
+        db.joinedload(TransactionItem.case)  # Load case relationship
     ).all()
     
     # For notarial transactions, check if they're linked to a paid entry
     for transaction in transactions:
         if transaction.transaction_type == 'Notarial':
-            # Check if there's a linked notarial entry that's paid
+            # Get the linked notarial entry
             notarial_entry = NotarialEntry.query.filter_by(
                 transaction_item_id=transaction.id
             ).first()
             
-            if notarial_entry and notarial_entry.transaction_status == 'paid':
+            if notarial_entry:
+                # Set entry_reference in transaction
+                transaction.entry_reference = f"{notarial_entry.not_book_num}-{notarial_entry.not_page_num}-{notarial_entry.not_entry_num}"
+                
                 # Override the transaction payment status if entry is paid
-                transaction.payment_status = 'Paid'
+                if notarial_entry.transaction_status == 'paid':
+                    transaction.payment_status = 'Paid'
+        elif transaction.transaction_type == 'Case':
+            # Set display fields for case transactions
+            if transaction.case:
+                transaction.case_reference = transaction.case.case_number
+                transaction.client_display = transaction.client.full_name if transaction.client else "Unknown Client"
     
     return transactions
 
@@ -249,3 +259,49 @@ def sync_existing_notarial_payments():
     
     db.session.commit()
     print(f"Synced {len(notarial_entries)} notarial entries with transactions")
+
+
+def format_transaction_display(transaction):
+    """
+    Format transaction for display based on type
+    
+    Args:
+        transaction (TransactionItem): The transaction
+    
+    Returns:
+        dict: Formatted display data
+    """
+    if transaction.transaction_type == 'Notarial':
+        # Get entry reference
+        notarial_entry = NotarialEntry.query.filter_by(
+            transaction_item_id=transaction.id
+        ).first()
+        
+        if notarial_entry:
+            display = {
+                'reference': f"{notarial_entry.not_book_num}-{notarial_entry.not_page_num}-{notarial_entry.not_entry_num}",
+                'description': f"Notarial: {notarial_entry.not_title}",
+                'client_display': "N/A"  # Notarial entries don't show client name
+            }
+        else:
+            display = {
+                'reference': f"Notarial #{transaction.id}",
+                'description': transaction.purpose,
+                'client_display': "N/A"
+            }
+    
+    elif transaction.transaction_type == 'Case':
+        display = {
+            'reference': transaction.case.case_number if transaction.case else f"Case #{transaction.id}",
+            'description': transaction.purpose,
+            'client_display': transaction.client.full_name if transaction.client else "Unknown Client"
+        }
+    
+    else:
+        display = {
+            'reference': f"#{transaction.id}",
+            'description': transaction.purpose,
+            'client_display': transaction.client.full_name if transaction.client else "Unknown Client"
+        }
+    
+    return display

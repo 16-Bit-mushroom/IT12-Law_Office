@@ -83,3 +83,62 @@ class NotarialEntryWitness(db.Model):
     witness_address = db.Column(db.String(150), nullable=True)
     
     notarial_entry = db.relationship('NotarialEntry', backref='witnesses', lazy=True)
+
+
+class NotarialLastEntry(db.Model):
+    __tablename__ = 'notarial_last_entries'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # Store the last used values
+    last_book_num = db.Column(db.String(255), default='1', nullable=False)
+    last_page_num = db.Column(db.String(255), default='1', nullable=False)
+    last_entry_num = db.Column(db.String(255), default='1', nullable=False)
+    
+    # To track which user's last entry
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    
+    # Timestamp
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship
+    user = db.relationship('User', backref='notarial_last_entry', lazy=True)
+    
+    def __repr__(self):
+        return f"<NotarialLastEntry(book='{self.last_book_num}', page='{self.last_page_num}', entry='{self.last_entry_num}')>"
+    
+    def increment_entry(self):
+        """Increment the entry number, handle page and book overflow"""
+        try:
+            current_entry = int(self.last_entry_num)
+            current_page = int(self.last_page_num)
+            current_book = int(self.last_book_num)
+            
+            # Increment entry
+            new_entry = current_entry + 1
+            
+            # Check if we need to increment page (assuming 50 entries per page)
+            if new_entry > 50:
+                self.last_entry_num = '1'
+                self.last_page_num = str(current_page + 1)
+                
+                # Check if we need to increment book (assuming 200 pages per book)
+                if (current_page + 1) > 200:
+                    self.last_page_num = '1'
+                    self.last_book_num = str(current_book + 1)
+            else:
+                self.last_entry_num = str(new_entry)
+                
+            return {
+                'book': self.last_book_num,
+                'page': self.last_page_num,
+                'entry': self.last_entry_num
+            }
+        except ValueError:
+            # If values aren't integers, just increment entry as string
+            self.last_entry_num = str(int(self.last_entry_num) + 1) if self.last_entry_num.isdigit() else '2'
+            return {
+                'book': self.last_book_num,
+                'page': self.last_page_num,
+                'entry': self.last_entry_num
+            }

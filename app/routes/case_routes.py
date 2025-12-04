@@ -5,10 +5,13 @@ from datetime import datetime
 
 from app.services.case_service import CaseService
 from app.services.client_service import get_all_clients
+from app.utils.permissions import admin_required
+
 
 case_bp = Blueprint('case', __name__, url_prefix='/cases')
 
 @case_bp.route('/')
+@admin_required  # Add this
 @login_required
 def list_cases():
     """Display all cases"""
@@ -83,6 +86,7 @@ def create_case():
                              pre_select_client_id=pre_select_client_id)
 
 @case_bp.route('/<int:case_id>')
+@admin_required  # Add this
 @login_required
 def view_case(case_id):
     """View case details"""
@@ -108,6 +112,7 @@ def view_case(case_id):
         return redirect(url_for('case.list_cases'))
 
 @case_bp.route('/<int:case_id>/edit', methods=['GET', 'POST'])
+@admin_required  # Add this
 @login_required
 def edit_case(case_id):
     """Edit a case"""
@@ -183,6 +188,7 @@ def edit_case(case_id):
                              representatives=representatives)
 
 @case_bp.route('/<int:case_id>/delete', methods=['POST'])
+@admin_required  # Add this
 @login_required
 def delete_case(case_id):
     """Delete a case"""

@@ -34,6 +34,8 @@
                 <div class="data-card__icon data-card__icon--gold"></div>
             </div>
 
+            <!-- Hide Case Files card for staff -->
+            {% if current_user.role != 'staff' %}
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
                     <span class="data-card__title">Case Files</span>
@@ -49,7 +51,10 @@
                 </div>
                 <div class="data-card__icon data-card__icon--green"></div>
             </div>
+            {% endif %}
 
+            <!-- Hide Consultation card for now -->
+            <!--
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
                     <span class="data-card__title">Consultation</span>
@@ -65,23 +70,13 @@
                 </div>
                 <div class="data-card__icon data-card__icon--purple"></div>
             </div>
-
+            -->
         </div>
-
     </header>
-
-
-
-    <!-- Filter Buttons -->
-
 
     <section class="content-section">
         <div class="panel-card">
-
-
             <div class="filter-buttons mb-4" style="display: flex; justify-content: space-between;">
-
-
                 <div class="btn-group" role="group" aria-label="Document filters">
                     <button type="button" class="btn btn-outline-primary active" data-filter="all">
                         All
@@ -89,13 +84,20 @@
                     <button type="button" class="btn btn-outline-primary" data-filter="notarial_entry">
                         Notarial
                     </button>
+                    
+                    <!-- Hide Case Logs filter button for staff -->
+                    {% if current_user.role != 'staff' %}
                     <button type="button" class="btn btn-outline-primary" data-filter="case">
                         Case Logs
                     </button>
-                    <!-- <button type="button" class="btn btn-outline-primary" data-filter="consultation">
+                    {% endif %}
+                    
+                    <!-- Hide Consultation filter button -->
+                    <!-- 
+                    <button type="button" class="btn btn-outline-primary" data-filter="consultation">
                         Consultation
-                    </button> -->
-
+                    </button>
+                    -->
                 </div>
             </div>
 
@@ -107,7 +109,6 @@
                         <col style="width: 10%">
                         <col style="width: 15%">
                         <col style="width: 10%">
-                        <!-- <col style="width: 15%"> -->
                         <col style="width: 10%">
                         <col style="width: 10%">
                     </colgroup>
@@ -115,11 +116,10 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Document Name</th>
+                            <th>Document Owner</th>
                             <th>Doc Type</th>
                             <th>Related To</th>
                             <th>Status</th>
-                            <!-- <th>Location</th> -->
                             <th>Uploaded</th>
                             <th>Actions</th>
                         </tr>
@@ -127,6 +127,8 @@
 
                     <tbody>
                         {% for document in documents %}
+                        <!-- This will automatically hide case documents for staff 
+                             because they're filtered out in the route -->
                         <tr class="document-row" data-parent-type="{{ document.parent_type }}">
                             <td><strong>#{{ document.id }}</strong></td>
                             <td>
@@ -176,17 +178,6 @@
                                 </span>
                             </td>
 
-                            <!-- <td>
-                                <div class="d-flex align-items-center text-muted small">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="me-1">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    {{ document.physical_location or 'Digital Only' }}
-                                </div>
-                            </td> -->
                             <td>
                                 <div class="small">{{ document.uploaded_at.strftime('%m/%d/%Y') }}</div>
                             </td>
@@ -202,7 +193,7 @@
                                         </svg>
                                     </a>
 
-                                    <!-- Status Dropdown (Replaces Download Button) -->
+                                    <!-- Status Dropdown -->
                                     <div class="dropdown status-dropdown">
                                         <button class="btn-action btn-action--secondary dropdown-toggle" type="button"
                                             data-bs-toggle="dropdown" aria-expanded="false" title="Update Status">
@@ -257,6 +248,20 @@
                             </td>
                         </tr>
                         {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10 9 9 9 8 9"></polyline>
+                                    </svg>
+                                    <p class="mb-0">No documents found.</p>
+                                </div>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -264,6 +269,7 @@
         </div>
     </section>
 </main>
+
 
 
 <style>
@@ -584,7 +590,7 @@
                         noResultsRow = document.createElement('tr');
                         noResultsRow.className = 'no-results-message';
                         noResultsRow.innerHTML = `
-                        <td colspan="8" class="text-center py-4">
+                        <td colspan="7" class="text-center py-4">
                             <div class="text-muted">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-2">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -603,85 +609,6 @@
                     noResultsRow.remove();
                 }
             });
-        });
-
-        // Search functionality
-        const searchInput = document.querySelector('.search-bar__input');
-        searchInput.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
-
-            let visibleCount = 0;
-            documentRows.forEach(row => {
-                if (row.style.display === 'none') return;
-
-                const filename = row.querySelector('.fw-semibold').textContent.toLowerCase();
-                const notes = row.querySelector('.text-muted.small')?.textContent.toLowerCase() || '';
-                const fileType = row.querySelector('.font-monospace').textContent.toLowerCase();
-                const parentType = row.querySelector('.badge').textContent.toLowerCase();
-
-                if (filename.includes(searchTerm) || notes.includes(searchTerm) ||
-                    fileType.includes(searchTerm) || parentType.includes(searchTerm)) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Update visible count after search
-            const tbody = document.querySelector('tbody');
-            let noResultsRow = tbody.querySelector('.no-results-message');
-
-            if (visibleCount === 0) {
-                if (!noResultsRow) {
-                    noResultsRow = document.createElement('tr');
-                    noResultsRow.className = 'no-results-message';
-                    noResultsRow.innerHTML = `
-                    <td colspan="8" class="text-center py-4">
-                        <div class="text-muted">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-2">
-                                <circle cx="11" cy="11" r="8"></
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                            <p class="mb-0">No documents match your search.</p>
-                        </div>
-                    </td>
-                `;
-                    tbody.appendChild(noResultsRow);
-                }
-            } else if (noResultsRow) {
-                noResultsRow.remove();
-            }
-        });
-    });
-
-    // Add this to your existing JavaScript in documents_page.html
-    document.addEventListener('DOMContentLoaded', function () {
-        // Status dropdown interactions
-        const statusOptions = document.querySelectorAll('.status-option');
-
-        statusOptions.forEach(option => {
-            option.addEventListener('click', function (e) {
-                // Optional: Add visual feedback that the status is being updated
-                const dropdown = this.closest('.status-dropdown');
-                const button = dropdown.querySelector('.btn-action');
-
-                // Briefly change button color to indicate action
-                button.style.backgroundColor = '#28a745';
-                setTimeout(() => {
-                    button.style.backgroundColor = '';
-                }, 500);
-            });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.status-dropdown')) {
-                const openDropdowns = document.querySelectorAll('.status-dropdown-menu.show');
-                openDropdowns.forEach(dropdown => {
-                    dropdown.classList.remove('show');
-                });
-            }
         });
     });
 </script>

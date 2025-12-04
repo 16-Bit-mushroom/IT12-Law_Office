@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from app.models.notarial_entry_mdl import NotarialEntry
@@ -12,6 +12,7 @@ from app.models.client_mdl import Client
 from app.models.document_mdl import Document
 from app.models.case_mdl import Case
 from app.models.transaction_mdl import TransactionItem
+from app.utils.query_filters import filter_dashboard_data
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/')
 
@@ -74,30 +75,35 @@ def get_context_url(doc):
 @dashboard_bp.route('/dashboard')
 @login_required 
 def dashboard_page():
-    # --- KPI 1: DOCUMENTS ---
-    # Count total documents
-    total_docs = Document.query.count()
-    # Count docs tagged as 'Lacking' (as per your model comments)
-    missing_docs = Document.query.filter(Document.document_status.ilike('Lacking')).count()
-
-    # --- KPI 2: WORKFLOW STATUS ---
-    # Use payment_status instead of transaction_status
-    # Count pending payments (transactions with payment_status = 'Pending')
-    pending_payments_count = TransactionItem.query.filter_by(payment_status='Pending').count()
+    filtered_data = filter_dashboard_data()
+    
+    # Use filtered queries for all dashboard metrics
+    total_docs = filtered_data['documents'].count()
+    missing_docs = filtered_data['documents'].filter(Document.document_status.ilike('Lacking')).count()
+    
+    # Filter transactions based on role
+    if current_user.role == 'staff':
+        # Staff only sees notarial transactions
+        pending_payments_count = filtered_data['transactions'].filter_by(payment_status='Pending').count()
+        unpaid_sum = db.session.query(func.sum(TransactionItem.transaction_amount))\
+            .filter(TransactionItem.payment_status == 'Pending',
+                   TransactionItem.transaction_type == 'Notarial').scalar() or 0
+        unpaid_count = TransactionItem.query.filter_by(
+            payment_status='Pending', 
+            transaction_type='Notarial'
+        ).count()
+    else:
+        # Admin sees all
+        pending_payments_count = TransactionItem.query.filter_by(payment_status='Pending').count()
+        unpaid_sum = db.session.query(func.sum(TransactionItem.transaction_amount))\
+            .filter(TransactionItem.payment_status == 'Pending').scalar() or 0
+        unpaid_count = TransactionItem.query.filter_by(payment_status='Pending').count()
     
     # For documents, keep existing logic
     pending_docs_count = Document.query.filter(Document.document_status.ilike('Pending')).count()
     
     # Total pending = pending documents + pending payments
     total_pending = pending_docs_count + pending_payments_count
-
-    # --- KPI 3: FINANCIALS ---
-    # Sum transaction_amount where payment_status is 'Pending'
-    unpaid_sum = db.session.query(func.sum(TransactionItem.transaction_amount))\
-        .filter(TransactionItem.payment_status == 'Pending').scalar() or 0
-    
-    # Count number of unpaid transactions
-    unpaid_count = TransactionItem.query.filter_by(payment_status='Pending').count()
 
     # --- KPI 4: ACTIVE MATTERS ---
     # Count cases where status is 'active'
@@ -137,14 +143,20 @@ def dashboard_page():
             'target_url': get_context_url(doc)
         })
 
-    # In dashboard_routes.py, update the section for pending transactions:
-
     # Add recent pending transactions to action items
-    pending_transactions = TransactionItem.query\
-        .filter_by(payment_status='Pending')\
-        .options(joinedload(TransactionItem.client))\
-        .order_by(TransactionItem.transaction_date.desc())\
-        .limit(5).all()
+    # Use role-based filtering for transactions
+    if current_user.role == 'staff':
+        pending_transactions = TransactionItem.query\
+            .filter_by(payment_status='Pending', transaction_type='Notarial')\
+            .options(joinedload(TransactionItem.client))\
+            .order_by(TransactionItem.transaction_date.desc())\
+            .limit(5).all()
+    else:
+        pending_transactions = TransactionItem.query\
+            .filter_by(payment_status='Pending')\
+            .options(joinedload(TransactionItem.client))\
+            .order_by(TransactionItem.transaction_date.desc())\
+            .limit(5).all()
 
     action_transactions_data = []
     for transaction in pending_transactions:

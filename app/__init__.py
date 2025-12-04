@@ -23,6 +23,27 @@ def create_app():
     # Import User model for the user_loader
     from app.models.user_model import User
 
+    # In your app/__init__.py, add this context processor
+    @app.context_processor
+    def utility_processor():
+        def can_access(module):
+            from app.utils.permissions import can_access_module
+            return can_access_module(module)
+        
+        def is_admin():
+            from flask_login import current_user
+            return current_user.is_authenticated and (current_user.is_admin or current_user.role == 'admin')
+        
+        def is_staff():
+            from flask_login import current_user
+            return current_user.is_authenticated and current_user.role == 'staff'
+        
+        return dict(
+            can_access=can_access,
+            is_admin=is_admin,
+            is_staff=is_staff
+        )
+
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))

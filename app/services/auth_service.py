@@ -7,7 +7,7 @@ from flask_login import login_user, logout_user, current_user
 def seed_initial_admin():
     """Seed the initial admin user and services if they don't exist"""
     # Seed admin user
-    if User.query.first() is None:
+    if User.query.filter_by(role='admin').first() is None:
         admin = User(
             username='admin',
             email='admin@lawoffice.com',
@@ -16,9 +16,22 @@ def seed_initial_admin():
         )
         admin.set_password('password123')
         db.session.add(admin)
-        db.session.commit()
         print("--- Initial Admin User SEEDED: Username 'admin', Password 'password123' ---")
         print("--- PLEASE CHANGE THIS PASSWORD IMMEDIATELY AFTER FIRST LOGIN ---")
+
+    # Seed staff user
+    if User.query.filter_by(role='staff').first() is None:
+        staff = User(
+            username='staff',
+            email='staff@lawoffice.com',
+            role='staff',
+            is_admin=False
+        )
+        staff.set_password('staff123')
+        db.session.add(staff)
+        print("--- Initial Staff User SEEDED: Username 'staff', Password 'staff123' ---")
+    
+    # Seed services...
 
     # Seed initial services
     if Service.query.first() is None:

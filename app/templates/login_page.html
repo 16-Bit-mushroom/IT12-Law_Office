@@ -4,35 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="alternate" href="atom.xml" type="application/atom+xml" title="Atom">
-    <!-- Using url_for() for correct static file linking -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/login.css') }}">
 
     <title>Login | RJB Law Office</title>
 </head>
-<body>
-    <section class="vh-100">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6 text-black">
+<body class="gradient-background">
+    <section class="vh-100 d-flex justify-content-center align-items-center">
+        <div class="container-fluid p-0">
+            <div class="row g-0 justify-content-center">
+                
+                <div class="col-md-10 col-lg-6 col-xl-4 text-black login-card-container">
 
-                    <div class="px-5 ms-xl-4">
-                        <i class="fas fa-crow fa-2x me-3 pt-5 mt-xl-4" style="color: #709085;"></i>
-                        <span class="h1 fw-bold mb-0">RJB Law Office</span>
+                    <div class="text-center mb-5 mt-4 brand-header">
+                        <i class="fas fa-balance-scale fa-2x brand-icon"></i>
+                        <span class="h1 fw-bold mb-0 brand-text">RJB Law Office</span>
                     </div>
 
-                    <div class="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
+                    <div class="d-flex justify-content-center px-4">
 
-                        <!-- === START: FORM LOGIC INTEGRATION === -->
-                        <form method="POST" action="{{ url_for('auth.login') }}" style="width: 23rem;">
+                        <form method="POST" action="{{ url_for('auth.login') }}" class="login-form-wrapper p-5">
 
-                            <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Log in</h3>
+                            <h3 class="fw-bold mb-3 form-heading text-center">Welcome Back</h3>
+                            <p class="text-muted mb-4 subtitle text-center">Please enter your details to access the firm portal.</p>
 
-                            <!-- Flash Messages Display Area -->
                             {% with messages = get_flashed_messages(with_categories=true) %}
                                 {% if messages %}
                                     {% for category, message in messages %}
-                                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        <div class="alert alert-{{ category }} alert-dismissible fade show custom-alert" role="alert">
                                             {{ message }}
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                         </div>
@@ -40,50 +44,34 @@
                                 {% endif %}
                             {% endwith %}
 
-                            <!-- Default Credentials Note -->
-                            <div class="alert alert-info">
-                                <strong>Default Credentials:</strong><br>
-                                Email: admin@lawoffice.com<br>
-                                Password: password123
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="form2Example18">Email Address</label>
+                                <input type="email" id="form2Example18" name="email" class="form-control form-control-lg custom-input" required value="admin@lawoffice.com" placeholder="name@company.com" />
                             </div>
 
-                            <div data-mdb-input-init class="form-outline mb-4">
-                                <!-- Added name="email" to capture the input data -->
-                                <input type="email" id="form2Example18" name="email" class="form-control form-control-lg" required value="admin@lawoffice.com" />
-                                <label class="form-label" for="form2Example18">Email address</label>
-                            </div>
-
-                            <div data-mdb-input-init class="form-outline mb-4">
-                                <!-- Added name="password" to capture the input data -->
-                                <input type="password" id="form2Example28" name="password" class="form-control form-control-lg" required value="password123" />
+                            <div class="form-group mb-4">
                                 <label class="form-label" for="form2Example28">Password</label>
+                                <input type="password" id="form2Example28" name="password" class="form-control form-control-lg custom-input" required value="password123" placeholder="Enter your password" />
                             </div>
 
                             <div class="pt-1 mb-4">
-                                <!-- Changed type="button" to type="submit" to send the form -->
-                                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-lg btn-block" type="submit">Login</button>
+                                <button class="btn btn-lg btn-block custom-btn-primary" type="submit">Sign In</button>
                             </div>
 
-                            <p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>
-                            <p>Don't have an account? <a href="#!" class="link-info">Register here</a></p>
+                            <div class="d-flex justify-content-between align-items-center mb-0 mt-4">
+                                <a class="text-muted small-link" href="#!">Forgot password?</a>
+                                <p class="mb-0 small">No account? <a href="#!" class="link-gold">Register here</a></p>
+                            </div>
 
                         </form>
-                        <!-- === END: FORM LOGIC INTEGRATION === -->
+                        </div>
 
-                    </div>
-
-                </div>
-                <div class="col-sm-6 px-0 d-none d-sm-block">
-                    <!-- Placeholder image; consider using a local image if possible -->
-                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img3.webp"
-                        alt="Login image" class="w-100 vh-100" style="object-fit: cover; object-position: left;">
                 </div>
             </div>
         </div>
     </section>
     
-    <!-- Required script for Bootstrap dismissible alerts to function -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 </body>
 </html>

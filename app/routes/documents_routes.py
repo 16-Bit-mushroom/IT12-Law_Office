@@ -1,19 +1,20 @@
-# app/routes/documents_routes.py
-
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, send_file
 from flask_login import login_required, current_user
 from app.models.document_mdl import Document
 from app.models.notarial_entry_mdl import NotarialEntry
-from app.models.case_mdl import Case  # ADD THIS IMPORT
-from app.models.client_mdl import Client  # ADD THIS IMPORT
+from app.models.case_mdl import Case  
+from app.models.client_mdl import Client  
 from app.models import db 
 from app.services.document_service import DocumentService
 from sqlalchemy import or_
 import os
+from app.utils.permissions import staff_or_admin_required
+from app.utils.query_filters import get_accessible_documents
 
 documents_bp = Blueprint('documents', __name__, url_prefix='/documents')
 
 @documents_bp.route('/')
+@staff_or_admin_required
 @login_required
 def documents_page():
     """Display all documents with context (Client Name / Party Name)"""
@@ -21,7 +22,11 @@ def documents_page():
     
     query = Document.query
     
-    # Filter logic
+    # ROLE-BASED FILTERING: Staff cannot see case documents
+    if current_user.role == 'staff':
+        query = query.filter(Document.parent_type != 'case')
+    
+    # Additional filter logic
     if document_type != 'all':
         query = query.filter_by(parent_type=document_type)
     
@@ -100,6 +105,7 @@ def documents_page():
 
 # documents_routes.py - Remove or redirect the duplicate route
 @documents_bp.route('/notarial-entry/<int:entry_id>')
+@staff_or_admin_required
 @login_required
 def notarial_entry_documents(entry_id):
     """Redirect to the main notarial entry details page"""
@@ -108,6 +114,7 @@ def notarial_entry_documents(entry_id):
 # ... rest of your routes remain the same
 
 @documents_bp.route('/upload', methods=['POST'])
+@staff_or_admin_required
 @login_required
 def upload_document():
     """Upload a document"""
@@ -139,6 +146,7 @@ def upload_document():
         return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
 
 @documents_bp.route('/download/<int:document_id>')
+@staff_or_admin_required
 @login_required
 def download_document(document_id):
     """Download a document"""
@@ -164,6 +172,7 @@ def download_document(document_id):
         return redirect(request.referrer or url_for('documents.documents_page'))
 
 @documents_bp.route('/delete/<int:document_id>', methods=['POST'])
+@staff_or_admin_required
 @login_required
 def delete_document(document_id):
     """Delete a document"""
@@ -179,6 +188,7 @@ def delete_document(document_id):
         return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
 
 @documents_bp.route('/view/<int:document_id>')
+@staff_or_admin_required
 @login_required
 def view_document(document_id):
     """View a document (for images/PDFs that can be displayed in browser)"""
@@ -194,6 +204,7 @@ def view_document(document_id):
 
 # Add this new route to your documents_routes.py
 @documents_bp.route('/update-status/<int:document_id>', methods=['POST'])
+@staff_or_admin_required
 @login_required
 def update_document_status(document_id):
     """Update document status"""

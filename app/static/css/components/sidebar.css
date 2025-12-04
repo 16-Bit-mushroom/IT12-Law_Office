@@ -153,6 +153,7 @@ body {
 }
 
 /* --- FOOTER (AVATAR) --- */
+/* --- FOOTER (AVATAR) --- */
 .sidebar-footer {
     margin-top: auto;
     position: relative;
@@ -171,10 +172,21 @@ body {
     padding: 8px;
     border-radius: 8px;
     text-align: left;
+    transition: all 0.2s ease;
 }
 
+/* FIX: Change background on hover, but keep text visible */
 .avatar-btn:hover {
     background-color: var(--color-hover-gray);
+}
+
+/* FIX: Ensure text stays visible on hover */
+.avatar-btn:hover .user-name {
+    color: var(--color-royal-blue); /* Change to royal blue on hover */
+}
+
+.avatar-btn:hover .user-role {
+    color: #6b7280; /* Keep role text gray but visible */
 }
 
 .avatar-btn img {
@@ -193,11 +205,13 @@ body {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--color-hover-gray);
+    transition: color 0.2s ease; /* Add smooth transition */
 }
 
 .user-role {
     font-size: 0.75rem;
     color: var(--color-text-gray);
+    transition: color 0.2s ease; /* Add smooth transition */
 }
 
 /* Dropdown */

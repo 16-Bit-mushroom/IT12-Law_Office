@@ -10,14 +10,23 @@ from app.services.client_service import get_all_clients
 from app.models.notarial_entry_mdl import NotarialEntry
 from app.models.transaction_mdl import TransactionItem
 from app.models.case_logs_mdl import CaseDocument  # Assuming you have this model
+from app.utils.permissions import staff_or_admin_required
+from app.utils.query_filters import get_accessible_transactions
 
 transaction_bp = Blueprint('transaction', __name__, url_prefix='/transactions')
 
 @transaction_bp.route('/')
+@staff_or_admin_required
 @login_required
 def transactions_page():
     """Display all transactions (auto-created from notarial entries and cases)"""
+    # Get all transactions
     transactions = get_all_transactions()
+    
+    # ROLE-BASED FILTERING: Staff cannot see case transactions
+    if current_user.role == 'staff':
+        transactions = [t for t in transactions if t.transaction_type != 'Case']
+    
     return render_template('transactions_page.html', transactions=transactions)
 
 @transaction_bp.route('/<int:transaction_id>/submit_approval', methods=['POST'])

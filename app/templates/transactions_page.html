@@ -43,6 +43,18 @@
                 </div>
                 <div class="data-card__icon data-card__icon--purple"></div>
             </div>
+            
+            <!-- Hide Case count card for staff -->
+            {% if current_user.role != 'staff' %}
+            <div class="data-card data-card--sm">
+                <div class="data-card__info">
+                    <span class="data-card__title">Case</span>
+                    <span class="data-card__value">{{ transactions|selectattr('transaction_type', 'equalto',
+                        'Case')|list|length }}</span>
+                </div>
+                <div class="data-card__icon data-card__icon--orange"></div>
+            </div>
+            {% endif %}
         </div>
     </header>
 
@@ -57,9 +69,14 @@
                     <button type="button" class="btn btn-outline-primary" data-filter="notarial">
                         Notarial
                     </button>
+                    
+                    <!-- Hide Case Logs filter button for staff -->
+                    {% if current_user.role != 'staff' %}
                     <button type="button" class="btn btn-outline-primary" data-filter="case">
                         Case Logs
                     </button>
+                    {% endif %}
+                    
                     <button type="button" class="btn btn-outline-primary" data-filter="pending">
                         Pending Payment
                     </button>
@@ -96,6 +113,7 @@
                     </thead>
                     <tbody>
                         {% for transaction in transactions %}
+                        <!-- Case transactions will be filtered out for staff users -->
                         <tr data-type="{{ transaction.transaction_type|lower }}"
                             data-status="{{ transaction.payment_status|lower }}">
                             <td>#{{ transaction.id }}</td>
@@ -116,8 +134,6 @@
                             <td>
                                 <div class="action-buttons">
                                     <!-- View Details -->
-                                    <!-- Replace the view button with this -->
-                                    <!-- Replace the view button with this -->
                                     <a href="{{ url_for('transaction.view_transaction_details', transaction_id=transaction.id) }}"
                                         class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -128,31 +144,21 @@
                                         </svg>
                                     </a>
 
-                                    <!-- Mark as Paid -->
-                                    <!-- {% if transaction.payment_status == 'Paid' %}
-                                    <span class="badge badge-success">Paid</span>
-                                    {% else %}
-                                    <form method="POST"
-                                        action="{{ url_for('transaction.mark_payment_paid_route', transaction_id=transaction.id) }}"
-                                        style="display:inline;">
-
-                                        <input type="hidden" name="payment_method" value="Cash">
-
-                                        <button type="submit" class="btn-action btn-action--warning"
-                                            title="Mark as Paid"
-                                            onclick="return confirm('Mark this transaction as Paid?');">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    <!-- Mark as Paid Button (show for Pending payments)
+                                    {% if transaction.payment_status == 'Pending' %}
+                                    <button type="button" class="btn-action btn-action--success" title="Mark as Paid"
+                                        data-bs-toggle="modal" data-bs-target="#paymentModal{{ transaction.id }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                    </button>
                                     {% endif %} -->
 
-                                    <!-- Case-specific actions -->
-                                    <!-- {% if transaction.transaction_type == 'Case' %}
+                                    <!-- Case-specific actions (only show for admins) -->
+                                    <!-- {% if transaction.transaction_type == 'Case' and current_user.role != 'staff' %}
                                     <button type="button" class="btn-action btn-action--primary"
                                         title="Submit for Approval" data-bs-toggle="modal"
                                         data-bs-target="#approvalModal{{ transaction.id }}">
@@ -220,8 +226,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Approval Modal (for Case transactions) -->
-                                {% if transaction.transaction_type == 'Case' %}
+                                <!-- Approval Modal (for Case transactions - only for admins) -->
+                                {% if transaction.transaction_type == 'Case' and current_user.role != 'staff' %}
                                 <div class="modal fade" id="approvalModal{{ transaction.id }}" tabindex="-1"
                                     aria-labelledby="approvalModalLabel{{ transaction.id }}" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -377,14 +383,16 @@
 
         // Search functionality
         const searchInput = document.querySelector('.search-bar__input');
-        searchInput.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
 
-            tableRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
             });
-        });
+        }
     });
 </script>
 {% endblock scripts %}

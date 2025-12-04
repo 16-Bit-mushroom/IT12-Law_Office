@@ -24,6 +24,8 @@ class Case(db.Model):
     # Metadata
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    cause_of_action = db.Column(db.String(255), nullable=True)  # Add this field
     
     # Relationships
     client = db.relationship('Client', backref='cases', lazy=True)

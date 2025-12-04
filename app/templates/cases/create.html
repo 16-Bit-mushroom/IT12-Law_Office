@@ -11,22 +11,26 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('case.create_case') }}" id="caseForm">
-                        <!-- Client Selection -->
+                        <!-- Client Selection with Auto-suggest -->
                         <div class="mb-4">
                             <h5 class="border-bottom pb-2">Client Information</h5>
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="mb-3">
-                                        <label for="client_id" class="form-label">Select Client *</label>
-                                        <select class="form-control" id="client_id" name="client_id" required>
-                                            <option value="">Choose a client...</option>
-                                            {% for client in clients %}
-                                            <option value="{{ client.id }}" 
-                                                {% if pre_select_client_id and client.id == pre_select_client_id %}selected{% endif %}>
-                                                {{ client.full_name }} - {{ client.email }}
-                                            </option>
-                                            {% endfor %}
-                                        </select>
+                                        <label for="client_search" class="form-label">Search Client *</label>
+                                        <div class="autocomplete-wrapper">
+                                            <input type="text" class="form-control" 
+                                                   id="client_search" 
+                                                   name="client_search"
+                                                   placeholder="Type client name or email..."
+                                                   autocomplete="off"
+                                                   oninput="searchClients(this.value)">
+                                            <div id="client_suggestions" class="autocomplete-dropdown"></div>
+                                        </div>
+                                        <input type="hidden" id="client_id" name="client_id" required>
+                                        <div class="form-text text-muted">
+                                            Start typing to search for existing clients
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-end">
@@ -62,7 +66,7 @@
                             </div>
                         </div>
 
-                        <!-- Case Details -->
+                        <!-- Case Details with Auto-suggest -->
                         <div class="mb-4">
                             <h5 class="border-bottom pb-2">Case Details</h5>
                             <div class="row">
@@ -76,24 +80,71 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="case_type" class="form-label">Case Type *</label>
-                                        <select class="form-control" id="case_type" name="case_type" required>
-                                            <option value="">Select case type...</option>
-                                            <option value="civil">Civil Case</option>
-                                            <option value="criminal">Criminal Case</option>
-                                            <option value="corporate">Corporate</option>
-                                            <option value="family">Family Law</option>
-                                            <option value="property">Property</option>
-                                            <option value="labor">Labor</option>
-                                            <option value="other">Other</option>
-                                        </select>
+                                        <div class="autocomplete-wrapper">
+                                            <input type="text" class="form-control" 
+                                                   id="case_type" 
+                                                   name="case_type" 
+                                                   required
+                                                   placeholder="Type or select case type..."
+                                                   autocomplete="off"
+                                                   oninput="getSuggestions('case_type', this.value)">
+                                            <div id="case_type_suggestions" class="autocomplete-dropdown"></div>
+                                            <input type="hidden" id="case_type_id" name="case_type_id">
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <small class="text-muted">Previous entries will appear as you type</small>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="removeSuggestion('case_type', document.getElementById('case_type').value)"
+                                                    style="display: none;" id="remove_case_type_btn">
+                                                Remove Suggestion
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="violation" class="form-label">Violation / Cause of Action</label>
-                                <input type="text" class="form-control" id="violation" name="violation"
-                                    placeholder="e.g., Breach of Contract, Theft, etc.">
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" class="form-control" 
+                                           id="violation" 
+                                           name="violation"
+                                           placeholder="e.g., Breach of Contract, Theft, etc."
+                                           autocomplete="off"
+                                           oninput="getSuggestions('violation', this.value)">
+                                    <div id="violation_suggestions" class="autocomplete-dropdown"></div>
+                                    <input type="hidden" id="violation_id" name="violation_id">
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">Previous entries will appear as you type</small>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="removeSuggestion('violation', document.getElementById('violation').value)"
+                                            style="display: none;" id="remove_violation_btn">
+                                        Remove Suggestion
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="cause_of_action" class="form-label">Cause of Action</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" class="form-control" 
+                                           id="cause_of_action" 
+                                           name="cause_of_action"
+                                           placeholder="e.g., Negligence, Fraud, etc."
+                                           autocomplete="off"
+                                           oninput="getSuggestions('cause_of_action', this.value)">
+                                    <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
+                                    <input type="hidden" id="cause_of_action_id" name="cause_of_action_id">
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">Previous entries will appear as you type</small>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="removeSuggestion('cause_of_action', document.getElementById('cause_of_action').value)"
+                                            style="display: none;" id="remove_cause_of_action_btn">
+                                        Remove Suggestion
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -176,7 +227,71 @@
     </div>
 </div>
 
+<style>
+    .autocomplete-wrapper {
+        position: relative;
+    }
+    
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    
+    .autocomplete-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .autocomplete-item.selected {
+        background-color: #e9ecef;
+        font-weight: 600;
+    }
+    
+    .suggestion-actions {
+        float: right;
+        font-size: 12px;
+        color: #6c757d;
+    }
+    
+    .remove-suggestion-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+    
+    .remove-suggestion-btn:hover {
+        color: #b02a37;
+        text-decoration: underline;
+    }
+</style>
+
+<!-- Update the JavaScript section in create.html -->
 <script>
+    // Add this at the beginning of the script section
+    const searchClientsUrl = "{{ url_for('case.search_clients_api') }}";
+    const getSuggestionsUrl = "{{ url_for('case.get_suggestions_api', field='FIELD') }}";
+    const searchSuggestionsUrl = "{{ url_for('case.search_suggestions_api', field='FIELD') }}";
+    const removeSuggestionUrl = "{{ url_for('case.remove_suggestion_api', field='FIELD') }}";
+
     document.addEventListener('DOMContentLoaded', function () {
         // Set today's date as default for engagement date
         const today = new Date().toISOString().split('T')[0];
@@ -211,6 +326,166 @@
 
         // Initial setup for remove buttons
         updateRemoveButtons();
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.autocomplete-wrapper')) {
+                closeAllDropdowns();
+            }
+        });
     });
+
+    // Close all autocomplete dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+    }
+    
+    // Search clients for auto-suggest
+    async function searchClients(query) {
+        if (query.length < 2) {
+            closeAllDropdowns();
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${searchClientsUrl}?q=${encodeURIComponent(query)}`);
+            const clients = await response.json();
+            
+            const dropdown = document.getElementById('client_suggestions');
+            dropdown.innerHTML = '';
+            
+            if (clients.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No clients found</div>';
+            } else {
+                clients.forEach(client => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `
+                        <strong>${client.full_name}</strong><br>
+                        <small class="text-muted">${client.email || 'No email'} | ${client.phone || 'No phone'}</small>
+                    `;
+                    item.onclick = () => selectClient(client);
+                    dropdown.appendChild(item);
+                });
+            }
+            
+            dropdown.style.display = 'block';
+        } catch (error) {
+            console.error('Error searching clients:', error);
+        }
+    }
+    
+    // Select a client from suggestions
+    function selectClient(client) {
+        document.getElementById('client_search').value = `${client.full_name}`;
+        document.getElementById('client_id').value = client.id;
+        closeAllDropdowns();
+    }
+    
+    // Get suggestions for case type, violation, or cause of action
+    async function getSuggestions(field, query) {
+        const dropdownId = `${field}_suggestions`;
+        const dropdown = document.getElementById(dropdownId);
+        const removeBtn = document.getElementById(`remove_${field}_btn`);
+        
+        // Show remove button if there's text
+        if (removeBtn) {
+            removeBtn.style.display = query.trim() ? 'inline-block' : 'none';
+        }
+        
+        let url;
+        if (query.length < 1) {
+            // Get recent suggestions
+            url = getSuggestionsUrl.replace('FIELD', field);
+        } else {
+            // Search for matching suggestions
+            url = `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
+        }
+        
+        try {
+            const response = await fetch(url);
+            const suggestions = await response.json();
+            
+            dropdown.innerHTML = '';
+            
+            if (suggestions.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No suggestions found</div>';
+            } else {
+                suggestions.forEach(suggestion => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    const value = suggestion.value || suggestion;
+                    item.innerHTML = `
+                        ${value}
+                        <span class="suggestion-actions">
+                            <button class="remove-suggestion-btn" 
+                                    onclick="event.stopPropagation(); removeSuggestion('${field}', '${value.replace(/'/g, "\\'")}')">
+                                Remove
+                            </button>
+                        </span>
+                    `;
+                    item.onclick = () => selectSuggestion(field, value);
+                    dropdown.appendChild(item);
+                });
+            }
+            
+            dropdown.style.display = 'block';
+        } catch (error) {
+            console.error('Error getting suggestions:', error);
+        }
+    }
+    
+    // Select a suggestion
+    function selectSuggestion(field, value) {
+        const input = document.getElementById(field);
+        input.value = value;
+        
+        // Hide the remove button since this is a selected suggestion
+        const removeBtn = document.getElementById(`remove_${field}_btn`);
+        if (removeBtn) {
+            removeBtn.style.display = 'none';
+        }
+        
+        closeAllDropdowns();
+    }
+    
+    // Remove a suggestion
+    async function removeSuggestion(field, value) {
+        if (!confirm(`Remove "${value}" from suggestions? This won't delete any cases using this value.`)) {
+            return;
+        }
+        
+        try {
+            const url = removeSuggestionUrl.replace('FIELD', field);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ value: value })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                alert(result.message || 'Suggestion removed successfully');
+                // Clear the field
+                document.getElementById(field).value = '';
+                const removeBtn = document.getElementById(`remove_${field}_btn`);
+                if (removeBtn) {
+                    removeBtn.style.display = 'none';
+                }
+                // Refresh suggestions
+                getSuggestions(field, '');
+            } else {
+                alert(result.error || 'Error removing suggestion');
+            }
+        } catch (error) {
+            console.error('Error removing suggestion:', error);
+            alert('Error removing suggestion');
+        }
+    }
 </script>
 {% endblock %}

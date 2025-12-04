@@ -183,12 +183,32 @@ class SearchService:
         try:
             from app.models.notarial_entry_mdl import NotarialEntry
             
+            # Create entry reference pattern for search
+            entry_ref_pattern = search_term.replace('-', '')
+            
             conditions = or_(
                 NotarialEntry.not_title.ilike(f'%{search_term}%'),
                 NotarialEntry.not_entry_num.ilike(f'%{search_term}%'),
                 NotarialEntry.not_type_act.ilike(f'%{search_term}%'),
-                NotarialEntry.not_book_num.ilike(f'%{search_term}%')
+                NotarialEntry.not_book_num.ilike(f'%{search_term}%'),
+                NotarialEntry.not_page_num.ilike(f'%{search_term}%'),
+                # Search in parties
+                NotarialEntry.parties.any(NotarialEntryParty.party_name.ilike(f'%{search_term}%'))
             )
+            
+            # Also search by entry reference format (Book-Page-Entry)
+            if '-' in search_term or all(x.isdigit() for x in search_term.replace('-', '')):
+                # Try to parse as book-page-entry
+                parts = search_term.replace('-', ' ').split()
+                if len(parts) >= 3:
+                    conditions = or_(
+                        conditions,
+                        and_(
+                            NotarialEntry.not_book_num.ilike(f'%{parts[0]}%'),
+                            NotarialEntry.not_page_num.ilike(f'%{parts[1]}%'),
+                            NotarialEntry.not_entry_num.ilike(f'%{parts[2]}%')
+                        )
+                    )
             
             entries = NotarialEntry.query.filter(conditions)\
                 .order_by(NotarialEntry.not_date.desc())\
@@ -206,7 +226,7 @@ class SearchService:
                     'type': 'Notarial',
                     'subtype': entry.not_type_act or 'Notarial Entry',
                     'title': f"Entry #{entry.not_entry_num}: {entry.not_title}",
-                    'description': f"Book: {entry.not_book_num}, Page: {entry.not_page_num} | Parties: {', '.join(party_names) if party_names else 'No parties'}",
+                    'description': f"Book: {entry.not_book_num}, Page: {entry.not_page_num} | Entry Ref: {entry.not_book_num}-{entry.not_page_num}-{entry.not_entry_num} | Parties: {', '.join(party_names) if party_names else 'No parties'}",
                     'url': f"/notarial-entries/{entry.id}",
                     'date': entry.not_date.strftime('%Y-%m-%d'),
                     'date_sort': entry.not_date,

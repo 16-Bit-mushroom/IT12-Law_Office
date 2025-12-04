@@ -22,6 +22,7 @@ class TransactionItem(db.Model):
     
     transaction_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(UTC))
     payment_date = db.Column(db.DateTime)  # When payment was made
+    entry_reference = db.Column(db.String(100), nullable=True)  # Format: "Book-Page-Entry"
     
     # Foreign key to Payment - KEEP THIS
     payment_id = db.Column(db.Integer, db.ForeignKey('payments.id'), nullable=True)

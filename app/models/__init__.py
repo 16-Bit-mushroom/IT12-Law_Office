@@ -14,7 +14,10 @@ from .case_mdl import Case
 from .notarial_entry_mdl import NotarialEntry
 from .notarial_entry_mdl import NotarialEntryParty
 from .notarial_entry_mdl import NotarialEntryWitness
+from .notarial_entry_mdl import NotarialLastEntry  # NEW
 
 from .legal_consultation_mdl import LegalConsultation
 from .document_mdl import Document
 from .representative_mdl import Representative
+from .suggestion_mdl import Suggestion  # NEW
+from .reminder_mdl import Reminder  # NEW

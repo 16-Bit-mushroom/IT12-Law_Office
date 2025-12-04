@@ -1,0 +1,317 @@
+.
+├── app
+│   ├── fs.txt
+│   ├── __init__.py
+│   ├── models
+│   │   ├── case_logs_mdl.py
+│   │   ├── case_mdl.py
+│   │   ├── client_mdl.py
+│   │   ├── document_mdl.py
+│   │   ├── __init__.py
+│   │   ├── legal_consultation_mdl.py
+│   │   ├── notarial_entry_mdl.py
+│   │   ├── payment_mdl.py
+│   │   ├── __pycache__
+│   │   │   ├── case_doc_mdl.cpython-313.pyc
+│   │   │   ├── case_doc_mdl.cpython-314.pyc
+│   │   │   ├── case_logs_mdl.cpython-313.pyc
+│   │   │   ├── case_logs_mdl.cpython-314.pyc
+│   │   │   ├── case_mdl.cpython-313.pyc
+│   │   │   ├── case_mdl.cpython-314.pyc
+│   │   │   ├── client_mdl.cpython-313.pyc
+│   │   │   ├── client_mdl.cpython-314.pyc
+│   │   │   ├── client_model.cpython-314.pyc
+│   │   │   ├── document_mdl.cpython-313.pyc
+│   │   │   ├── document_mdl.cpython-314.pyc
+│   │   │   ├── __init__.cpython-313.pyc
+│   │   │   ├── __init__.cpython-314.pyc
+│   │   │   ├── legal_consultation_mdl.cpython-313.pyc
+│   │   │   ├── legal_consultation_mdl.cpython-314.pyc
+│   │   │   ├── notarial_entry_mdl.cpython-313.pyc
+│   │   │   ├── notarial_entry_mdl.cpython-314.pyc
+│   │   │   ├── payment_mdl.cpython-313.pyc
+│   │   │   ├── payment_mdl.cpython-314.pyc
+│   │   │   ├── representative_mdl.cpython-313.pyc
+│   │   │   ├── service_mdl.cpython-313.pyc
+│   │   │   ├── service_mdl.cpython-314.pyc
+│   │   │   ├── transaction_mdl.cpython-313.pyc
+│   │   │   ├── transaction_mdl.cpython-314.pyc
+│   │   │   ├── user_model.cpython-313.pyc
+│   │   │   └── user_model.cpython-314.pyc
+│   │   ├── representative_mdl.py
+│   │   ├── service_mdl.py
+│   │   ├── transaction_mdl.py
+│   │   └── user_model.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   └── __init__.cpython-314.pyc
+│   ├── routes
+│   │   ├── admin_profile_routes.py
+│   │   ├── backup_routes.py
+│   │   ├── case_routes.py
+│   │   ├── clients_routes.py
+│   │   ├── dashboard_routes.py
+│   │   ├── documents_routes.py
+│   │   ├── __init__.py
+│   │   ├── legal_consultation_routes.py
+│   │   ├── login_routes.py
+│   │   ├── notarial_entries_routes.py
+│   │   ├── payments_routes.py
+│   │   ├── __pycache__
+│   │   │   ├── admin_profile_routes.cpython-313.pyc
+│   │   │   ├── admin_profile_routes.cpython-314.pyc
+│   │   │   ├── backup_routes.cpython-313.pyc
+│   │   │   ├── backup_routes.cpython-314.pyc
+│   │   │   ├── case_logs_routes.cpython-313.pyc
+│   │   │   ├── case_logs_routes.cpython-314.pyc
+│   │   │   ├── case_routes.cpython-313.pyc
+│   │   │   ├── case_routes.cpython-314.pyc
+│   │   │   ├── clients_routes.cpython-313.pyc
+│   │   │   ├── clients_routes.cpython-314.pyc
+│   │   │   ├── dashboard_routes.cpython-313.pyc
+│   │   │   ├── dashboard_routes.cpython-314.pyc
+│   │   │   ├── documents_routes.cpython-313.pyc
+│   │   │   ├── documents_routes.cpython-314.pyc
+│   │   │   ├── __init__.cpython-313.pyc
+│   │   │   ├── __init__.cpython-314.pyc
+│   │   │   ├── legal_consultation_routes.cpython-313.pyc
+│   │   │   ├── legal_consultation_routes.cpython-314.pyc
+│   │   │   ├── login_routes.cpython-313.pyc
+│   │   │   ├── login_routes.cpython-314.pyc
+│   │   │   ├── notarial_entries_routes.cpython-313.pyc
+│   │   │   ├── notarial_entries_routes.cpython-314.pyc
+│   │   │   ├── payments_routes.cpython-313.pyc
+│   │   │   ├── payments_routes.cpython-314.pyc
+│   │   │   ├── search_routes.cpython-313.pyc
+│   │   │   ├── settings_route.cpython-313.pyc
+│   │   │   ├── settings_route.cpython-314.pyc
+│   │   │   ├── transaction_routes.cpython-313.pyc
+│   │   │   └── transaction_routes.cpython-314.pyc
+│   │   ├── search_routes.py
+│   │   ├── services_routes.py
+│   │   ├── settings_route.py
+│   │   └── transaction_routes.py
+│   ├── services
+│   │   ├── auth_service.py
+│   │   ├── backup_service.py
+│   │   ├── case_service.py
+│   │   ├── client_service.py
+│   │   ├── document_service.py
+│   │   ├── __init__.py
+│   │   ├── notarial_entry_service.py
+│   │   ├── __pycache__
+│   │   │   ├── auth_service.cpython-313.pyc
+│   │   │   ├── auth_service.cpython-314.pyc
+│   │   │   ├── backup_service.cpython-313.pyc
+│   │   │   ├── backup_service.cpython-314.pyc
+│   │   │   ├── case_service.cpython-313.pyc
+│   │   │   ├── case_service.cpython-314.pyc
+│   │   │   ├── client_service.cpython-313.pyc
+│   │   │   ├── client_service.cpython-314.pyc
+│   │   │   ├── document_service.cpython-313.pyc
+│   │   │   ├── document_service.cpython-314.pyc
+│   │   │   ├── __init__.cpython-313.pyc
+│   │   │   ├── __init__.cpython-314.pyc
+│   │   │   ├── notarial_entry_service.cpython-313.pyc
+│   │   │   ├── notarial_entry_service.cpython-314.pyc
+│   │   │   ├── search_service.cpython-313.pyc
+│   │   │   ├── service_service.cpython-313.pyc
+│   │   │   ├── service_service.cpython-314.pyc
+│   │   │   ├── transaction_service.cpython-313.pyc
+│   │   │   ├── transaction_service.cpython-314.pyc
+│   │   │   ├── user_service.cpython-313.pyc
+│   │   │   └── user_service.cpython-314.pyc
+│   │   ├── search_service.py
+│   │   ├── service_service.py
+│   │   ├── transaction_service.py
+│   │   └── user_service.py
+│   ├── static
+│   │   ├── css
+│   │   │   ├── base
+│   │   │   │   ├── layout.css
+│   │   │   │   ├── reset.css
+│   │   │   │   └── _variable.css
+│   │   │   ├── components
+│   │   │   │   ├── _button.css
+│   │   │   │   ├── card.css
+│   │   │   │   ├── _dashboard.css
+│   │   │   │   ├── _data-card.css
+│   │   │   │   ├── _deadline-list.css
+│   │   │   │   ├── _document-list.css
+│   │   │   │   ├── _forms.css
+│   │   │   │   ├── _search-bar.css
+│   │   │   │   ├── sidebar.css
+│   │   │   │   ├── _status-tag.css
+│   │   │   │   ├── _table.css
+│   │   │   │   └── topbar.css
+│   │   │   ├── main.css
+│   │   │   └── pages
+│   │   │       ├── _admin.css
+│   │   │       ├── dashboard.css
+│   │   │       ├── login.css
+│   │   │       └── search.css
+│   │   ├── img
+│   │   │   ├── avatar.svg
+│   │   │   ├── book.svg
+│   │   │   ├── cases1.svg
+│   │   │   ├── cases.svg
+│   │   │   ├── clients1.svg
+│   │   │   ├── clients.svg
+│   │   │   ├── consult.svg
+│   │   │   ├── dashboard1.svg
+│   │   │   ├── dashboard.svg
+│   │   │   ├── documents1.svg
+│   │   │   ├── documents.svg
+│   │   │   ├── payments1.svg
+│   │   │   ├── payments.svg
+│   │   │   ├── profile.svg
+│   │   │   ├── scales-of-justice1.png
+│   │   │   ├── scales-of-justice.svg
+│   │   │   ├── service.svg
+│   │   │   └── transaction.svg
+│   │   ├── js
+│   │   │   ├── case_logs
+│   │   │   │   └── case_logs_table.js
+│   │   │   ├── clients
+│   │   │   │   ├── client_form.js
+│   │   │   │   └── client_table.js
+│   │   │   ├── documents
+│   │   │   │   └── document_table.js
+│   │   │   ├── main.js
+│   │   │   ├── payments
+│   │   │   │   └── payment_table.js
+│   │   │   └── search.js
+│   │   └── vendor
+│   │       └── bootstrap
+│   │           ├── css
+│   │           │   ├── bootstrap.css
+│   │           │   ├── bootstrap.css.map
+│   │           │   ├── bootstrap-grid.css
+│   │           │   ├── bootstrap-grid.css.map
+│   │           │   ├── bootstrap-grid.min.css
+│   │           │   ├── bootstrap-grid.min.css.map
+│   │           │   ├── bootstrap-grid.rtl.css
+│   │           │   ├── bootstrap-grid.rtl.css.map
+│   │           │   ├── bootstrap-grid.rtl.min.css
+│   │           │   ├── bootstrap-grid.rtl.min.css.map
+│   │           │   ├── bootstrap.min.css
+│   │           │   ├── bootstrap.min.css.map
+│   │           │   ├── bootstrap-reboot.css
+│   │           │   ├── bootstrap-reboot.css.map
+│   │           │   ├── bootstrap-reboot.min.css
+│   │           │   ├── bootstrap-reboot.min.css.map
+│   │           │   ├── bootstrap-reboot.rtl.css
+│   │           │   ├── bootstrap-reboot.rtl.css.map
+│   │           │   ├── bootstrap-reboot.rtl.min.css
+│   │           │   ├── bootstrap-reboot.rtl.min.css.map
+│   │           │   ├── bootstrap.rtl.css
+│   │           │   ├── bootstrap.rtl.css.map
+│   │           │   ├── bootstrap.rtl.min.css
+│   │           │   ├── bootstrap.rtl.min.css.map
+│   │           │   ├── bootstrap-utilities.css
+│   │           │   ├── bootstrap-utilities.css.map
+│   │           │   ├── bootstrap-utilities.min.css
+│   │           │   ├── bootstrap-utilities.min.css.map
+│   │           │   ├── bootstrap-utilities.rtl.css
+│   │           │   ├── bootstrap-utilities.rtl.css.map
+│   │           │   ├── bootstrap-utilities.rtl.min.css
+│   │           │   └── bootstrap-utilities.rtl.min.css.map
+│   │           └── js
+│   │               ├── bootstrap.bundle.js
+│   │               ├── bootstrap.bundle.js.map
+│   │               ├── bootstrap.bundle.min.js
+│   │               ├── bootstrap.bundle.min.js.map
+│   │               ├── bootstrap.esm.js
+│   │               ├── bootstrap.esm.js.map
+│   │               ├── bootstrap.esm.min.js
+│   │               ├── bootstrap.esm.min.js.map
+│   │               ├── bootstrap.js
+│   │               ├── bootstrap.js.map
+│   │               ├── bootstrap.min.js
+│   │               └── bootstrap.min.js.map
+│   ├── templates
+│   │   ├── add_client.html
+│   │   ├── add_user.html
+│   │   ├── base.html
+│   │   ├── case_logs_page.html
+│   │   ├── cases
+│   │   │   ├── case_detail.html
+│   │   │   ├── create.html
+│   │   │   ├── edit_case.html
+│   │   │   └── list.html
+│   │   ├── clients_page.html
+│   │   ├── components
+│   │   │   ├── alert.html
+│   │   │   ├── client_form1.html
+│   │   │   └── client_form.html
+│   │   ├── components.html
+│   │   ├── dashboard_page.html
+│   │   ├── document_row.html
+│   │   ├── documents_page.html
+│   │   ├── edit_user.html
+│   │   ├── legal_consultation_page.html
+│   │   ├── login_page.html
+│   │   ├── manage_profile_page.html
+│   │   ├── manage_users.html
+│   │   ├── new_case_form.html
+│   │   ├── new_consultation.html
+│   │   ├── new_transaction_form.html
+│   │   ├── notarial_entries.html
+│   │   ├── notarial_entry_details.html
+│   │   ├── payments_page.html
+│   │   ├── recycle_bin_clients.html
+│   │   ├── search_results_page.html
+│   │   ├── settings
+│   │   │   ├── backup_tab.html
+│   │   │   ├── logs_tab.html
+│   │   │   ├── modals
+│   │   │   │   ├── create_user_modal.html
+│   │   │   │   └── edit_user_modal.html
+│   │   │   ├── recycle_tab.html
+│   │   │   └── users_tab.html
+│   │   ├── settings_page.html
+│   │   └── transactions_page.html
+│   ├── uploads
+│   │   └── documents
+│   │       └── 7508b18ede5347969eca44086179baf0.png
+│   └── utils
+│       ├── permissions.py
+│       ├── __pycache__
+│       │   ├── permissions.cpython-313.pyc
+│       │   └── query_filters.cpython-313.pyc
+│       └── query_filters.py
+├── erd.png
+├── file_structure.txt
+├── instance
+│   ├── app.db
+│   └── backups
+│       ├── backup_history.json
+│       ├── full_system_backup_20251130_104052.zip
+│       ├── full_system_backup_20251130_104112.zip
+│       └── full_system_backup_20251204_103941.zip
+├── Notes
+│   ├── Bugs
+│   │   ├── case_logs.txt
+│   │   ├── client_page.txt
+│   │   ├── documents_page.txt
+│   │   ├── global_function_bugs.txt
+│   │   ├── legal_consultation.txt
+│   │   ├── notarial_entry_page.txt
+│   │   ├── transaction_page.txt
+│   │   └── UI_UX_bugs.txt
+│   ├── bugs.txt
+│   ├── document_entry_flow.txt
+│   ├── documents_page_recommendations.txt
+│   ├── flow.txt
+│   ├── models-implemented.txt
+│   ├── notes.txt.txt
+│   ├── page_revisions.txt
+│   ├── recommendations.txt
+│   ├── to-do.txt
+│   └── usability_hueristics.txt
+├── requirements.txt
+├── run.py
+└── uploads
+    └── documents
+
+39 directories, 276 files

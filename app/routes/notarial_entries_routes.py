@@ -1,6 +1,6 @@
 # notarial_entries_routes.py
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app.models.notarial_entry_mdl import NotarialEntry
 from app.models import db
 from app.services.notarial_entry_service import NotarialEntryService
@@ -106,8 +106,8 @@ def mark_as_paid(entry_id):
 def create_manual_entry():
     """Create a manual notarial entry and auto-create transaction"""
     try:
-        # Ensure your Service handles the transaction creation internally now
-        entry = NotarialEntryService.create_manual_entry(request.form)
+        # Pass current_user.id to the service
+        entry = NotarialEntryService.create_manual_entry(request.form, current_user.id)
         flash('Notarial entry created successfully!', 'success')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
         
@@ -121,7 +121,8 @@ def create_manual_entry():
 def update_entry(entry_id):
     """Update a notarial entry"""
     try:
-        entry = NotarialEntryService.update_entry(entry_id, request.form)
+        # Pass current_user.id to the service
+        entry = NotarialEntryService.update_entry(entry_id, request.form, current_user.id)
         if entry:
             flash('Notarial entry updated successfully!', 'success')
         else:
@@ -147,3 +148,45 @@ def delete_entry(entry_id):
     except Exception as e:
         flash(f'Error deleting notarial entry: {str(e)}', 'error')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
+
+@notarial_entries_bp.route('/suggestions/<field>')
+@staff_or_admin_required
+@login_required
+def get_suggestions(field):
+    """Get suggestions for notarial form fields"""
+    suggestions = NotarialEntryService.get_notarial_suggestions(field, current_user.id)
+    return jsonify(suggestions)
+
+@notarial_entries_bp.route('/last-entry')
+@staff_or_admin_required
+@login_required
+def get_last_entry():
+    """Get last used book, page, entry numbers"""
+    last_entry = NotarialEntryService.get_last_entry_values(current_user.id)
+    return jsonify(last_entry)
+
+@notarial_entries_bp.route('/increment-entry')
+@staff_or_admin_required
+@login_required
+def increment_entry():
+    """Increment entry number and return new values"""
+    new_values = NotarialEntryService.increment_last_entry(current_user.id)
+    return jsonify(new_values)
+
+# Remove the print_styles from the route
+@notarial_entries_bp.route('/<int:entry_id>/print')
+@staff_or_admin_required
+@login_required
+def print_entry(entry_id):
+    """Print notarial entry details"""
+    from app.services.print_service import PrintService
+    print_data = PrintService.generate_notarial_print_data(entry_id)
+    
+    if not print_data:
+        flash('Notarial entry not found!', 'error')
+        return redirect(url_for('notarial_entries.notarial_entries_page'))
+    
+    # Add prepared_by from current user
+    print_data['prepared_by'] = current_user.full_name if hasattr(current_user, 'full_name') else current_user.username
+    
+    return render_template('notarial_entry_print.html', **print_data)

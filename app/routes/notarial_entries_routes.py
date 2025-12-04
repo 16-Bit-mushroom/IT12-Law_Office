@@ -6,10 +6,12 @@ from app.models import db
 from app.services.notarial_entry_service import NotarialEntryService
 from datetime import datetime
 from sqlalchemy.orm import joinedload
+from app.utils.permissions import staff_or_admin_required
 
 notarial_entries_bp = Blueprint('notarial_entries', __name__, url_prefix='/notarial-entries')
 
 @notarial_entries_bp.route('/')
+@staff_or_admin_required  # Add this
 @login_required
 def notarial_entries_page():
     """Display all notarial entries"""
@@ -18,6 +20,7 @@ def notarial_entries_page():
 
 # notarial_entries_routes.py - Update the entry_details route
 @notarial_entries_bp.route('/<int:entry_id>')
+@staff_or_admin_required  # Add this
 @login_required
 def entry_details(entry_id):
     """Display notarial entry details and documents"""
@@ -32,9 +35,11 @@ def entry_details(entry_id):
     
     return render_template('notarial_entry_details.html', 
                          entry=entry, 
-                         documents=documents)  # ADD documents here
+                         documents=documents, # ADD documents here
+                         now=datetime.utcnow()) #
 
 @notarial_entries_bp.route('/<int:entry_id>/json', methods=['GET'])
+@staff_or_admin_required  # Add this
 @login_required
 def get_entry_json(entry_id):
     """Get notarial entry data for editing (JSON API)"""
@@ -76,6 +81,7 @@ def get_entry_json(entry_id):
 # --- REMOVED create_transaction ROUTE HERE ---
 
 @notarial_entries_bp.route('/<int:entry_id>/mark-paid', methods=['POST'])
+@staff_or_admin_required  # Add this
 @login_required
 def mark_as_paid(entry_id):
     try:
@@ -95,6 +101,7 @@ def mark_as_paid(entry_id):
     return redirect(url_for('notarial_entries.notarial_entries_page'))
 
 @notarial_entries_bp.route('/create-manual', methods=['POST'])
+@staff_or_admin_required  # Add this
 @login_required
 def create_manual_entry():
     """Create a manual notarial entry and auto-create transaction"""
@@ -109,6 +116,7 @@ def create_manual_entry():
         return redirect(url_for('notarial_entries.notarial_entries_page'))
 
 @notarial_entries_bp.route('/<int:entry_id>/update', methods=['POST'])
+@staff_or_admin_required  # Add this
 @login_required
 def update_entry(entry_id):
     """Update a notarial entry"""
@@ -125,6 +133,7 @@ def update_entry(entry_id):
         return redirect(url_for('notarial_entries.notarial_entries_page'))
 
 @notarial_entries_bp.route('/<int:entry_id>/delete', methods=['POST'])
+@staff_or_admin_required  # Add this
 @login_required
 def delete_entry(entry_id):
     """Delete a notarial entry"""

@@ -399,7 +399,7 @@
                         <select class="form-control" name="notarial_act_type" required>
                             <option value="">Select notarial act...</option>
                             <option value="Acknowledgment">Acknowledgment</option>
-                            <option value="Jurat">Jurat</option>
+                            <option value="Jurat">Affirmation or Oath</option>
                             <option value="Oath or Affirmation">Oath or Affirmation</option>
                             <option value="Certified True Copy">Certified True Copy</option>
                             <option value="Signature Witnessing">Signature Witnessing</option>
@@ -573,21 +573,24 @@
 
     .clickable-list .list-tooltip {
         visibility: hidden;
-        width: 300px;
+        width: 320px;
         background-color: #fff;
         color: #333;
         text-align: left;
         border-radius: 6px;
         padding: 12px;
         position: absolute;
-        z-index: 1000;
+        z-index: 1050; /* Increased z-index */
         bottom: 125%;
         left: 50%;
-        margin-left: -150px;
+        transform: translateX(-50%);
+        margin-left: 0;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         border: 1px solid #dee2e6;
         opacity: 0;
         transition: opacity 0.3s;
+        /* Ensure tooltip is not clipped */
+        overflow: visible !important;
     }
 
     .clickable-list:hover .list-tooltip {
@@ -614,6 +617,27 @@
     .btn-sm {
         padding: 0.25rem 0.5rem;
         font-size: 0.875rem;
+    }
+
+    /* Fix table cell overflow */
+    .table td {
+        position: relative;
+        overflow: visible !important;
+    }
+
+    /* Ensure the entire table allows overflow */
+    .table-wrapper {
+        overflow: visible !important;
+    }
+
+    .table {
+        overflow: visible !important;
+    }
+
+    /* Specific fix for the parties column */
+    td:nth-child(4) { /* This targets the 4th column (Parties column) */
+        overflow: visible !important;
+        position: relative;
     }
 </style>
 

@@ -7,17 +7,36 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
-    
+
     <title>RBJ Law Office</title>
 
     <style>
-        .sidebar-search .input-group { background: rgba(255,255,255,0.1); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
-        .sidebar-search input { background: transparent !important; border: none !important; color: #fff !important; box-shadow: none !important; font-size: 14px; }
-        .sidebar-search input::placeholder { color: rgba(255,255,255,0.5); }
-        .sidebar-search svg { fill: rgba(255,255,255,0.6); }
-        
+        .sidebar-search .input-group {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-search input {
+            background: transparent !important;
+            border: none !important;
+            color: #fff !important;
+            box-shadow: none !important;
+            font-size: 14px;
+        }
+
+        .sidebar-search input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .sidebar-search svg {
+            fill: rgba(255, 255, 255, 0.6);
+        }
+
         /* Hide any dropdown that might appear */
-        .search-suggestions { display: none !important; }
+        .search-suggestions {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -33,19 +52,24 @@
         </div>
 
         <div class="sidebar-search">
-            <form action="{{ url_for('search.search_page') }}" method="GET"> 
+            <form action="{{ url_for('search.search_page') }}" method="GET">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0 pe-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-search" viewBox="0 0 16 16">
+                            <path
+                                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
                         </svg>
                     </span>
-                    <input type="text" name="q" class="form-control" placeholder="Search anything..." aria-label="Search" value="{{ request.args.get('q', '') }}">
+                    <input type="text" name="q" class="form-control" placeholder="Search anything..."
+                        aria-label="Search" value="{{ request.args.get('q', '') }}">
                 </div>
             </form>
         </div>
+        <!-- Update your base.html sidebar section -->
+        <!-- Replace the entire sidebar-links section with this -->
         <ul class="sidebar-links">
-
+            <!-- Dashboard - Everyone -->
             <li>
                 <a href="{{ url_for('dashboard.dashboard_page') }}"
                     class="{{ 'active' if 'dashboard' in request.endpoint else '' }}">
@@ -55,6 +79,8 @@
                 </a>
             </li>
 
+            <!-- Case Logs - Admin Only -->
+            {% if current_user.is_authenticated and (current_user.is_admin or current_user.role == 'admin') %}
             <li>
                 <a href="{{ url_for('case.list_cases') }}" class="{{ 'active' if 'case' in request.endpoint else '' }}">
                     <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/cases.svg') }}"
@@ -62,7 +88,10 @@
                     Case Logs
                 </a>
             </li>
+            {% endif %}
 
+            <!-- Notarial Entries - Staff & Admin -->
+            {% if current_user.is_authenticated and current_user.role in ['admin', 'staff'] %}
             <li>
                 <a href="{{ url_for('notarial_entries.notarial_entries_page') }}"
                     class="{{ 'active' if 'notarial' in request.endpoint else '' }}">
@@ -71,7 +100,10 @@
                     Notarial Entries
                 </a>
             </li>
+            {% endif %}
 
+            <!-- Documents - Staff & Admin (but filtered in backend) -->
+            {% if current_user.is_authenticated and current_user.role in ['admin', 'staff'] %}
             <li>
                 <a href="{{ url_for('documents.documents_page') }}"
                     class="{{ 'active' if 'documents' in request.endpoint else '' }}">
@@ -80,8 +112,11 @@
                     Documents
                 </a>
             </li>
+            {% endif %}
 
-            <li role="none">
+            <!-- Transactions - Staff & Admin (filtered for staff) -->
+            {% if current_user.is_authenticated and current_user.role in ['admin', 'staff'] %}
+            <li>
                 <a href="{{ url_for('transaction.transactions_page') }}"
                     class="{{ 'active' if 'transaction' in request.endpoint else '' }}">
                     <span class="icon-wrapper"><img src="{{ url_for('static', filename='img/transaction.svg') }}"
@@ -89,29 +124,41 @@
                     Transactions
                 </a>
             </li>
+            {% endif %}
 
-            <li role="none"><a role="menuitem" href="#">
+            <!-- Services - Admin Only
+            {% if current_user.is_authenticated and (current_user.is_admin or current_user.role == 'admin') %}
+            <li>
+                <a href="#" class="{{ 'active' if 'services' in request.endpoint else '' }}">
                     <span class="icon-wrapper"><img style="width: 24px;"
-                            src="{{ url_for('static', filename='img/service.svg') }}" alt=""></span>Services
-                </a></li>
+                            src="{{ url_for('static', filename='img/service.svg') }}" alt=""></span>
+                    Services
+                </a>
+            </li>
+            {% endif %} -->
 
-            <li role="none"><a role="menuitem" href="{{ url_for('payments.payments_page') }}">
-                    <span class="icon-wrapper"><img style="width: 24px;"
-                            src="{{ url_for('static', filename='img/payments.svg') }}" alt=""></span>Payments
-                </a></li>
 
         </ul>
 
+        <!-- Update the user info in sidebar footer -->
         <div class="sidebar-footer">
             <button class="avatar-btn" id="avatarBtn">
                 <img src="{{ url_for('static', filename='img/avatar.svg') }}" alt="User Avatar">
                 <div class="user-info">
-                    <span class="user-name">Atty. Chris</span>
-                    <span class="user-role">Administrator</span>
+                    <span class="user-name">
+                        {% if current_user.role == 'admin' %}{% endif %}
+                        {{ current_user.username }}
+                    </span>
+                    <span class="user-role">
+                        {{ current_user.role|title }}
+                        {% if current_user.is_admin %} (Administrator){% endif %}
+                    </span>
                 </div>
             </button>
             <div class="avatar-dropdown" id="avatarDropdown">
+                {% if current_user.is_authenticated and (current_user.is_admin or current_user.role == 'admin') %}
                 <a href="{{ url_for('settings.settings_page') }}">Settings</a>
+                {% endif %}
                 <a href="{{ url_for('auth.logout') }}">Log Out</a>
             </div>
         </div>
@@ -173,7 +220,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const searchForm = document.querySelector('.sidebar-search form');
         const searchInput = document.querySelector('.sidebar-search input[name="q"]');
-        
+
         if (searchForm && searchInput) {
             // Optional: Clear search when clicking escape
             searchInput.addEventListener('keydown', (e) => {
@@ -181,7 +228,7 @@
                     searchInput.value = '';
                 }
             });
-            
+
             // Optional: Focus search input when pressing Ctrl+K or Cmd+K
             document.addEventListener('keydown', (e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -192,6 +239,6 @@
         }
     });
 </script>
- <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
 </html>

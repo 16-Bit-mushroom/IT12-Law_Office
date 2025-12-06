@@ -280,7 +280,7 @@ class NotarialEntryService:
             raise e
 
     @staticmethod
-    def update_entry(entry_id, form_data):
+    def update_entry(entry_id, form_data, user_id):
         try:
             entry = NotarialEntry.query.get(entry_id)
             if not entry:   

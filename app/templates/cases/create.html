@@ -19,12 +19,9 @@
                                     <div class="mb-3">
                                         <label for="client_search" class="form-label">Search Client *</label>
                                         <div class="autocomplete-wrapper">
-                                            <input type="text" class="form-control" 
-                                                   id="client_search" 
-                                                   name="client_search"
-                                                   placeholder="Type client name or email..."
-                                                   autocomplete="off"
-                                                   oninput="searchClients(this.value)">
+                                            <input type="text" class="form-control" id="client_search"
+                                                name="client_search" placeholder="Type client name or email..."
+                                                autocomplete="off" oninput="searchClients(this.value)">
                                             <div id="client_suggestions" class="autocomplete-dropdown"></div>
                                         </div>
                                         <input type="hidden" id="client_id" name="client_id" required>
@@ -34,8 +31,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-end">
-                                    <a href="{{ url_for('clients.new_client_form') }}" class="btn btn-outline-primary w-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                                    <a href="{{ url_for('clients.new_client_form') }}"
+                                        class="btn btn-outline-primary w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                         </svg>
@@ -51,13 +51,15 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="case_category" id="individual" value="individual" checked>
+                                        <input class="form-check-input" type="radio" name="case_category"
+                                            id="individual" value="individual" checked>
                                         <label class="form-check-label" for="individual">
                                             Individual Case
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="case_category" id="corporate" value="corporate">
+                                        <input class="form-check-input" type="radio" name="case_category" id="corporate"
+                                            value="corporate">
                                         <label class="form-check-label" for="corporate">
                                             Corporate Case
                                         </label>
@@ -81,21 +83,17 @@
                                     <div class="mb-3">
                                         <label for="case_type" class="form-label">Case Category *</label>
                                         <div class="autocomplete-wrapper">
-                                            <input type="text" class="form-control" 
-                                                   id="case_type" 
-                                                   name="case_type" 
-                                                   required
-                                                   placeholder="Type or select case type..."
-                                                   autocomplete="off"
-                                                   oninput="getSuggestions('case_type', this.value)">
+                                            <input type="text" class="form-control" id="case_type" name="case_type"
+                                                required placeholder="Type or select case type..." autocomplete="off"
+                                                oninput="getSuggestions('case_type', this.value)">
                                             <div id="case_type_suggestions" class="autocomplete-dropdown"></div>
                                             <input type="hidden" id="case_type_id" name="case_type_id">
                                         </div>
                                         <div class="d-flex justify-content-between mt-1">
                                             <small class="text-muted">Previous entries will appear as you type</small>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                    onclick="removeSuggestion('case_type', document.getElementById('case_type').value)"
-                                                    style="display: none;" id="remove_case_type_btn">
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="removeSuggestion('case_type', document.getElementById('case_type').value)"
+                                                style="display: none;" id="remove_case_type_btn">
                                                 Remove Suggestion
                                             </button>
                                         </div>
@@ -106,132 +104,117 @@
                             <div class="mb-3">
                                 <label for="violation" class="form-label">Violation / Case Type</label>
                                 <div class="autocomplete-wrapper">
-                                    <input type="text" class="form-control" 
-                                           id="violation" 
-                                           name="violation"
-                                           placeholder="e.g., Breach of Contract, Theft, etc."
-                                           autocomplete="off"
-                                           oninput="getSuggestions('violation', this.value)">
+                                    <input type="text" class="form-control" id="violation" name="violation"
+                                        placeholder="e.g., Breach of Contract, Theft, etc." autocomplete="off"
+                                        oninput="getSuggestions('violation', this.value)">
                                     <div id="violation_suggestions" class="autocomplete-dropdown"></div>
                                     <input type="hidden" id="violation_id" name="violation_id">
                                 </div>
                                 <div class="d-flex justify-content-between mt-1">
                                     <small class="text-muted">Previous entries will appear as you type</small>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                                            onclick="removeSuggestion('violation', document.getElementById('violation').value)"
-                                            style="display: none;" id="remove_violation_btn">
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="removeSuggestion('violation', document.getElementById('violation').value)"
+                                        style="display: none;" id="remove_violation_btn">
                                         Remove Suggestion
                                     </button>
                                 </div>
                             </div>
-                            
-                            <!-- <div class="mb-3">
-                                <label for="cause_of_action" class="form-label">Cause of Action</label>
-                                <div class="autocomplete-wrapper">
-                                    <input type="text" class="form-control" hidden 
-                                           id="cause_of_action" 
-                                           name="cause_of_action"
-                                           placeholder="e.g., Negligence, Fraud, etc."
-                                           autocomplete="off"
-                                           oninput="getSuggestions('cause_of_action', this.value)">
-                                    <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
-                                    <input type="hidden" id="cause_of_action_id" name="cause_of_action_id">
-                                </div>
-                                <div class="d-flex justify-content-between mt-1">
-                                    <small class="text-muted">Previous entries will appear as you type</small>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                                            onclick="removeSuggestion('cause_of_action', document.getElementById('cause_of_action').value)"
-                                            style="display: none;" id="remove_cause_of_action_btn">
-                                        Remove Suggestion
-                                    </button>
-                                </div> -->
-                            </div>
-                        </div>
 
-                        <!-- Representatives Section -->
-                        <div class="mb-4" id="representativesSection">
-                            <h5 class="border-bottom pb-2">Representatives</h5>
-                            <p class="text-muted">Add representatives for this case (optional)</p>
-                            
-                            <div id="representativesContainer">
-                                <!-- Representative template -->
-                                <div class="representative-entry card mb-3">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Full Name</label>
-                                                    <input type="text" class="form-control" name="representative_name[]" placeholder="Full name">
+
+                            <!-- Representatives Section -->
+                            <div class="mb-4" id="representativesSection">
+                                <h5 class="border-bottom pb-2">Representatives</h5>
+                                <p class="text-muted">Add representatives for this case (optional)</p>
+
+                                <div id="representativesContainer">
+                                    <!-- Representative template -->
+                                    <div class="representative-entry card mb-3">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Full Name</label>
+                                                        <input type="text" class="form-control"
+                                                            name="representative_name[]" placeholder="Full name">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Email</label>
+                                                        <input type="email" class="form-control"
+                                                            name="representative_email[]" placeholder="Email">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Phone</label>
+                                                        <input type="text" class="form-control"
+                                                            name="representative_phone[]" placeholder="Phone">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Role</label>
+                                                        <input type="text" class="form-control"
+                                                            name="representative_role[]" placeholder="Role">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Email</label>
-                                                    <input type="email" class="form-control" name="representative_email[]" placeholder="Email">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Phone</label>
-                                                    <input type="text" class="form-control" name="representative_phone[]" placeholder="Phone">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Role</label>
-                                                    <input type="text" class="form-control" name="representative_role[]" placeholder="Role">
-                                                </div>
-                                            </div>
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline-primary" id="addRepresentative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="margin-right: 5px;">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Add Representative
+                                </button>
+                            </div>
+
+                            <!-- Dates -->
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">Case Dates</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="engagement_date" class="form-label">Engagement Date *</label>
+                                            <input type="date" class="form-control" id="engagement_date"
+                                                name="engagement_date" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="filing_date" class="form-label">Filing Date (if
+                                                applicable)</label>
+                                            <input type="date" class="form-control" id="filing_date" name="filing_date">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <button type="button" class="btn btn-outline-primary" id="addRepresentative">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Add Representative
-                            </button>
-                        </div>
 
-                        <!-- Dates -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Case Dates</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="engagement_date" class="form-label">Engagement Date *</label>
-                                        <input type="date" class="form-control" id="engagement_date" name="engagement_date" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="filing_date" class="form-label">Filing Date (if applicable)</label>
-                                        <input type="date" class="form-control" id="filing_date" name="filing_date">
-                                    </div>
-                                </div>
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('case.list_cases') }}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Create Case</button>
                             </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('case.list_cases') }}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Create Case</button>
-                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 
 <style>
     .autocomplete-wrapper {
         position: relative;
     }
-    
+
     .autocomplete-dropdown {
         position: absolute;
         top: 100%;
@@ -245,30 +228,30 @@
         overflow-y: auto;
         z-index: 1000;
         display: none;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    
+
     .autocomplete-item {
         padding: 8px 12px;
         cursor: pointer;
         border-bottom: 1px solid #f5f5f5;
     }
-    
+
     .autocomplete-item:hover {
         background-color: #f8f9fa;
     }
-    
+
     .autocomplete-item.selected {
         background-color: #e9ecef;
         font-weight: 600;
     }
-    
+
     .suggestion-actions {
         float: right;
         font-size: 12px;
         color: #6c757d;
     }
-    
+
     .remove-suggestion-btn {
         background: none;
         border: none;
@@ -277,7 +260,7 @@
         padding: 2px 6px;
         font-size: 12px;
     }
-    
+
     .remove-suggestion-btn:hover {
         color: #b02a37;
         text-decoration: underline;
@@ -302,7 +285,7 @@
         const addRepresentativeBtn = document.getElementById('addRepresentative');
 
         // Add representative
-        addRepresentativeBtn.addEventListener('click', function() {
+        addRepresentativeBtn.addEventListener('click', function () {
             const newEntry = representativesContainer.children[0].cloneNode(true);
             // Clear input values
             newEntry.querySelectorAll('input').forEach(input => input.value = '');
@@ -313,7 +296,7 @@
         // Remove representative
         function updateRemoveButtons() {
             document.querySelectorAll('.remove-representative').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     if (representativesContainer.children.length > 1) {
                         this.closest('.representative-entry').remove();
                     } else {
@@ -326,9 +309,9 @@
 
         // Initial setup for remove buttons
         updateRemoveButtons();
-        
+
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!event.target.closest('.autocomplete-wrapper')) {
                 closeAllDropdowns();
             }
@@ -341,21 +324,21 @@
             dropdown.style.display = 'none';
         });
     }
-    
+
     // Search clients for auto-suggest
     async function searchClients(query) {
         if (query.length < 2) {
             closeAllDropdowns();
             return;
         }
-        
+
         try {
             const response = await fetch(`${searchClientsUrl}?q=${encodeURIComponent(query)}`);
             const clients = await response.json();
-            
+
             const dropdown = document.getElementById('client_suggestions');
             dropdown.innerHTML = '';
-            
+
             if (clients.length === 0) {
                 dropdown.innerHTML = '<div class="autocomplete-item text-muted">No clients found</div>';
             } else {
@@ -370,31 +353,31 @@
                     dropdown.appendChild(item);
                 });
             }
-            
+
             dropdown.style.display = 'block';
         } catch (error) {
             console.error('Error searching clients:', error);
         }
     }
-    
+
     // Select a client from suggestions
     function selectClient(client) {
         document.getElementById('client_search').value = `${client.full_name}`;
         document.getElementById('client_id').value = client.id;
         closeAllDropdowns();
     }
-    
+
     // Get suggestions for case type, violation, or cause of action
     async function getSuggestions(field, query) {
         const dropdownId = `${field}_suggestions`;
         const dropdown = document.getElementById(dropdownId);
         const removeBtn = document.getElementById(`remove_${field}_btn`);
-        
+
         // Show remove button if there's text
         if (removeBtn) {
             removeBtn.style.display = query.trim() ? 'inline-block' : 'none';
         }
-        
+
         let url;
         if (query.length < 1) {
             // Get recent suggestions
@@ -403,13 +386,13 @@
             // Search for matching suggestions
             url = `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
         }
-        
+
         try {
             const response = await fetch(url);
             const suggestions = await response.json();
-            
+
             dropdown.innerHTML = '';
-            
+
             if (suggestions.length === 0) {
                 dropdown.innerHTML = '<div class="autocomplete-item text-muted">No suggestions found</div>';
             } else {
@@ -430,33 +413,33 @@
                     dropdown.appendChild(item);
                 });
             }
-            
+
             dropdown.style.display = 'block';
         } catch (error) {
             console.error('Error getting suggestions:', error);
         }
     }
-    
+
     // Select a suggestion
     function selectSuggestion(field, value) {
         const input = document.getElementById(field);
         input.value = value;
-        
+
         // Hide the remove button since this is a selected suggestion
         const removeBtn = document.getElementById(`remove_${field}_btn`);
         if (removeBtn) {
             removeBtn.style.display = 'none';
         }
-        
+
         closeAllDropdowns();
     }
-    
+
     // Remove a suggestion
     async function removeSuggestion(field, value) {
         if (!confirm(`Remove "${value}" from suggestions? This won't delete any cases using this value.`)) {
             return;
         }
-        
+
         try {
             const url = removeSuggestionUrl.replace('FIELD', field);
             const response = await fetch(url, {
@@ -466,9 +449,9 @@
                 },
                 body: JSON.stringify({ value: value })
             });
-            
+
             const result = await response.json();
-            
+
             if (response.ok) {
                 alert(result.message || 'Suggestion removed successfully');
                 // Clear the field

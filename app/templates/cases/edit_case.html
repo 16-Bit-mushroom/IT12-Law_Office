@@ -14,6 +14,22 @@
                         <!-- Client Selection with Auto-suggest -->
                         <div class="mb-4">
                             <h5 class="border-bottom pb-2">Client Information</h5>
+
+                            <!-- Case Status -->
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Case Status</label>
+                                <select class="form-control" id="status" name="status">
+                                    <option value="active" {% if case.status=='active' %}selected{% endif %}>Active
+                                    </option>
+                                    <option value="completed" {% if case.status=='completed' %}selected{% endif %}>
+                                        Completed
+                                    </option>
+                                    <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending
+                                    </option>
+                                    <option value="closed" {% if case.status=='closed' %}selected{% endif %}>Closed
+                                    </option>
+                                </select>
+                            </div>
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="mb-3">
@@ -127,39 +143,9 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="cause_of_action" class="form-label">Cause of Action</label>
-                                <div class="autocomplete-wrapper">
-                                    <input type="text" class="form-control" id="cause_of_action" name="cause_of_action"
-                                        placeholder="e.g., Negligence, Fraud, etc." autocomplete="off"
-                                        oninput="getSuggestions('cause_of_action', this.value)"
-                                        value="{{ case.cause_of_action or '' }}">
-                                    <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
-                                    <input type="hidden" id="cause_of_action_id" name="cause_of_action_id">
-                                </div>
-                                <div class="d-flex justify-content-between mt-1">
-                                    <small class="text-muted">Previous entries will appear as you type</small>
-                                    <button type="button" class="btn btn-sm btn-outline-danger"
-                                        onclick="removeSuggestion('cause_of_action', document.getElementById('cause_of_action').value)"
-                                        style="display: none;" id="remove_cause_of_action_btn">
-                                        Remove Suggestion
-                                    </button>
-                                </div>
-                            </div>
                         </div>
 
-                        <!-- Case Status -->
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Case Status</label>
-                            <select class="form-control" id="status" name="status">
-                                <option value="active" {% if case.status=='active' %}selected{% endif %}>Active</option>
-                                <option value="completed" {% if case.status=='completed' %}selected{% endif %}>Completed
-                                </option>
-                                <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending
-                                </option>
-                                <option value="closed" {% if case.status=='closed' %}selected{% endif %}>Closed</option>
-                            </select>
-                        </div>
+
 
                         <!-- Representatives Section -->
                         <div class="mb-4" id="representativesSection">

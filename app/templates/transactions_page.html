@@ -43,7 +43,7 @@
                 </div>
                 <div class="data-card__icon data-card__icon--purple"></div>
             </div>
-            
+
             <!-- Hide Case count card for staff -->
             {% if current_user.role != 'staff' %}
             <div class="data-card data-card--sm">
@@ -69,14 +69,14 @@
                     <button type="button" class="btn btn-outline-primary" data-filter="notarial">
                         Notarial
                     </button>
-                    
+
                     <!-- Hide Case Logs filter button for staff -->
                     {% if current_user.role != 'staff' %}
                     <button type="button" class="btn btn-outline-primary" data-filter="case">
                         Case Logs
                     </button>
                     {% endif %}
-                    
+
                     <button type="button" class="btn btn-outline-primary" data-filter="pending">
                         Pending Payment
                     </button>
@@ -102,7 +102,7 @@
                     <thead>
                         <tr>
                             <th data-sort-key="id">ID</th>
-                            <th data-sort-key="client">Client</th>
+                            <th data-sort-key="client">Reference/ Client</th>
                             <th data-sort-key="type">Type</th>
                             <th data-sort-key="purpose">Purpose</th>
                             <th data-sort-key="amount">Amount</th>
@@ -117,7 +117,29 @@
                         <tr data-type="{{ transaction.transaction_type|lower }}"
                             data-status="{{ transaction.payment_status|lower }}">
                             <td>#{{ transaction.id }}</td>
-                            <td>{{ transaction.client.full_name if transaction.client else 'Unknown Client' }}</td>
+                            <td>
+                                {% if transaction.transaction_type == 'Notarial' %}
+                                {% if transaction.entry_reference %}
+                                <div class="d-flex flex-column">
+                                    <span style="font-family: monospace; font-weight: 600; color: #2d5a2d;">
+                                        {{ transaction.entry_reference }}
+                                    </span>
+                                    <span style="font-size: 0.75rem; color: #6c757d;">Notarial Ref</span>
+                                </div>
+                                {% else %}
+                                <span class="text-muted fst-italic">Pending Entry</span>
+                                {% endif %}
+                                {% else %}
+                                <div class="fw-bold">
+                                    {{ transaction.client.full_name if transaction.client else 'Unknown Client' }}
+                                </div>
+                                {% if transaction.case %}
+                                <div style="font-size: 0.75rem; color: #6c757d;">
+                                    {{ transaction.case.case_number }}
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </td>
                             <td>
                                 <span class="type-tag type-tag--{{ transaction.transaction_type|lower }}">
                                     {{ transaction.transaction_type }}
@@ -143,126 +165,11 @@
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </a>
-
-                                    <!-- Mark as Paid Button (show for Pending payments)
-                                    {% if transaction.payment_status == 'Pending' %}
-                                    <button type="button" class="btn-action btn-action--success" title="Mark as Paid"
-                                        data-bs-toggle="modal" data-bs-target="#paymentModal{{ transaction.id }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                        </svg>
-                                    </button>
-                                    {% endif %} -->
-
-                                    <!-- Case-specific actions (only show for admins) -->
-                                    <!-- {% if transaction.transaction_type == 'Case' and current_user.role != 'staff' %}
-                                    <button type="button" class="btn-action btn-action--primary"
-                                        title="Submit for Approval" data-bs-toggle="modal"
-                                        data-bs-target="#approvalModal{{ transaction.id }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                        </svg>
-                                    </button>
-                                    {% endif %} -->
                                 </div>
 
-                                <!-- Payment Modal -->
-                                <div class="modal fade" id="paymentModal{{ transaction.id }}" tabindex="-1"
-                                    aria-labelledby="paymentModalLabel{{ transaction.id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="paymentModalLabel{{ transaction.id }}">
-                                                    Mark Payment as Paid - #{{ transaction.id }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <form
-                                                action="{{ url_for('transaction.mark_payment_paid_route', transaction_id=transaction.id) }}"
-                                                method="POST">
-                                                <div class="modal-body">
-                                                    <p><strong>Client:</strong> {{ transaction.client.full_name }}</p>
-                                                    <p><strong>Purpose:</strong> {{ transaction.purpose }}</p>
-                                                    <p><strong>Amount:</strong> ₱{{
-                                                        "%.2f"|format(transaction.transaction_amount) }}</p>
 
-                                                    <div class="mb-3">
-                                                        <label for="payment_method{{ transaction.id }}"
-                                                            class="form-label">Payment Method</label>
-                                                        <select class="form-control"
-                                                            id="payment_method{{ transaction.id }}"
-                                                            name="payment_method" required>
-                                                            <option value="">Select payment method</option>
-                                                            <option value="Cash">Cash</option>
-                                                            <option value="Bank Transfer">Bank Transfer</option>
-                                                            <option value="Credit Card">Credit Card</option>
-                                                            <option value="Check">Check</option>
-                                                            <option value="Online Payment">Online Payment</option>
-                                                        </select>
-                                                    </div>
 
-                                                    <div class="mb-3">
-                                                        <label for="payment_reference{{ transaction.id }}"
-                                                            class="form-label">Reference Number (Optional)</label>
-                                                        <input type="text" class="form-control"
-                                                            id="payment_reference{{ transaction.id }}"
-                                                            name="payment_reference"
-                                                            placeholder="Enter reference number...">
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-success">Mark as Paid</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- Approval Modal (for Case transactions - only for admins) -->
-                                {% if transaction.transaction_type == 'Case' and current_user.role != 'staff' %}
-                                <div class="modal fade" id="approvalModal{{ transaction.id }}" tabindex="-1"
-                                    aria-labelledby="approvalModalLabel{{ transaction.id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="approvalModalLabel{{ transaction.id }}">
-                                                    Submit for Approval - #{{ transaction.id }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <form
-                                                action="{{ url_for('transaction.submit_for_approval_route', transaction_id=transaction.id) }}"
-                                                method="POST">
-                                                <div class="modal-body">
-                                                    <p><strong>Client:</strong> {{ transaction.client.full_name }}</p>
-                                                    <p><strong>Purpose:</strong> {{ transaction.purpose }}</p>
-                                                    <p><strong>Amount:</strong> ₱{{
-                                                        "%.2f"|format(transaction.transaction_amount) }}</p>
-
-                                                    <div class="alert alert-info">
-                                                        This will create a case document and submit it for lawyer
-                                                        approval.
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-primary">Submit for
-                                                        Approval</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
                             </td>
                         </tr>
                         {% else %}

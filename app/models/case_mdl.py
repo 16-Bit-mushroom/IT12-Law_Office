@@ -30,6 +30,8 @@ class Case(db.Model):
     # Relationships
     client = db.relationship('Client', backref='cases', lazy=True)
     assigned_attorney = db.relationship('User', backref='assigned_cases', lazy=True)
+
+    schedules = db.relationship('Schedule', backref='case', lazy=True, cascade="all, delete-orphan", order_by="asc(Schedule.deadline)")
     
     def __repr__(self):
         return f"<Case(id={self.id}, case_number='{self.case_number}', title='{self.title}')>"

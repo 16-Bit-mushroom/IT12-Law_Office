@@ -31,15 +31,21 @@
 │   │   │   ├── notarial_entry_mdl.cpython-314.pyc
 │   │   │   ├── payment_mdl.cpython-313.pyc
 │   │   │   ├── payment_mdl.cpython-314.pyc
+│   │   │   ├── reminder_mdl.cpython-313.pyc
 │   │   │   ├── representative_mdl.cpython-313.pyc
+│   │   │   ├── schedule_mdl.cpython-313.pyc
 │   │   │   ├── service_mdl.cpython-313.pyc
 │   │   │   ├── service_mdl.cpython-314.pyc
+│   │   │   ├── suggestion_mdl.cpython-313.pyc
 │   │   │   ├── transaction_mdl.cpython-313.pyc
 │   │   │   ├── transaction_mdl.cpython-314.pyc
 │   │   │   ├── user_model.cpython-313.pyc
 │   │   │   └── user_model.cpython-314.pyc
+│   │   ├── reminder_mdl.py
 │   │   ├── representative_mdl.py
+│   │   ├── schedule_mdl.py
 │   │   ├── service_mdl.py
+│   │   ├── suggestion_mdl.py
 │   │   ├── transaction_mdl.py
 │   │   └── user_model.py
 │   ├── __pycache__
@@ -99,6 +105,7 @@
 │   │   ├── document_service.py
 │   │   ├── __init__.py
 │   │   ├── notarial_entry_service.py
+│   │   ├── print_service.py
 │   │   ├── __pycache__
 │   │   │   ├── auth_service.cpython-313.pyc
 │   │   │   ├── auth_service.cpython-314.pyc
@@ -114,15 +121,22 @@
 │   │   │   ├── __init__.cpython-314.pyc
 │   │   │   ├── notarial_entry_service.cpython-313.pyc
 │   │   │   ├── notarial_entry_service.cpython-314.pyc
+│   │   │   ├── print_service.cpython-313.pyc
+│   │   │   ├── reminder_service.cpython-313.pyc
+│   │   │   ├── schedule_service.cpython-313.pyc
 │   │   │   ├── search_service.cpython-313.pyc
 │   │   │   ├── service_service.cpython-313.pyc
 │   │   │   ├── service_service.cpython-314.pyc
+│   │   │   ├── suggestion_service.cpython-313.pyc
 │   │   │   ├── transaction_service.cpython-313.pyc
 │   │   │   ├── transaction_service.cpython-314.pyc
 │   │   │   ├── user_service.cpython-313.pyc
 │   │   │   └── user_service.cpython-314.pyc
+│   │   ├── reminder_service.py
+│   │   ├── schedule_service.py
 │   │   ├── search_service.py
 │   │   ├── service_service.py
+│   │   ├── suggestion_service.py
 │   │   ├── transaction_service.py
 │   │   └── user_service.py
 │   ├── static
@@ -175,6 +189,7 @@
 │   │   │   ├── clients
 │   │   │   │   ├── client_form.js
 │   │   │   │   └── client_table.js
+│   │   │   ├── components
 │   │   │   ├── documents
 │   │   │   │   └── document_table.js
 │   │   │   ├── main.js
@@ -243,7 +258,8 @@
 │   │   ├── components
 │   │   │   ├── alert.html
 │   │   │   ├── client_form1.html
-│   │   │   └── client_form.html
+│   │   │   ├── client_form.html
+│   │   │   └── modals
 │   │   ├── components.html
 │   │   ├── dashboard_page.html
 │   │   ├── document_row.html
@@ -258,8 +274,13 @@
 │   │   ├── new_transaction_form.html
 │   │   ├── notarial_entries.html
 │   │   ├── notarial_entry_details.html
+│   │   ├── notarial_entry_print.html
 │   │   ├── payments_page.html
 │   │   ├── recycle_bin_clients.html
+│   │   ├── schedules
+│   │   │   ├── add_schedule.html
+│   │   │   ├── edit_schedule.html
+│   │   │   └── _schedule_list.html
 │   │   ├── search_results_page.html
 │   │   ├── settings
 │   │   │   ├── backup_tab.html
@@ -273,7 +294,12 @@
 │   │   └── transactions_page.html
 │   ├── uploads
 │   │   └── documents
-│   │       └── 7508b18ede5347969eca44086179baf0.png
+│   │       ├── 3954b21fe2a64f61be11ef79ff5ebfce.jpg
+│   │       ├── 3bcc8f0cbda842668e327f136567ba78.png
+│   │       ├── 4b50e5b499a640d88a74d7a04aee793e.jpg
+│   │       ├── 7508b18ede5347969eca44086179baf0.png
+│   │       ├── 8a9227253fc544c285b5f653518e8d21.jpg
+│   │       └── a68fc3e3ade24a689d7dd1e487603968.png
 │   └── utils
 │       ├── permissions.py
 │       ├── __pycache__
@@ -288,7 +314,9 @@
 │       ├── backup_history.json
 │       ├── full_system_backup_20251130_104052.zip
 │       ├── full_system_backup_20251130_104112.zip
-│       └── full_system_backup_20251204_103941.zip
+│       ├── full_system_backup_20251204_103941.zip
+│       ├── full_system_backup_20251205_000234.zip
+│       └── full_system_backup_20251206_215101.zip
 ├── Notes
 │   ├── Bugs
 │   │   ├── case_logs.txt
@@ -314,4 +342,4 @@
 └── uploads
     └── documents
 
-39 directories, 276 files
+42 directories, 301 files

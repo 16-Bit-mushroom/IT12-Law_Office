@@ -21,3 +21,4 @@ from .document_mdl import Document
 from .representative_mdl import Representative
 from .suggestion_mdl import Suggestion  # NEW
 from .reminder_mdl import Reminder  # NEW
+from .schedule_mdl import Schedule

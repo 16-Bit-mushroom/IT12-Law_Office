@@ -32,7 +32,8 @@
                         <div class="detail-item">
                             <span class="detail-label">Case Category</span>
                             <span class="detail-value">
-                                <span class="badge {% if case.case_category == 'corporate' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                <span
+                                    class="badge {% if case.case_category == 'corporate' %}bg-primary{% else %}bg-secondary{% endif %}">
                                     {{ case.case_category|title }}
                                 </span>
                             </span>
@@ -144,9 +145,16 @@
             </section>
         </div>
 
+
+
         <!-- Documents Column -->
         <div class="col-md-6">
+            {% from 'schedules/_schedule_list.html' import render_schedule_list %}
+            
             <section class="content-section">
+                {{ render_schedule_list(schedules=schedules, now=now, case_id=case.id) }}
+
+
                 <div class="panel-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="panel-card__title">Case Documents ({{ documents|length }})</h5>
@@ -199,13 +207,15 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">{{ document.document_type or 'Unknown' }}</span>
+                                        <span class="badge bg-secondary">{{ document.document_type or 'Unknown'
+                                            }}</span>
                                     </td>
                                     <td>
                                         <small class="text-muted">{{ document.formatted_file_size }}</small>
                                     </td>
                                     <td>
-                                        <small class="text-muted">{{ document.uploaded_at.strftime('%Y-%m-%d') }}</small>
+                                        <small class="text-muted">{{ document.uploaded_at.strftime('%Y-%m-%d')
+                                            }}</small>
                                     </td>
                                     <td>
                                         <div class="action-buttons">
@@ -259,6 +269,9 @@
                     {% endif %}
                 </div>
             </section>
+
+
+
         </div>
     </div>
 </main>
@@ -402,6 +415,88 @@
     .status-tag--closed {
         background-color: #f8d7da;
         color: #721c24;
+    }
+
+    /* Schedule Module Styles */
+    .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .schedule-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+    }
+
+    .schedule-item:last-child {
+        border-bottom: none;
+    }
+
+    /* The Status Dot */
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    /* Typography */
+    .schedule-title {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 0.95rem;
+    }
+
+    .schedule-deadline {
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* Done State */
+    .schedule-item.is-done .schedule-title {
+        text-decoration: line-through;
+        color: #adb5bd;
+    }
+
+    .schedule-item.is-done .status-dot {
+        background-color: #dee2e6 !important;
+        /* Force gray */
+    }
+
+    /* Action Buttons */
+    .btn-icon-check {
+        background: none;
+        border: 1px solid #dee2e6;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #28a745;
+        /* Green check */
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-icon-check:hover {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-icon-undo {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
     }
 </style>
 {% endblock %}

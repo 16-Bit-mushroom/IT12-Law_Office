@@ -1,0 +1,86 @@
+{% macro render_schedule_list(schedules, now, case_id) %}
+<div class="panel-card" style="margin-bottom: 20px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="panel-card__title">Schedules</h5>
+        <a href="{{ url_for('case.add_schedule_page', case_id=case_id) }}" class="btn btn-sm btn-outline-primary">
+            + Add Task
+        </a>
+    </div>
+
+    {% if schedules %}
+    <div class="list-group list-group-flush">
+        {% for task in schedules %}
+            {% set is_overdue = task.deadline < now and not task.is_done %}
+            
+            <div class="list-group-item px-0 py-3 d-flex align-items-start {% if task.is_done %}bg-light{% endif %}" style="border-bottom: 1px solid #f0f0f0; padding: 10px;">
+                    
+                <div class="me-3 mt-1">
+                    <form method="POST" action="{{ url_for('case.toggle_schedule', schedule_id=task.id) }}" style="margin:0;">
+                        {% if task.is_done %}
+                        <button type="submit" class="btn btn-sm btn-success rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; padding: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </button>
+                        {% else %}
+                        <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 24px; height: 24px; padding: 0; border: 2px solid #dee2e6;"></button>
+                        {% endif %}
+                    </form>
+                </div>
+
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                        
+                        <div>
+                            <h6 class="mb-1 {% if task.is_done %}text-muted text-decoration-line-through{% endif %}" style="font-weight: 600;">
+                                {{ task.title }}
+                            </h6>
+                            <p class="mb-0 small text-muted {% if task.is_done %}text-decoration-line-through{% endif %}" style="line-height: 1.4;">
+                                {{ task.details or '' }}
+                            </p>
+                        </div>
+
+                        <div class="d-flex align-items-start ms-3">
+                            <div class="text-end me-3" style="min-width: 130px;">
+                                <div class="mb-1">
+                                    {% if task.priority == 'high' %}
+                                        <span class="badge bg-danger">Urgent</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">Normal</span>
+                                    {% endif %}
+                                </div>
+                                <div class="small fw-bold {% if is_overdue %}text-danger{% elif task.is_done %}text-muted{% else %}text-secondary{% endif %}">
+                                    {% if is_overdue %}Overdue{% else %}{{ task.deadline.strftime('%a, %b') }} {{ task.deadline.day }}, {{ task.deadline.year }}{% endif %}
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li>
+                                        <a class="dropdown-item small" href="{{ url_for('case.edit_schedule_page', case_id=case_id, schedule_id=task.id) }}">
+                                            Edit Task
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ url_for('case.delete_schedule', schedule_id=task.id) }}" onsubmit="return confirm('Delete this task?');" style="margin:0;">
+                                            <button type="submit" class="dropdown-item small text-danger">Delete</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+        <p class="text-muted small mb-0">No upcoming schedules.</p>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

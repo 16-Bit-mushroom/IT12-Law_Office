@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import func
+from datetime import datetime
 from sqlalchemy.orm import joinedload
 from app.models.notarial_entry_mdl import NotarialEntry
 
@@ -11,8 +12,10 @@ from app import db
 from app.models.client_mdl import Client
 from app.models.document_mdl import Document
 from app.models.case_mdl import Case
+from app.models.schedule_mdl import Schedule
 from app.models.transaction_mdl import TransactionItem
 from app.utils.query_filters import filter_dashboard_data
+
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/')
 
@@ -112,6 +115,13 @@ def dashboard_page():
     # --- NEW KPI: Transaction Types ---
     notarial_count = TransactionItem.query.filter_by(transaction_type='Notarial').count()
     case_count = TransactionItem.query.filter_by(transaction_type='Case').count()
+    
+    upcoming_deadlines = Schedule.query\
+        .options(joinedload(Schedule.case))\
+        .filter(Schedule.is_done == False)\
+        .order_by(Schedule.deadline.asc())\
+        .limit(6)\
+        .all()
 
     # Package data for the template
     kpi_data = {
@@ -176,7 +186,9 @@ def dashboard_page():
     context = {
         'kpi': kpi_data,
         'action_docs': action_docs_data,
-        'action_transactions': action_transactions_data  # New: pending transactions for action
+        'action_transactions': action_transactions_data,  # New: pending transactions for action
+        'upcoming_deadlines': upcoming_deadlines, # <--- Added this
+        'now': datetime.now().date()
     }
 
     return render_template('dashboard_page.html', **context)

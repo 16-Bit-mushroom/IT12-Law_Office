@@ -10,6 +10,8 @@ from app.services.suggestion_service import SuggestionService
 from app.models.case_mdl import Case
 from app.models.client_mdl import Client
 from app.utils.permissions import admin_required
+from app.services.schedule_service import ScheduleService # New import
+from app.models.schedule_mdl import Schedule # New import if needed directly
 
 
 case_bp = Blueprint('case', __name__, url_prefix='/cases')
@@ -186,11 +188,19 @@ def view_case(case_id):
         # Get documents for this case
         from app.services.document_service import DocumentService
         documents = DocumentService.get_documents_by_parent('case', case_id)
+
+        # --- NEW: Get Schedules ---
+        schedules = ScheduleService.get_schedules_by_case(case_id)
+        
+        # Pass datetime.now() for the template to calculate "Overdue" logic
+        now = datetime.now().date()
         
         return render_template('cases/case_detail.html', 
                              case=case, 
                              representatives=representatives,
-                             documents=documents)
+                             documents=documents,
+                             schedules=schedules,  # <--- Pass this
+                             now=now)             # <--- Pass this
     except Exception as e:
         flash(f'Error loading case: {str(e)}', 'error')
         return redirect(url_for('case.list_cases'))
@@ -448,3 +458,135 @@ def get_case_types_api():
     all_types.sort()
     
     return jsonify(all_types)
+
+# 1. Route to SHOW the separate 'Add Schedule' page (GET)
+@case_bp.route('/<int:case_id>/schedule/new', methods=['GET'])
+@login_required
+def add_schedule_page(case_id):
+    """Render the page to add a new schedule"""
+    case = CaseService.get_case_by_id(case_id)
+    if not case:
+        flash('Case not found', 'error')
+        return redirect(url_for('case.list_cases'))
+        
+    return render_template('schedules/add_schedule.html', case=case)
+
+# 2. Route to SAVE the schedule (POST)
+@case_bp.route('/<int:case_id>/schedule/add', methods=['POST'])
+@login_required
+def add_schedule_submission(case_id):
+    """Handle the form submission"""
+    try:
+        title = request.form.get('title')
+        details = request.form.get('details') # <-- Add this
+        deadline_str = request.form.get('deadline')
+        priority = request.form.get('priority', 'normal')
+
+        if not title or not deadline_str:
+            flash('Title and Deadline are required', 'error')
+            # Redirect back to the add page on error
+            return redirect(url_for('case.add_schedule_page', case_id=case_id))
+
+        deadline = datetime.strptime(deadline_str, '%Y-%m-%d').date()
+
+        schedule_data = {
+            'title': title,
+            'details': details,
+            'deadline': deadline,
+            'priority': priority,
+            'case_id': case_id
+        }
+
+        ScheduleService.create_schedule(schedule_data)
+        flash('Schedule added successfully', 'success')
+        
+    except Exception as e:
+        flash(f'Error adding schedule: {str(e)}', 'error')
+        return redirect(url_for('case.add_schedule_page', case_id=case_id))
+    
+    # On success, go back to the Case Detail view
+    return redirect(url_for('case.view_case', case_id=case_id))
+
+# 3. Route to TOGGLE status
+@case_bp.route('/schedule/<int:schedule_id>/toggle', methods=['POST'])
+@login_required
+def toggle_schedule(schedule_id):
+    try:
+        schedule = ScheduleService.toggle_status(schedule_id)
+        if schedule:
+            return redirect(url_for('case.view_case', case_id=schedule.case_id))
+        else:
+            flash('Schedule not found', 'error')
+            return redirect(url_for('case.list_cases'))
+    except Exception as e:
+        flash(f'Error updating schedule: {str(e)}', 'error')
+        return redirect(url_for('case.list_cases'))
+    
+
+# app/routes/case_routes.py
+# ... keep existing imports ...
+
+# 1. EDIT PAGE (GET)
+@case_bp.route('/<int:case_id>/schedule/<int:schedule_id>/edit', methods=['GET'])
+@login_required
+def edit_schedule_page(case_id, schedule_id):
+    case = CaseService.get_case_by_id(case_id)
+    schedule = ScheduleService.get_schedule_by_id(schedule_id)
+    
+    if not case or not schedule or schedule.case_id != case_id:
+        flash('Schedule or Case not found', 'error')
+        return redirect(url_for('case.list_cases'))
+        
+    return render_template('schedules/edit_schedule.html', case=case, schedule=schedule)
+
+# 2. UPDATE ACTION (POST)
+@case_bp.route('/<int:case_id>/schedule/<int:schedule_id>/update', methods=['POST'])
+@login_required
+def edit_schedule_submission(case_id, schedule_id):
+    try:
+        title = request.form.get('title')
+        details = request.form.get('details')
+        deadline_str = request.form.get('deadline')
+        priority = request.form.get('priority')
+
+        if not title or not deadline_str:
+            flash('Title and Deadline are required', 'error')
+            return redirect(url_for('case.edit_schedule_page', case_id=case_id, schedule_id=schedule_id))
+
+        deadline = datetime.strptime(deadline_str, '%Y-%m-%d').date()
+
+        data = {
+            'title': title,
+            'details': details,
+            'deadline': deadline,
+            'priority': priority
+        }
+
+        ScheduleService.update_schedule(schedule_id, data)
+        flash('Schedule updated successfully', 'success')
+        
+    except Exception as e:
+        flash(f'Error updating schedule: {str(e)}', 'error')
+        return redirect(url_for('case.edit_schedule_page', case_id=case_id, schedule_id=schedule_id))
+    
+    return redirect(url_for('case.view_case', case_id=case_id))
+
+# 3. DELETE ACTION (POST)
+@case_bp.route('/schedule/<int:schedule_id>/delete', methods=['POST'])
+@login_required
+def delete_schedule(schedule_id):
+    try:
+        # Get schedule first to know which case to return to
+        schedule = ScheduleService.get_schedule_by_id(schedule_id)
+        if not schedule:
+            flash('Schedule not found', 'error')
+            return redirect(url_for('case.list_cases'))
+            
+        case_id = schedule.case_id
+        ScheduleService.delete_schedule(schedule_id)
+        flash('Task deleted successfully', 'success')
+        return redirect(url_for('case.view_case', case_id=case_id))
+        
+    except Exception as e:
+        flash(f'Error deleting schedule: {str(e)}', 'error')
+        return redirect(url_for('case.list_cases'))

@@ -701,32 +701,58 @@
 
         <div class="panel-card">
             <header class="panel-card__header">
-                <h3 class="panel-card__title">Upcoming Deadlines</h3>
+                <div class="d-flex justify-content-between align-items-center"
+                    style="display:flex; justify-content:space-between;">
+                    <h3 class="panel-card__title">Upcoming Deadlines</h3>
+                </div>
             </header>
+
             <div class="panel-card__body">
-                <div class="deadline-item">
-                    <p class="deadline-item__title"><span class="deadline-indicator indicator-red"></span>Court
-                        Submission</p>
-                    <span style="color: #ef4444; font-size:0.8rem; font-weight:600;">Overdue</span>
+                {% if upcoming_deadlines %}
+                {% for task in upcoming_deadlines %}
+                <div class="dashboard-task-item">
+
+                    <div class="task-info">
+                        <span class="task-title" title="{{ task.title }}">{{ task.title }}</span>
+                        <span class="task-context" title="{{ task.case.title }}">
+                            <span style="color: #9ca3af;">Case:</span> {{ task.case.title }}
+                        </span>
+                    </div>
+
+                    <div class="task-meta">
+                        <div class="task-date-group">
+                            {% if task.priority == 'high' %}
+                            <span class="task-priority" style="color: #ef4444; margin-bottom: 2px;">Urgent</span>
+                            {% endif %}
+
+                            {% if task.deadline < now %} <span class="task-date" style="color: #ef4444;">Overdue</span>
+                                {% elif task.deadline == now %}
+                                <span class="task-date" style="color: #f97316;">Today</span>
+                                {% else %}
+                                <span class="task-date" style="color: #111827;">
+                                    {{ task.deadline.strftime('%a, %b') }} {{ task.deadline.day }}, {{
+                                    task.deadline.year }}
+                                </span>
+                                {% endif %}
+                        </div>
+
+                        <a href="{{ url_for('case.view_case', case_id=task.case_id) }}" class="btn-view-task">
+                            View
+                        </a>
+                    </div>
                 </div>
-                <hr class="deadline-divider">
-                <div class="deadline-item">
-                    <p class="deadline-item__title"><span class="deadline-indicator indicator-orange"></span>Estate Fee
-                    </p>
-                    <span>2 Days</span>
+                {% endfor %}
+                {% else %}
+                <div style="text-align: center; padding: 40px 0; color: #9ca3af;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="opacity: 0.5; margin-bottom: 8px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <p style="margin: 0; font-size: 0.9rem;">No upcoming deadlines.</p>
                 </div>
-                <hr class="deadline-divider">
-                <div class="deadline-item">
-                    <p class="deadline-item__title"><span class="deadline-indicator indicator-blue"></span>Client
-                        Meeting</p>
-                    <span>Nov 12</span>
-                </div>
-                <hr class="deadline-divider">
-                <div class="deadline-item">
-                    <p class="deadline-item__title"><span class="deadline-indicator indicator-blue"></span>File Review
-                    </p>
-                    <span>Nov 15</span>
-                </div>
+                {% endif %}
             </div>
         </div>
 

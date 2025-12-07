@@ -1,6 +1,7 @@
 from flask import Flask
 from app.models import db
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 def create_app():
     app = Flask(__name__)

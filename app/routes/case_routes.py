@@ -12,6 +12,7 @@ from app.models.client_mdl import Client
 from app.utils.permissions import admin_required
 from app.services.schedule_service import ScheduleService # New import
 from app.models.schedule_mdl import Schedule # New import if needed directly
+from app.services.system_log_service import SystemLogService
 
 
 case_bp = Blueprint('case', __name__, url_prefix='/cases')
@@ -160,6 +161,11 @@ def create_case():
         
         # Create case
         new_case = CaseService.create_case(case_data)
+        
+        # --- LOGGING ---
+        SystemLogService.log('Create', 'Case', f"Opened new case: {new_case.title}", new_case.id)
+        # ---------------
+        
         flash(f'Case {new_case.case_number} created successfully!', 'success')
         return redirect(url_for('case.list_cases'))
         
@@ -234,6 +240,13 @@ def edit_case(case_id):
     
     # Handle POST request
     try:
+        
+        old_data = {
+            'title': case.title,
+            'status': case.status,
+            'violation': case.violation,
+            'type': case.case_type
+        }
         # Validate required fields
         if not all([request.form.get('title'), 
                    request.form.get('engagement_date'), 
@@ -308,6 +321,26 @@ def edit_case(case_id):
         
         # Update case
         updated_case = CaseService.update_case(case_id, case_data)
+        
+        new_data = {
+            'title': updated_case.title,
+            'status': updated_case.status,
+            'violation': updated_case.violation,
+            'type': updated_case.case_type
+        }
+        
+        # --- LOGGING (Only if changed) ---
+        if old_data != new_data:
+            SystemLogService.log(
+                action='Update',
+                module='Case',
+                description=f"Updated details for Case #{case.case_number}",
+                entity_id=case.id,
+                old_val=old_data,
+                new_val=new_data
+            )
+        # ---------------------------------
+        
         flash(f'Case {updated_case.case_number} updated successfully!', 'success')
         return redirect(url_for('case.view_case', case_id=case_id))
         

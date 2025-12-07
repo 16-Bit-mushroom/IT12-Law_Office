@@ -5,6 +5,7 @@ from app.services.user_service import (
     get_all_users, get_user_by_id, create_new_user, 
     update_user_profile_admin, delete_user, activate_user
 )
+from app.services.system_log_service import SystemLogService
 
 settings_bp = Blueprint('settings', __name__, url_prefix='/settings')
 
@@ -59,6 +60,11 @@ def create_user():
         is_admin=data.get('is_admin', False)
     )
     
+    if success:
+        # --- LOGGING ---
+        SystemLogService.log('Create', 'User', f"Created new user: {data.get('username')}", None)
+        # ---------------
+    
     return jsonify({'success': success, 'message': message})
 
 @settings_bp.route('/users/<int:user_id>/update', methods=['POST'])
@@ -79,6 +85,11 @@ def update_user(user_id):
         is_admin=data.get('is_admin', False),
         is_active=data.get('is_active', True)
     )
+    
+    if success:
+         # --- LOGGING ---
+        SystemLogService.log('Update', 'User', f"Updated profile for User ID {user_id}", user_id)
+        # ---------------
     
     return jsonify({'success': success, 'message': message})
 

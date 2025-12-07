@@ -10,6 +10,7 @@ from sqlalchemy import or_
 import os
 from app.utils.permissions import staff_or_admin_required
 from app.utils.query_filters import get_accessible_documents
+from app.services.system_log_service import SystemLogService
 
 documents_bp = Blueprint('documents', __name__, url_prefix='/documents')
 
@@ -138,6 +139,15 @@ def upload_document():
             user_id=current_user.id
         )
         
+        # --- LOGGING ---
+        SystemLogService.log(
+            action='Upload',
+            module='Document',
+            description=f"Uploaded file '{document.filename}' to {document.parent_type} #{document.parent_id}",
+            entity_id=document.id
+        )
+        # ---------------
+        
         flash('Document uploaded successfully!', 'success')
         return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
         
@@ -177,8 +187,18 @@ def download_document(document_id):
 def delete_document(document_id):
     """Delete a document"""
     try:
+        
+        doc = Document.query.get(document_id)
+        filename = doc.filename if doc else 'Unknown File'
+        
+        
         success = DocumentService.delete_document(document_id)
         if success:
+            
+            # --- LOGGING ---
+            SystemLogService.log('Delete', 'Document', f"Deleted file '{filename}'", document_id)
+            # ---------------
+            
             flash('Document deleted successfully!', 'success')
         else:
             flash('Document not found!', 'error')

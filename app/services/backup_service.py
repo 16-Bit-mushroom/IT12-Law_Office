@@ -18,6 +18,9 @@ from app.models.representative_mdl import Representative
 from app.models.notarial_entry_mdl import NotarialEntry, NotarialEntryParty, NotarialEntryWitness
 from app.models.legal_consultation_mdl import LegalConsultation
 from app.models.document_mdl import Document
+from app.models.schedule_mdl import Schedule
+from app.services.system_log_service import SystemLogService
+from app.models.system_log_mdl import SystemLog
 
 class BackupService:
     @staticmethod
@@ -191,8 +194,10 @@ class BackupService:
 
             # Clear data in dependency order
             tables_to_clear = [
+                SystemLog, # <--- ADDED: Must delete logs first as they reference users
                 Document, NotarialEntryWitness, NotarialEntryParty, 
                 NotarialEntry, LegalConsultation, Representative,
+                Schedule,
                 Case, TransactionItem, Payment, Service, Client, User
             ]
             
@@ -212,12 +217,14 @@ class BackupService:
                 (Payment, 'payments'),
                 (TransactionItem, 'transaction_items'),
                 (Case, 'cases'),
+                (Schedule, 'schedules'),
                 (Representative, 'representatives'),
                 (NotarialEntry, 'notarial_entries'),
                 (NotarialEntryParty, 'notarial_entry_parties'),
                 (NotarialEntryWitness, 'notarial_entry_witnesses'),
                 (LegalConsultation, 'legal_consultations'),
-                (Document, 'documents')
+                (Document, 'documents'),
+                (SystemLog, 'system_logs') # Restored last
             ]
             
             for model, data_key in models_restore_order:
@@ -277,6 +284,7 @@ class BackupService:
             'clients': [BackupService.serialize_model(x) for x in Client.query.all()],
             'services': [BackupService.serialize_model(x) for x in Service.query.all()],
             'payments': [BackupService.serialize_model(x) for x in Payment.query.all()],
+            'schedules': [BackupService.serialize_model(x) for x in Schedule.query.all()],
             'transaction_items': [BackupService.serialize_model(x) for x in TransactionItem.query.all()],
             'cases': [BackupService.serialize_model(x) for x in Case.query.all()],
             'representatives': [BackupService.serialize_model(x) for x in Representative.query.all()],
@@ -284,7 +292,8 @@ class BackupService:
             'notarial_entry_parties': [BackupService.serialize_model(x) for x in NotarialEntryParty.query.all()],
             'notarial_entry_witnesses': [BackupService.serialize_model(x) for x in NotarialEntryWitness.query.all()],
             'legal_consultations': [BackupService.serialize_model(x) for x in LegalConsultation.query.all()],
-            'documents': [BackupService.serialize_model(x) for x in Document.query.all()]
+            'documents': [BackupService.serialize_model(x) for x in Document.query.all()],
+            'system_logs': [BackupService.serialize_model(x) for x in SystemLog.query.all()] # <--- ADDED: Now actually backing up logs
         }
         return backup_data
 
@@ -312,17 +321,19 @@ class BackupService:
                 'payments': Payment.query.count(),
                 'transaction_items': TransactionItem.query.count(),
                 'cases': Case.query.count(),
+                'schedules': Schedule.query.count(),
                 'representatives': Representative.query.count(),
                 'notarial_entries': NotarialEntry.query.count(),
                 'notarial_entry_parties': NotarialEntryParty.query.count(),
                 'notarial_entry_witnesses': NotarialEntryWitness.query.count(),
                 'legal_consultations': LegalConsultation.query.count(),
                 'documents': Document.query.count(),
+                'system_logs': SystemLog.query.count()
             }
         except Exception:
             return {}
-
-    # ... Helper methods (_save_backup_info, get_backup_history, etc.) remain the same ...
+    
+    # ... Helper methods remain the same ...
     @staticmethod
     def _save_backup_info(backup_info):
         backup_history_file = os.path.join(current_app.instance_path, 'backups', 'backup_history.json')

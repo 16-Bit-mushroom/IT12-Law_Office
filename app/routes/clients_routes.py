@@ -3,6 +3,7 @@ from flask_login import login_required
 from app.services.client_service import add_client, get_all_clients, get_client_by_email
 from app.models.client_mdl import Client
 from app import db
+from app.services.system_log_service import SystemLogService
 
 clients_bp = Blueprint('clients', __name__, url_prefix='/clients')
 
@@ -39,6 +40,11 @@ def submit_new_client():
 
     try:
         new_client = add_client(address, email, phone, role, notes, first_name, last_name)
+        
+        # --- LOGGING ---
+        SystemLogService.log('Create', 'Client', f"Created new client: {first_name} {last_name}", new_client.id)
+        # ---------------
+        
         flash(f'Client {first_name} {last_name} added successfully.', 'success')
         
         # Redirect to case creation with pre-selected client
@@ -80,6 +86,10 @@ def delete_client(client_id):
         client.soft_delete()
         db.session.commit()
         
+        # --- LOGGING ---
+        SystemLogService.log('Delete', 'Client', f"Moved client '{client.full_name}' to Recycle Bin", client.id)
+        # ---------------
+        
         return jsonify({
             'success': True,
             'message': f'Client "{client.full_name}" has been moved to recycle bin.',
@@ -110,6 +120,10 @@ def restore_client(client_id):
             
         client.restore()
         db.session.commit()
+        
+        # --- LOGGING ---
+        SystemLogService.log('Restore', 'Client', f"Restored client '{client.full_name}' from Recycle Bin", client.id)
+        # ---------------
         
         return jsonify({
             'success': True,

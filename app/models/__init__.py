@@ -22,3 +22,4 @@ from .representative_mdl import Representative
 from .suggestion_mdl import Suggestion  # NEW
 from .reminder_mdl import Reminder  # NEW
 from .schedule_mdl import Schedule
+from .system_log_mdl import SystemLog

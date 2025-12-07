@@ -14,6 +14,7 @@ from app.models.document_mdl import Document
 from app.models.case_mdl import Case
 from app.models.schedule_mdl import Schedule
 from app.models.transaction_mdl import TransactionItem
+from app.models.system_log_mdl import SystemLog
 from app.utils.query_filters import filter_dashboard_data
 
 
@@ -122,6 +123,11 @@ def dashboard_page():
         .order_by(Schedule.deadline.asc())\
         .limit(6)\
         .all()
+    
+    recent_logs = SystemLog.query\
+        .order_by(SystemLog.timestamp.desc())\
+        .limit(5)\
+        .all()
 
     # Package data for the template
     kpi_data = {
@@ -187,7 +193,8 @@ def dashboard_page():
         'kpi': kpi_data,
         'action_docs': action_docs_data,
         'action_transactions': action_transactions_data,  # New: pending transactions for action
-        'upcoming_deadlines': upcoming_deadlines, # <--- Added this
+        'upcoming_deadlines': upcoming_deadlines,
+        'recent_logs': recent_logs,
         'now': datetime.now().date()
     }
 

@@ -7,6 +7,7 @@ from app.services.notarial_entry_service import NotarialEntryService
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 from app.utils.permissions import staff_or_admin_required
+from app.services.system_log_service import SystemLogService
 
 notarial_entries_bp = Blueprint('notarial_entries', __name__, url_prefix='/notarial-entries')
 
@@ -90,6 +91,17 @@ def mark_as_paid(entry_id):
         
         entry = NotarialEntryService.mark_as_paid(entry_id, or_number)
         if entry:
+            
+            # --- LOGGING ---
+            SystemLogService.log(
+                action='Payment',
+                module='Notarial',
+                description=f"Notarial Entry #{entry.not_entry_num} marked as PAID. OR: {or_number}",
+                entity_id=entry.id,
+                new_val={'payment_status': 'Paid', 'or_number': or_number}
+            )
+            # ---------------
+            
             if or_number:
                 flash(f'Entry marked as paid with OR# {or_number}!', 'success')
             else:
@@ -108,6 +120,11 @@ def create_manual_entry():
     try:
         # Pass current_user.id to the service
         entry = NotarialEntryService.create_manual_entry(request.form, current_user.id)
+        
+        
+        SystemLogService.log('Create', 'Notarial', f"Created Notarial Entry #{entry.not_entry_num}", entry.id)
+        # ---------------
+        
         flash('Notarial entry created successfully!', 'success')
         return redirect(url_for('notarial_entries.notarial_entries_page'))
         
@@ -121,9 +138,24 @@ def create_manual_entry():
 def update_entry(entry_id):
     """Update a notarial entry"""
     try:
+        
+        old_entry = NotarialEntryService.get_entry_by_id(entry_id)
+        old_fee = str(old_entry.not_fee) if old_entry else None
+        
         # Pass current_user.id to the service
         entry = NotarialEntryService.update_entry(entry_id, request.form, current_user.id)
         if entry:
+            
+            new_fee = str(entry.not_fee)
+            desc = f"Updated Notarial Entry #{entry.not_entry_num}"
+            
+            # Special check for fee changes (Financial Transparency)
+            if old_fee != new_fee:
+                desc += f" (Fee changed: {old_fee} -> {new_fee})"
+                
+            SystemLogService.log('Update', 'Notarial', desc, entry.id)
+            # ---------------
+            
             flash('Notarial entry updated successfully!', 'success')
         else:
             flash('Notarial entry not found!', 'error')

@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from app.services.auth_service import authenticate_user, deauthenticate_user
 
+from app.services.system_log_service import SystemLogService
+
 # Changed to 'auth' for clarity and to avoid conflicts
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -19,6 +21,16 @@ def login():
         success, result = authenticate_user(email, password)
         
         if success:
+            
+            # --- LOGGING START ---
+            SystemLogService.log(
+                action='Login',
+                module='Auth',
+                description=f"User '{result.username}' logged in successfully.",
+                entity_id=result.id
+            )
+            # --- LOGGING END ---
+            
             flash(f'Welcome back, {result.username}!', 'success')
             # Redirect to the page they were trying to access, or the dashboard
             next_page = request.args.get('next')
@@ -31,6 +43,15 @@ def login():
 @auth_bp.route('/logout')
 @login_required # Ensures only logged-in users can log out
 def logout():
+    
+    # --- LOGGING START ---
+    SystemLogService.log(
+        action='Logout',
+        module='Auth',
+        description=f"User '{current_user.username}' logged out.",
+        entity_id=current_user.id
+    )
+    # --- LOGGING END ---
     message = deauthenticate_user()
     flash(message, 'info')
     return redirect(url_for('auth.login'))

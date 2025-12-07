@@ -16,6 +16,9 @@ from app.models import (
     TransactionItem, Service, Payment, Representative,
     NotarialEntryParty, NotarialEntryWitness
 )
+from app.services.system_log_service import SystemLogService
+from app.models.schedule_mdl import Schedule
+from app.models.system_log_mdl import SystemLog
 
 backup_bp = Blueprint('backup', __name__, url_prefix='/backup')
 
@@ -26,6 +29,11 @@ def download_full_backup():
     try:
         zip_path = BackupService.create_full_backup()
         filename = os.path.basename(zip_path)
+        
+        
+        # --- LOGGING ---
+        SystemLogService.log('Backup', 'System', "Generated Full System Backup", None)
+        # ---------------
         
         return send_file(
             zip_path,
@@ -121,6 +129,7 @@ def restore_backup():
 
             # Clear all tables (Updated Order & Included missing models)
             # Delete children first
+            SystemLog.query.delete()
             NotarialEntryWitness.query.delete()
             NotarialEntryParty.query.delete()
             Document.query.delete()
@@ -128,6 +137,7 @@ def restore_backup():
             # Delete parents
             NotarialEntry.query.delete()
             Representative.query.delete() # Added
+            Schedule.query.delete() # <--- ADDED
             LegalConsultation.query.delete()
             Case.query.delete()
             TransactionItem.query.delete()
@@ -173,6 +183,16 @@ def restore_backup():
                 pass
         
         if success:
+            
+            # --- LOGGING ---
+            SystemLogService.log(
+                action='Restore',
+                module='System',
+                description=f"System Restored from backup. Type: {backup_type}",
+                entity_id=None
+            )
+            # ---------------
+            
             current_app.logger.info(f"Restore completed: {message}")
             return jsonify({'message': message})
         else:

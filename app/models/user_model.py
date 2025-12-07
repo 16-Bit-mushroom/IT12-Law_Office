@@ -68,3 +68,11 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User {self.username} | Role: {self.role}>"
+    
+    
+    # ... inside class User ...
+
+    @property
+    def full_name(self):
+        """Helper to return username as full name for now"""
+        return self.username

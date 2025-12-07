@@ -761,34 +761,43 @@
                 <h3 class="panel-card__title">Recent Activities</h3>
             </header>
             <div class="panel-card__body">
+                {% if recent_logs %}
+                {% for log in recent_logs %}
                 <div class="document-row">
                     <div class="document-row__info">
-                        <p class="document-row__title">Payment Received</p>
-                        <span class="document-row__subtitle">Trans #4421</span>
+                        <p class="document-row__title">{{ log.description }}</p>
+
+                        <span class="document-row__subtitle">
+                            <span style="color: #111827; font-weight: 500;">
+                                {% if log.user %}
+                                {{ log.user.username }}
+                                {% else %}
+                                System
+                                {% endif %}
+                            </span>
+                            &bull;
+                            {{ log.timestamp.strftime('%b %d, %I:%M %p') }}
+                        </span>
                     </div>
-                    <span class="status-tag status-tag--complete">Fin</span>
+
+                    {% if log.action == 'Create' or log.action == 'Upload' or log.action == 'Login' %}
+                    <span class="status-tag status-tag--complete">{{ log.action }}</span>
+                    {% elif log.action == 'Delete' %}
+                    <span class="status-tag status-tag--missing">{{ log.action }}</span>
+                    {% elif log.action == 'Update' %}
+                    <span class="status-tag status-tag--pending">{{ log.action }}</span>
+                    {% elif log.action == 'Payment' %}
+                    <span class="status-tag status-tag--for-signature">Paid</span>
+                    {% else %}
+                    <span class="status-tag status-tag--pending">{{ log.action }}</span>
+                    {% endif %}
                 </div>
-                <div class="document-row">
-                    <div class="document-row__info">
-                        <p class="document-row__title">New Case: Rivera</p>
-                        <span class="document-row__subtitle">Atty. Santos</span>
-                    </div>
-                    <span class="status-tag status-tag--pending">Case</span>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted small mb-0">No recent activity recorded.</p>
                 </div>
-                <div class="document-row">
-                    <div class="document-row__info">
-                        <p class="document-row__title">Notarial #221</p>
-                        <span class="document-row__subtitle">Deed of Sale</span>
-                    </div>
-                    <span class="status-tag status-tag--for-signature">Notary</span>
-                </div>
-                <div class="document-row">
-                    <div class="document-row__info">
-                        <p class="document-row__title">Client Onboarding</p>
-                        <span class="document-row__subtitle">Mr. Tan</span>
-                    </div>
-                    <span class="status-tag status-tag--complete">Admin</span>
-                </div>
+                {% endif %}
             </div>
         </div>
 

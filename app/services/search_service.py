@@ -1,4 +1,5 @@
-"""Search Service - Fixed parentheses and model relationships"""
+# app/services/search_service.py
+"""Search Service - Updated to include Party Name search in Documents"""
 from app.models import db
 from app.models.case_mdl import Case
 from app.models.document_mdl import Document
@@ -118,13 +119,30 @@ class SearchService:
     
     @staticmethod
     def _search_documents(search_term, limit):
-        """Search in documents"""
+        """Search in documents including Parties and Case Clients"""
         try:
-            # Find matching cases first
+            # 1. Find matching Cases (for Case-linked documents)
             matching_case_ids = db.session.query(Case.id).filter(
-                Case.case_number.ilike(f'%{search_term}%')
+                or_(
+                    Case.case_number.ilike(f'%{search_term}%'),
+                    # Also match if the Case's CLIENT name matches
+                    Case.client.has(
+                        or_(
+                            Client.client_first_name.ilike(f'%{search_term}%'),
+                            Client.client_last_name.ilike(f'%{search_term}%'),
+                            func.concat(Client.client_first_name, ' ', Client.client_last_name).ilike(f'%{search_term}%')
+                        )
+                    )
+                )
+            ).all()
+
+            # 2. Find matching Notarial Entries by PARTY NAME (for Notarial-linked documents)
+            # This logic finds the IDs of NotarialEntries where a Party matches the search term
+            matching_entry_ids = db.session.query(NotarialEntry.id).join(NotarialEntryParty).filter(
+                NotarialEntryParty.party_name.ilike(f'%{search_term}%')
             ).all()
             
+            # Base conditions (Filename, Type, Notes)
             conditions = or_(
                 Document.filename.ilike(f'%{search_term}%'),
                 Document.document_type.ilike(f'%{search_term}%'),
@@ -132,13 +150,23 @@ class SearchService:
                 Document.document_status.ilike(f'%{search_term}%')
             )
             
-            # Add Case linking
+            # Add Case linking condition
             if matching_case_ids:
+                case_ids_list = [c.id for c in matching_case_ids]
                 case_doc_condition = and_(
                     Document.parent_type == 'case',
-                    Document.parent_id.in_([c.id for c in matching_case_ids])
+                    Document.parent_id.in_(case_ids_list)
                 )
                 conditions = or_(conditions, case_doc_condition)
+
+            # Add Notarial Party linking condition
+            if matching_entry_ids:
+                entry_ids_list = [e.id for e in matching_entry_ids]
+                party_doc_condition = and_(
+                    Document.parent_type == 'notarial_entry',
+                    Document.parent_id.in_(entry_ids_list)
+                )
+                conditions = or_(conditions, party_doc_condition)
             
             documents = Document.query.filter(conditions)\
                 .order_by(Document.uploaded_at.desc())\
@@ -169,10 +197,21 @@ class SearchService:
     def _get_document_context(document):
         try:
             if document.parent_type == 'notarial_entry':
+                # Try to get the entry details to show party names in context if possible
+                entry = NotarialEntry.query.get(document.parent_id)
+                if entry:
+                    party_names = [p.party_name for p in entry.parties[:2]]
+                    party_str = ", ".join(party_names)
+                    return f"Notarial: {entry.not_title} ({party_str})"
                 return f"Notarial Entry ID: {document.parent_id}"
+                
             elif document.parent_type == 'case':
                 case = Case.query.get(document.parent_id)
-                return f"Case #{case.case_number}" if case else "Unknown Case"
+                if case:
+                    client_name = case.client.full_name if case.client else "No Client"
+                    return f"Case #{case.case_number} ({client_name})"
+                return "Unknown Case"
+                
             elif document.parent_type == 'client':
                 client = Client.query.get(document.parent_id)
                 return f"Client: {client.full_name}" if client else "Unknown Client"

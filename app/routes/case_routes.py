@@ -399,11 +399,20 @@ def search_clients_api():
     
     return jsonify(result)
 
+# app/routes/case_routes.py
+
+# ... (Previous code) ...
+
+# ===== NEW API ENDPOINTS FOR AUTO-SUGGESTIONS =====
+
+# ... (search_clients_api remains the same) ...
+
 @case_bp.route('/api/cases/suggestions/<field>')
 @login_required
 def get_suggestions_api(field):
     """Get suggestions for a specific field"""
-    valid_fields = ['case_type', 'violation', 'cause_of_action']
+    # UPDATE THIS LIST
+    valid_fields = ['case_type', 'violation', 'cause_of_action', 'document_type']
     
     if field not in valid_fields:
         return jsonify({'error': 'Invalid field'}), 400
@@ -419,7 +428,8 @@ def get_suggestions_api(field):
 @login_required
 def search_suggestions_api(field):
     """Search suggestions for a specific field"""
-    valid_fields = ['case_type', 'violation', 'cause_of_action']
+    # UPDATE THIS LIST
+    valid_fields = ['case_type', 'violation', 'cause_of_action', 'document_type']
     
     if field not in valid_fields:
         return jsonify({'error': 'Invalid field'}), 400
@@ -455,7 +465,8 @@ def search_suggestions_api(field):
 @login_required
 def remove_suggestion_api(field):
     """Remove a suggestion (soft delete)"""
-    valid_fields = ['case_type', 'violation', 'cause_of_action']
+    # UPDATE THIS LIST
+    valid_fields = ['case_type', 'violation', 'cause_of_action', 'document_type']
     
     if field not in valid_fields:
         return jsonify({'error': 'Invalid field'}), 400

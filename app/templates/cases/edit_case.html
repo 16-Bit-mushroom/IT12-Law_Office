@@ -339,125 +339,100 @@
 </style>
 
 <script>
-
-
-
-    // Add these variables at the beginning
+    // 1. Define API Endpoints
     const searchClientsUrl = "{{ url_for('case.search_clients_api') }}";
+    // We use a placeholder 'FIELD' to be replaced dynamically later
     const getSuggestionsUrl = "{{ url_for('case.get_suggestions_api', field='FIELD') }}";
     const searchSuggestionsUrl = "{{ url_for('case.search_suggestions_api', field='FIELD') }}";
     const removeSuggestionUrl = "{{ url_for('case.remove_suggestion_api', field='FIELD') }}";
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Representatives management
-        const representativesContainer = document.getElementById('representativesContainer');
-        const addRepresentativeBtn = document.getElementById('addRepresentative');
+        // 2. Representatives Management Logic
+        setupRepresentatives();
 
-        // Add representative
-        addRepresentativeBtn.addEventListener('click', function () {
-            const template = representativesContainer.querySelector('.representative-entry:last-child');
-            const newEntry = template.cloneNode(true);
-            newEntry.style.display = 'block';
-            // Clear input values
-            newEntry.querySelectorAll('input').forEach(input => input.value = '');
-            representativesContainer.insertBefore(newEntry, template);
-            updateRemoveButtons();
-        });
-
-        // Remove representative
-        function updateRemoveButtons() {
-            document.querySelectorAll('.remove-representative').forEach(button => {
-                button.addEventListener('click', function () {
-                    const entries = representativesContainer.querySelectorAll('.representative-entry');
-                    if (entries.length > 2) { // Keep at least one visible + template
-                        this.closest('.representative-entry').remove();
-                    } else if (entries.length === 2) {
-                        // If it's the last visible one, just clear the inputs
-                        this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
-                    }
-                });
-            });
-        }
-
-        // Initial setup for remove buttons
-        updateRemoveButtons();
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.autocomplete-wrapper')) {
-                closeAllDropdowns();
-            }
-        });
-    });
-
-    // Rest of the functions (searchClients, getSuggestions, etc.) remain the same as in create.html
-    // Copy the functions from create.html
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // Representatives management
-        const representativesContainer = document.getElementById('representativesContainer');
-        const addRepresentativeBtn = document.getElementById('addRepresentative');
-
-        // Add representative
-        addRepresentativeBtn.addEventListener('click', function () {
-            const template = representativesContainer.querySelector('.representative-entry:last-child');
-            const newEntry = template.cloneNode(true);
-            newEntry.style.display = 'block';
-            // Clear input values
-            newEntry.querySelectorAll('input').forEach(input => input.value = '');
-            representativesContainer.insertBefore(newEntry, template);
-            updateRemoveButtons();
-        });
-
-        // Remove representative
-        function updateRemoveButtons() {
-            document.querySelectorAll('.remove-representative').forEach(button => {
-                button.addEventListener('click', function () {
-                    const entries = representativesContainer.querySelectorAll('.representative-entry');
-                    if (entries.length > 2) { // Keep at least one visible + template
-                        this.closest('.representative-entry').remove();
-                    } else if (entries.length === 2) {
-                        // If it's the last visible one, just clear the inputs
-                        this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
-                    }
-                });
-            });
-        }
-
-        // Initial setup for remove buttons
-        updateRemoveButtons();
-
-        // Close dropdown when clicking outside
+        // 3. Global Click Listener (Close dropdowns)
         document.addEventListener('click', function (event) {
             if (!event.target.closest('.autocomplete-wrapper')) {
                 closeAllDropdowns();
             }
         });
 
-        // Load initial suggestions for case type
-        getSuggestions('case_type', '');
+        // 4. Initial Load (Optional: Pre-load suggestions if fields are empty)
+        // If the case already has a type, we don't need to pop the dropdown immediately
+        const caseTypeInput = document.getElementById('case_type');
+        if(!caseTypeInput.value) {
+             getSuggestions('case_type', '');
+        }
     });
 
-    // Close all autocomplete dropdowns
+    // --- Core Functions ---
+
+    function setupRepresentatives() {
+        const representativesContainer = document.getElementById('representativesContainer');
+        const addRepresentativeBtn = document.getElementById('addRepresentative');
+
+        // Add Representative Logic
+        addRepresentativeBtn.addEventListener('click', function () {
+            // Clone the template (the hidden one or the first one)
+            // Note: In your HTML loop, ensure you have a clean template or logic to clear values
+            const entries = representativesContainer.querySelectorAll('.representative-entry');
+            const template = entries[entries.length - 1]; // Grab the last one
+            
+            const newEntry = template.cloneNode(true);
+            newEntry.style.display = 'block';
+            
+            // Clear inputs
+            newEntry.querySelectorAll('input').forEach(input => input.value = '');
+            
+            representativesContainer.appendChild(newEntry);
+            updateRemoveButtons();
+        });
+
+        updateRemoveButtons();
+    }
+
+    function updateRemoveButtons() {
+        const container = document.getElementById('representativesContainer');
+        
+        container.querySelectorAll('.remove-representative').forEach(button => {
+            // Remove old listeners to prevent duplicates (simple approach)
+            button.replaceWith(button.cloneNode(true));
+        });
+
+        // Re-attach listeners
+        container.querySelectorAll('.remove-representative').forEach(button => {
+            button.addEventListener('click', function () {
+                const entries = container.querySelectorAll('.representative-entry');
+                // Allow removing if it's not the only one, or just clear inputs if it is
+                if (entries.length > 1) {
+                    this.closest('.representative-entry').remove();
+                } else {
+                    this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
+                }
+            });
+        });
+    }
+
     function closeAllDropdowns() {
         document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
             dropdown.style.display = 'none';
         });
     }
 
-    // Search clients for auto-suggest
+    // --- Search Logic (Clients) ---
+
     async function searchClients(query) {
+        const dropdown = document.getElementById('client_suggestions');
+        
         if (query.length < 2) {
-            closeAllDropdowns();
+            dropdown.style.display = 'none';
             return;
         }
 
         try {
-            const response = await fetch(`/api/clients/search?q=${encodeURIComponent(query)}`);
+            const response = await fetch(`${searchClientsUrl}?q=${encodeURIComponent(query)}`);
             const clients = await response.json();
 
-            const dropdown = document.getElementById('client_suggestions');
             dropdown.innerHTML = '';
 
             if (clients.length === 0) {
@@ -468,148 +443,115 @@
                     item.className = 'autocomplete-item';
                     item.innerHTML = `
                         <strong>${client.full_name}</strong><br>
-                        <small class="text-muted">${client.email || 'No email'} | ${client.phone || 'No phone'}</small>
+                        <small class="text-muted">${client.email || 'No email'}</small>
                     `;
-                    item.onclick = () => selectClient(client);
+                    item.onclick = () => {
+                        document.getElementById('client_search').value = `${client.full_name} (${client.email || ''})`;
+                        document.getElementById('client_id').value = client.id;
+                        dropdown.style.display = 'none';
+                    };
                     dropdown.appendChild(item);
                 });
             }
-
             dropdown.style.display = 'block';
         } catch (error) {
             console.error('Error searching clients:', error);
         }
     }
 
-    // Select a client from suggestions
-    function selectClient(client) {
-        document.getElementById('client_search').value = `${client.full_name} (${client.email || 'No email'})`;
-        document.getElementById('client_id').value = client.id;
-        closeAllDropdowns();
-    }
+    // --- Suggestion Logic (Case Type, Violation, etc.) ---
 
-    // Get suggestions for case type, violation, or cause of action
     async function getSuggestions(field, query) {
         const dropdownId = `${field}_suggestions`;
         const dropdown = document.getElementById(dropdownId);
+        
+        // Logic for the "Remove Suggestion" button visibility (optional)
         const removeBtn = document.getElementById(`remove_${field}_btn`);
-
-        // Show remove button if there's text
         if (removeBtn) {
-            removeBtn.style.display = query.trim() ? 'inline-block' : 'none';
+            // Only show remove button if the input matches exactly a known suggestion? 
+            // Or usually hide it and only show "Remove" inside the dropdown list items.
+            removeBtn.style.display = 'none'; 
         }
 
+        let url;
         if (query.length < 1) {
-            // Show recent suggestions when field is empty
-            try {
-                const response = await fetch(`/api/cases/suggestions/${field}`);
-                const suggestions = await response.json();
-
-                dropdown.innerHTML = '';
-
-                if (suggestions.length === 0) {
-                    dropdown.innerHTML = '<div class="autocomplete-item text-muted">No previous entries</div>';
-                } else {
-                    suggestions.forEach(suggestion => {
-                        const item = document.createElement('div');
-                        item.className = 'autocomplete-item';
-                        item.innerHTML = `
-                            ${suggestion.value}
-                            <span class="suggestion-actions">
-                                <button class="remove-suggestion-btn" 
-                                        onclick="event.stopPropagation(); removeSuggestion('${field}', '${suggestion.value.replace(/'/g, "\\'")}')">
-                                    Remove
-                                </button>
-                            </span>
-                        `;
-                        item.onclick = () => selectSuggestion(field, suggestion.value);
-                        dropdown.appendChild(item);
-                    });
-                }
-
-                dropdown.style.display = 'block';
-            } catch (error) {
-                console.error('Error getting suggestions:', error);
-            }
-            return;
+            // Load recent/top suggestions
+            url = getSuggestionsUrl.replace('FIELD', field);
+        } else {
+            // Search suggestions
+            url = `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
         }
 
-        // Search for matching suggestions
         try {
-            const response = await fetch(`/api/cases/suggestions/${field}/search?q=${encodeURIComponent(query)}`);
+            const response = await fetch(url);
             const suggestions = await response.json();
 
             dropdown.innerHTML = '';
 
             if (suggestions.length === 0) {
-                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No matching suggestions</div>';
+                if(query.length > 0) {
+                     // UX: Explicitly tell them this is a new entry
+                     dropdown.innerHTML = '<div class="autocomplete-item text-muted">New entry (will be saved)</div>';
+                } else {
+                     dropdown.style.display = 'none';
+                     return;
+                }
             } else {
                 suggestions.forEach(suggestion => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
+                    
+                    // Handle object or string response
+                    const val = suggestion.value || suggestion; 
+                    
+                    // Escape quotes for the onclick function
+                    const safeVal = val.replace(/'/g, "\\'");
+                    
                     item.innerHTML = `
-                        ${suggestion.value}
+                        <span>${val}</span>
                         <span class="suggestion-actions">
-                            <button class="remove-suggestion-btn" 
-                                    onclick="event.stopPropagation(); removeSuggestion('${field}', '${suggestion.value.replace(/'/g, "\\'")}')">
-                                Remove
+                            <button type="button" class="remove-suggestion-btn text-danger" 
+                                onclick="event.stopPropagation(); removeSuggestion('${field}', '${safeVal}')">
+                                &times;
                             </button>
                         </span>
                     `;
-                    item.onclick = () => selectSuggestion(field, suggestion.value);
+                    
+                    item.onclick = () => {
+                        document.getElementById(field).value = val;
+                        dropdown.style.display = 'none';
+                    };
+                    
                     dropdown.appendChild(item);
                 });
             }
-
             dropdown.style.display = 'block';
         } catch (error) {
-            console.error('Error searching suggestions:', error);
+            console.error('Error fetching suggestions:', error);
         }
     }
 
-    // Select a suggestion
-    function selectSuggestion(field, value) {
-        const input = document.getElementById(field);
-        input.value = value;
-
-        // Hide the remove button since this is a selected suggestion
-        const removeBtn = document.getElementById(`remove_${field}_btn`);
-        if (removeBtn) {
-            removeBtn.style.display = 'none';
-        }
-
-        closeAllDropdowns();
-    }
-
-    // Remove a suggestion
     async function removeSuggestion(field, value) {
-        if (!confirm(`Remove "${value}" from suggestions? This won't delete any cases using this value.`)) {
+        if (!confirm(`Permanently remove "${value}" from the suggestion list?`)) {
             return;
         }
 
         try {
-            const response = await fetch(`/api/cases/suggestions/${field}/remove`, {
+            const url = removeSuggestionUrl.replace('FIELD', field);
+            const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ value: value })
             });
 
             if (response.ok) {
-                alert('Suggestion removed successfully');
-                // Clear the field
-                document.getElementById(field).value = '';
-                const removeBtn = document.getElementById(`remove_${field}_btn`);
-                if (removeBtn) {
-                    removeBtn.style.display = 'none';
-                }
+                // Refresh the list to show it's gone
+                getSuggestions(field, document.getElementById(field).value);
             } else {
-                alert('Error removing suggestion');
+                alert('Failed to remove suggestion');
             }
-        } catch (error) {
-            console.error('Error removing suggestion:', error);
-            alert('Error removing suggestion');
+        } catch (e) {
+            console.error(e);
         }
     }
 </script>

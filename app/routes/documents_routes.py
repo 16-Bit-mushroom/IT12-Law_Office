@@ -11,6 +11,7 @@ import os
 from app.utils.permissions import staff_or_admin_required
 from app.utils.query_filters import get_accessible_documents
 from app.services.system_log_service import SystemLogService
+from app.services.suggestion_service import SuggestionService
 
 documents_bp = Blueprint('documents', __name__, url_prefix='/documents')
 
@@ -139,11 +140,25 @@ def upload_document():
             user_id=current_user.id
         )
         
+        # --- NEW LOGIC: LEARN THE SUGGESTION ---
+        if document_type:
+            # Map the parent_type to the correct suggestion module
+            # If uploaded to Notarial, save to 'notarial' module. 
+            # If uploaded to Case, save to 'case' module.
+            suggestion_module = 'general'
+            if parent_type == 'notarial_entry':
+                suggestion_module = 'notarial'
+            elif parent_type == 'case':
+                suggestion_module = 'case'
+                
+            SuggestionService.add_suggestion(suggestion_module, 'document_type', document_type)
+        # ---------------------------------------
+
         # --- LOGGING ---
         SystemLogService.log(
             action='Upload',
             module='Document',
-            description=f"Uploaded file '{document.filename}' to {document.parent_type} #{document.parent_id}",
+            description=f"Uploaded file '{document.filename}' ({document_type}) to {document.parent_type} #{document.parent_id}",
             entity_id=document.id
         )
         # ---------------
@@ -162,15 +177,12 @@ def download_document(document_id):
     """Download a document"""
     document = Document.query.get(document_id)
     
-    # Check if DB record exists
     if not document:
         flash('Document record not found!', 'error')
         return redirect(request.referrer or url_for('documents.documents_page'))
 
-    # Check if Physical File exists
     if not document.file_path or not os.path.exists(document.file_path):
-        # Optional: Logic to clean up broken DB record
-        flash(f'File not found on server. It may have been moved or deleted. (Path: {document.file_path})', 'error')
+        flash(f'File not found on server. Path: {document.file_path}', 'error')
         return redirect(request.referrer or url_for('documents.documents_page'))
     
     try:
@@ -187,18 +199,12 @@ def download_document(document_id):
 def delete_document(document_id):
     """Delete a document"""
     try:
-        
         doc = Document.query.get(document_id)
         filename = doc.filename if doc else 'Unknown File'
         
-        
         success = DocumentService.delete_document(document_id)
         if success:
-            
-            # --- LOGGING ---
             SystemLogService.log('Delete', 'Document', f"Deleted file '{filename}'", document_id)
-            # ---------------
-            
             flash('Document deleted successfully!', 'success')
         else:
             flash('Document not found!', 'error')
@@ -211,18 +217,16 @@ def delete_document(document_id):
 @staff_or_admin_required
 @login_required
 def view_document(document_id):
-    """View a document (for images/PDFs that can be displayed in browser)"""
+    """View a document"""
     document = Document.query.get(document_id)
     if not document or not os.path.exists(document.file_path):
         flash('Document not found!', 'error')
         return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
     
-    # For now, just download. Later can implement proper viewing
     return send_file(document.file_path, 
                     as_attachment=False, 
                     download_name=document.filename)
 
-# Add this new route to your documents_routes.py
 @documents_bp.route('/update-status/<int:document_id>', methods=['POST'])
 @staff_or_admin_required
 @login_required

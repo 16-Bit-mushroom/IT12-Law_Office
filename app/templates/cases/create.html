@@ -269,48 +269,25 @@
 
 <!-- Update the JavaScript section in create.html -->
 <script>
-    // Add this at the beginning of the script section
+    // --- Configuration ---
     const searchClientsUrl = "{{ url_for('case.search_clients_api') }}";
+    // Placeholders for dynamic URLs
     const getSuggestionsUrl = "{{ url_for('case.get_suggestions_api', field='FIELD') }}";
     const searchSuggestionsUrl = "{{ url_for('case.search_suggestions_api', field='FIELD') }}";
     const removeSuggestionUrl = "{{ url_for('case.remove_suggestion_api', field='FIELD') }}";
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Set today's date as default for engagement date
+        // 1. Set Default Date (Today)
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('engagement_date').value = today;
-
-        // Representatives management
-        const representativesContainer = document.getElementById('representativesContainer');
-        const addRepresentativeBtn = document.getElementById('addRepresentative');
-
-        // Add representative
-        addRepresentativeBtn.addEventListener('click', function () {
-            const newEntry = representativesContainer.children[0].cloneNode(true);
-            // Clear input values
-            newEntry.querySelectorAll('input').forEach(input => input.value = '');
-            representativesContainer.appendChild(newEntry);
-            updateRemoveButtons();
-        });
-
-        // Remove representative
-        function updateRemoveButtons() {
-            document.querySelectorAll('.remove-representative').forEach(button => {
-                button.addEventListener('click', function () {
-                    if (representativesContainer.children.length > 1) {
-                        this.closest('.representative-entry').remove();
-                    } else {
-                        // If it's the last one, just clear the inputs
-                        this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
-                    }
-                });
-            });
+        const dateInput = document.getElementById('engagement_date');
+        if(dateInput && !dateInput.value) {
+            dateInput.value = today;
         }
 
-        // Initial setup for remove buttons
-        updateRemoveButtons();
+        // 2. Setup Dynamic Representatives
+        setupRepresentatives();
 
-        // Close dropdown when clicking outside
+        // 3. Global Click Listener (Close Dropdowns)
         document.addEventListener('click', function (event) {
             if (!event.target.closest('.autocomplete-wrapper')) {
                 closeAllDropdowns();
@@ -318,17 +295,60 @@
         });
     });
 
-    // Close all autocomplete dropdowns
-    function closeAllDropdowns() {
-        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
-            dropdown.style.display = 'none';
+    // --- Representatives Logic ---
+
+    function setupRepresentatives() {
+        const container = document.getElementById('representativesContainer');
+        const addBtn = document.getElementById('addRepresentative');
+
+        // Add Button Click
+        addBtn.addEventListener('click', function () {
+            // Clone the last visible entry
+            const entries = container.querySelectorAll('.representative-entry');
+            const template = entries[entries.length - 1]; 
+            
+            const newEntry = template.cloneNode(true);
+            
+            // Clear all inputs in the new row
+            newEntry.querySelectorAll('input').forEach(input => input.value = '');
+            
+            container.appendChild(newEntry);
+            updateRemoveButtons();
+        });
+
+        // Initialize Remove Buttons
+        updateRemoveButtons();
+    }
+
+    function updateRemoveButtons() {
+        const container = document.getElementById('representativesContainer');
+        
+        // Re-bind all remove buttons
+        container.querySelectorAll('.remove-representative').forEach(button => {
+            // Clone to strip old event listeners
+            const newBtn = button.cloneNode(true);
+            button.parentNode.replaceChild(newBtn, button);
+
+            newBtn.addEventListener('click', function () {
+                const entries = container.querySelectorAll('.representative-entry');
+                // If there's more than one row, remove it. 
+                // If it's the only row, just clear the inputs.
+                if (entries.length > 1) {
+                    this.closest('.representative-entry').remove();
+                } else {
+                    this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
+                }
+            });
         });
     }
 
-    // Search clients for auto-suggest
+    // --- Client Search Logic ---
+
     async function searchClients(query) {
+        const dropdown = document.getElementById('client_suggestions');
+        
         if (query.length < 2) {
-            closeAllDropdowns();
+            dropdown.style.display = 'none';
             return;
         }
 
@@ -336,7 +356,6 @@
             const response = await fetch(`${searchClientsUrl}?q=${encodeURIComponent(query)}`);
             const clients = await response.json();
 
-            const dropdown = document.getElementById('client_suggestions');
             dropdown.innerHTML = '';
 
             if (clients.length === 0) {
@@ -347,43 +366,38 @@
                     item.className = 'autocomplete-item';
                     item.innerHTML = `
                         <strong>${client.full_name}</strong><br>
-                        <small class="text-muted">${client.email || 'No email'} | ${client.phone || 'No phone'}</small>
+                        <small class="text-muted">${client.email || 'No email'}</small>
                     `;
-                    item.onclick = () => selectClient(client);
+                    item.onclick = () => {
+                        document.getElementById('client_search').value = `${client.full_name}`;
+                        document.getElementById('client_id').value = client.id;
+                        dropdown.style.display = 'none';
+                    };
                     dropdown.appendChild(item);
                 });
             }
-
             dropdown.style.display = 'block';
         } catch (error) {
             console.error('Error searching clients:', error);
         }
     }
 
-    // Select a client from suggestions
-    function selectClient(client) {
-        document.getElementById('client_search').value = `${client.full_name}`;
-        document.getElementById('client_id').value = client.id;
-        closeAllDropdowns();
-    }
+    // --- Smart Suggestion Logic (The "X" Button Style) ---
 
-    // Get suggestions for case type, violation, or cause of action
     async function getSuggestions(field, query) {
         const dropdownId = `${field}_suggestions`;
         const dropdown = document.getElementById(dropdownId);
-        const removeBtn = document.getElementById(`remove_${field}_btn`);
-
-        // Show remove button if there's text
-        if (removeBtn) {
-            removeBtn.style.display = query.trim() ? 'inline-block' : 'none';
-        }
+        
+        // Hide the old standalone remove buttons if they exist in HTML
+        const oldRemoveBtn = document.getElementById(`remove_${field}_btn`);
+        if (oldRemoveBtn) oldRemoveBtn.style.display = 'none';
 
         let url;
         if (query.length < 1) {
-            // Get recent suggestions
+            // Fetch recent/top suggestions
             url = getSuggestionsUrl.replace('FIELD', field);
         } else {
-            // Search for matching suggestions
+            // Search specific suggestions
             url = `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
         }
 
@@ -394,49 +408,49 @@
             dropdown.innerHTML = '';
 
             if (suggestions.length === 0) {
-                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No suggestions found</div>';
+                if (query.length > 0) {
+                    // UX: Show that this is a new custom entry
+                    dropdown.innerHTML = '<div class="autocomplete-item text-muted small">New entry (will be saved)</div>';
+                } else {
+                    dropdown.style.display = 'none';
+                    return;
+                }
             } else {
                 suggestions.forEach(suggestion => {
                     const item = document.createElement('div');
-                    item.className = 'autocomplete-item';
-                    const value = suggestion.value || suggestion;
+                    item.className = 'autocomplete-item d-flex justify-content-between align-items-center';
+                    
+                    const val = suggestion.value || suggestion;
+                    const safeVal = val.replace(/'/g, "\\'"); // Escape for JS
+
                     item.innerHTML = `
-                        ${value}
-                        <span class="suggestion-actions">
-                            <button class="remove-suggestion-btn" 
-                                    onclick="event.stopPropagation(); removeSuggestion('${field}', '${value.replace(/'/g, "\\'")}')">
-                                Remove
-                            </button>
-                        </span>
+                        <span>${val}</span>
+                        <button type="button" class="btn btn-link text-danger p-0 ms-2" style="text-decoration: none;"
+                            onclick="event.stopPropagation(); removeSuggestion('${field}', '${safeVal}')" title="Remove from suggestions">
+                            &times;
+                        </button>
                     `;
-                    item.onclick = () => selectSuggestion(field, value);
+                    
+                    // Clicking the item text fills the input
+                    item.onclick = (e) => {
+                        // Ensure we didn't click the button
+                        if(e.target.tagName !== 'BUTTON') {
+                            document.getElementById(field).value = val;
+                            dropdown.style.display = 'none';
+                        }
+                    };
+                    
                     dropdown.appendChild(item);
                 });
             }
-
             dropdown.style.display = 'block';
         } catch (error) {
-            console.error('Error getting suggestions:', error);
+            console.error('Error fetching suggestions:', error);
         }
     }
 
-    // Select a suggestion
-    function selectSuggestion(field, value) {
-        const input = document.getElementById(field);
-        input.value = value;
-
-        // Hide the remove button since this is a selected suggestion
-        const removeBtn = document.getElementById(`remove_${field}_btn`);
-        if (removeBtn) {
-            removeBtn.style.display = 'none';
-        }
-
-        closeAllDropdowns();
-    }
-
-    // Remove a suggestion
     async function removeSuggestion(field, value) {
-        if (!confirm(`Remove "${value}" from suggestions? This won't delete any cases using this value.`)) {
+        if (!confirm(`Remove "${value}" from the suggestion list?`)) {
             return;
         }
 
@@ -444,31 +458,26 @@
             const url = removeSuggestionUrl.replace('FIELD', field);
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ value: value })
             });
 
-            const result = await response.json();
-
             if (response.ok) {
-                alert(result.message || 'Suggestion removed successfully');
-                // Clear the field
-                document.getElementById(field).value = '';
-                const removeBtn = document.getElementById(`remove_${field}_btn`);
-                if (removeBtn) {
-                    removeBtn.style.display = 'none';
-                }
-                // Refresh suggestions
-                getSuggestions(field, '');
+                // Refresh the list immediately to show it's gone
+                const currentInput = document.getElementById(field).value;
+                getSuggestions(field, currentInput);
             } else {
-                alert(result.error || 'Error removing suggestion');
+                alert('Failed to remove suggestion');
             }
-        } catch (error) {
-            console.error('Error removing suggestion:', error);
-            alert('Error removing suggestion');
+        } catch (e) {
+            console.error(e);
         }
+    }
+
+    function closeAllDropdowns() {
+        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
     }
 </script>
 {% endblock %}

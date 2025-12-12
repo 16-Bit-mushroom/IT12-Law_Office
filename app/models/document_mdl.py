@@ -1,10 +1,9 @@
-# document_mdl.py - ADDING STATUS AND LOCATION
-
 from . import db
 from datetime import datetime
+from app.utils.mixins import SoftDeleteMixin
 import os
 
-class Document(db.Model):
+class Document(db.Model, SoftDeleteMixin):
     __tablename__ = 'documents'
     
     id = db.Column(db.Integer, primary_key=True)

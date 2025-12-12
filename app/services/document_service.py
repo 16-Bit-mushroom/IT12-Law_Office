@@ -27,10 +27,11 @@ class DocumentService:
     
     @staticmethod
     def get_documents_by_parent(parent_type, parent_id):
+        # UPDATED: Filter deleted
         return Document.query.filter_by(
             parent_type=parent_type, 
             parent_id=parent_id
-        ).order_by(Document.uploaded_at.desc()).all()
+        ).filter(Document.deleted_at == None).order_by(Document.uploaded_at.desc()).all()
     
     @staticmethod
     def create_document(file, parent_type, parent_id, document_type=None, notes=None, user_id=None):
@@ -82,21 +83,15 @@ class DocumentService:
     
     @staticmethod
     def delete_document(document_id):
+        """Soft delete document (Keep physical file)"""
         try:
             document = Document.query.get(document_id)
             if not document:
                 return False
             
-            # Store path before deleting DB record
-            file_path = document.file_path
-            
-            db.session.delete(document)
-            db.session.commit()
-            
-            # Delete physical file
-            if os.path.exists(file_path):
-                os.remove(file_path)
-                
+            # UPDATED: Do NOT remove file from disk yet.
+            # Only soft delete the DB record.
+            document.soft_delete() 
             return True
             
         except Exception as e:

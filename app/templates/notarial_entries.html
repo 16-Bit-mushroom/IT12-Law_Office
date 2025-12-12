@@ -114,6 +114,7 @@
                                     </span>
                                     {% else %}
                                     <button type="button" class="btn-action btn-action--warning"
+                                        style="color: rgb(70, 48, 0);" title="Edit"
                                         title="Mark as Paid (₱{{ entry.not_fee }})" data-id="{{ entry.id }}"
                                         data-fee="{{ entry.not_fee }}" data-title="{{ entry.not_title }}"
                                         onclick="openPaymentModal(this.dataset.id, this.dataset.fee, this.dataset.title)">
@@ -143,7 +144,7 @@
                                         style="display: inline;"
                                         onsubmit="return confirm('Are you sure you want to delete this entry?');">
                                         <button type="submit" class="btn-action btn-action--danger"
-                                            style="background-color: #dc3545; color: white;" title="Delete">
+                                            style="background-color: salmon; color: white;" title="Delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">
@@ -901,19 +902,19 @@
                 document.querySelector('input[name="entry_book_num"]').value = entry.not_book_num;
                 document.querySelector('input[name="not_series"]').value = entry.not_series;
                 document.querySelector('input[name="notarial_fee"]').value = entry.not_fee;
-                
+
                 // REMOVED: This line caused the error because the input no longer exists
                 // document.querySelector('input[name="notarial_fee_or"]').value = entry.not_fee_or; 
 
                 // 2. Smart Suggestion Fields (Target by ID)
                 // Use safe setters in case elements are missing
-                if(document.getElementById('document_title')) 
+                if (document.getElementById('document_title'))
                     document.getElementById('document_title').value = entry.not_title;
-                
-                if(document.getElementById('notarial_act_type'))
+
+                if (document.getElementById('notarial_act_type'))
                     document.getElementById('notarial_act_type').value = entry.not_type_act;
-                
-                if(document.getElementById('other_place'))
+
+                if (document.getElementById('other_place'))
                     document.getElementById('other_place').value = entry.not_other_place || '';
 
                 // 3. Date

@@ -1,15 +1,19 @@
 # app/services/system_log_service.py
-from app import db
+from app.models import db
 from app.models.system_log_mdl import SystemLog
 from flask_login import current_user
 from flask import request
+from datetime import datetime, timezone, timedelta
+
+# Define PHT
+PHT = timezone(timedelta(hours=8))
 
 class SystemLogService:
+    
     @staticmethod
     def log(action, module, description, entity_id=None, old_val=None, new_val=None):
         """
         Logs a system event.
-        usage: SystemLogService.log('Update', 'Case', 'Changed status', 1, {'status':'Open'}, {'status':'Closed'})
         """
         try:
             # 1. Get User Context
@@ -18,14 +22,12 @@ class SystemLogService:
                 user_id = current_user.id
             
             # 2. Get IP Context
-            # Handle proxy setups (X-Forwarded-For) or direct access
+            ip = 'System/Console'
             if request:
                 if request.headers.getlist("X-Forwarded-For"):
                     ip = request.headers.getlist("X-Forwarded-For")[0]
                 else:
                     ip = request.remote_addr
-            else:
-                ip = 'System/Console'
 
             # 3. Create Log
             new_log = SystemLog(
@@ -36,7 +38,8 @@ class SystemLogService:
                 description=description,
                 old_value=old_val,
                 new_value=new_val,
-                ip_address=ip
+                ip_address=ip,
+                timestamp=datetime.now(PHT) # Ensure timestamp is PHT
             )
             
             db.session.add(new_log)
@@ -44,7 +47,19 @@ class SystemLogService:
             return True
             
         except Exception as e:
-            # Failsafe: Logging failures should never crash the main application
             print(f"!!! SYSTEM LOGGING ERROR: {str(e)}")
             db.session.rollback()
             return False
+
+    # --- THIS WAS MISSING ---
+    @staticmethod
+    def get_recent_logs(limit=50):
+        """Fetch recent system logs ordered by time (Newest First)"""
+        return SystemLog.query.order_by(SystemLog.timestamp.desc()).limit(limit).all()
+
+    @staticmethod
+    def get_logs_by_module(module, limit=50):
+        """Fetch logs for a specific module (e.g., 'Case', 'User')"""
+        return SystemLog.query.filter_by(module=module)\
+            .order_by(SystemLog.timestamp.desc())\
+            .limit(limit).all()

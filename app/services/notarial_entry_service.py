@@ -6,7 +6,12 @@ from datetime import datetime, timezone, timedelta
 
 from app.services.suggestion_service import SuggestionService
 from app.models.notarial_entry_mdl import NotarialLastEntry
-from datetime import datetime
+# from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+
+PHT = timezone(timedelta(hours=8))
+
 
 class NotarialEntryService:
 

@@ -1,10 +1,11 @@
 # models/case_mdl.py
 from . import db
-from datetime import datetime, timezone, timedelta # <--- Add timedeltaPHT = timezone(timedelta(hours=8))
+from datetime import datetime, timezone, timedelta 
+from app.utils.mixins import SoftDeleteMixin
 
 PHT = timezone(timedelta(hours=8))
 
-class Case(db.Model):
+class Case(db.Model, SoftDeleteMixin):
     __tablename__ = 'cases'
     
     id = db.Column(db.Integer, primary_key=True)

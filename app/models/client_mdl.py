@@ -1,7 +1,8 @@
 from . import db
 from datetime import datetime
+from app.utils.mixins import SoftDeleteMixin
 
-class Client(db.Model):
+class Client(db.Model, SoftDeleteMixin):
     __tablename__ = 'clients'
 
     id = db.Column(db.Integer, primary_key=True)

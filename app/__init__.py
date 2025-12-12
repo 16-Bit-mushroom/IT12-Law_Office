@@ -72,6 +72,7 @@ def create_app():
     from .routes.settings_route import settings_bp
     from app.routes.backup_routes import backup_bp
     from .routes.search_routes import search_bp
+    from app.routes.recycle_bin_routes import recycle_bp
 
 
     
@@ -90,5 +91,6 @@ def create_app():
     app.register_blueprint(settings_bp)
     app.register_blueprint(backup_bp)
     app.register_blueprint(search_bp)
+    app.register_blueprint(recycle_bp)
 
     return app

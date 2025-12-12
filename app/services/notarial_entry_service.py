@@ -158,13 +158,13 @@ class NotarialEntryService:
         except Exception as e:
             print(f"Error recording suggestions: {e}")
 
-    @staticmethod
     def get_all_entries():
-        """Get all notarial entries with their parties and witnesses"""
+        """Get all active entries"""
+        # UPDATED
         return NotarialEntry.query.options(
             db.joinedload(NotarialEntry.parties),
             db.joinedload(NotarialEntry.witnesses)
-        ).order_by(NotarialEntry.not_date.desc()).all()
+        ).filter(NotarialEntry.deleted_at == None).order_by(NotarialEntry.not_date.desc()).all()
 
     @staticmethod
     def get_entry_by_id(entry_id):
@@ -390,10 +390,10 @@ class NotarialEntryService:
         try:
             entry = NotarialEntry.query.get(entry_id)
             if entry:
-                NotarialEntryParty.query.filter_by(notarial_entry_id=entry_id).delete()
-                NotarialEntryWitness.query.filter_by(notarial_entry_id=entry_id).delete()
-                db.session.delete(entry)
-                db.session.commit()
+                # UPDATED: Use Soft Delete
+                # We do NOT delete parties/witnesses here anymore.
+                # They stay linked in the DB, just hidden because the parent is hidden.
+                entry.soft_delete()
                 return True
             return False
         except Exception as e:

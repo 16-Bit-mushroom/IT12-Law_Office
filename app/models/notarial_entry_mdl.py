@@ -2,11 +2,12 @@
 from . import db
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import Numeric
+from app.utils.mixins import SoftDeleteMixin
 
 PHT = timezone(timedelta(hours=8))  
 
 
-class NotarialEntry(db.Model):
+class NotarialEntry(db.Model, SoftDeleteMixin):
     __tablename__ = 'notarial_entries'
     
     id = db.Column(db.Integer, primary_key=True)

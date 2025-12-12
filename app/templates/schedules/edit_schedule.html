@@ -18,9 +18,10 @@
         <div class="col-md-8 offset-md-2">
             <div class="panel-card">
                 <h5 class="panel-card__title">Edit Details</h5>
-                
-                <form method="POST" action="{{ url_for('case.edit_schedule_submission', case_id=case.id, schedule_id=schedule.id) }}">
-                    
+
+                <form method="POST"
+                    action="{{ url_for('case.edit_schedule_submission', case_id=case.id, schedule_id=schedule.id) }}">
+
                     <div class="mb-3">
                         <label class="form-label">Task Title *</label>
                         <input type="text" class="form-control" name="title" value="{{ schedule.title }}" required>
@@ -34,17 +35,34 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Deadline *</label>
-                            <input type="date" class="form-control" name="deadline" value="{{ schedule.deadline }}" required>
+                            <input type="date" class="form-control" 
+                                   name="deadline" 
+                                   id="deadlineInput" 
+                                   value="{{ schedule.deadline }}" 
+                                   data-original="{{ schedule.deadline }}"
+                                   required 
+                                   onchange="checkDateChange()">
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Priority</label>
                             <select class="form-control" name="priority">
-                                <option value="normal" {% if schedule.priority == 'normal' %}selected{% endif %}>Normal</option>
-                                <option value="high" {% if schedule.priority == 'high' %}selected{% endif %}>Urgent</option>
+                                <option value="normal" {% if schedule.priority=='normal' %}selected{% endif %}>Normal</option>
+                                <option value="high" {% if schedule.priority=='high' %}selected{% endif %}>Urgent</option>
                             </select>
                         </div>
                     </div>
-                    
+
+                    <div class="mb-3" id="reasonField"
+                        style="display: none; background-color: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba;">
+                        <label class="form-label text-warning-emphasis fw-bold">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Reason for Moving Date *
+                        </label>
+                        <input type="text" class="form-control" name="change_reason" id="changeReasonInput"
+                            placeholder="e.g., Court rescheduled due to judge's absence">
+                        <div class="form-text text-muted">Required when changing the deadline.</div>
+                    </div>
+
                     <div class="mt-3 text-end">
                         <button type="submit" class="btn btn-primary">Update Task</button>
                     </div>
@@ -53,4 +71,25 @@
         </div>
     </div>
 </main>
+
+<script>
+    function checkDateChange() {
+        const input = document.getElementById('deadlineInput');
+        const reasonField = document.getElementById('reasonField');
+        const reasonInput = document.getElementById('changeReasonInput');
+        
+        // Get original date from data attribute
+        const originalDate = input.getAttribute('data-original');
+        
+        // Compare values
+        if (input.value !== originalDate) {
+            reasonField.style.display = 'block';
+            reasonInput.required = true;
+        } else {
+            reasonField.style.display = 'none';
+            reasonInput.required = false;
+            reasonInput.value = ''; // Clear if reverted
+        }
+    }
+</script>
 {% endblock %}

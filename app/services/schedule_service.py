@@ -1,6 +1,7 @@
 # app/services/schedule_service.py
 from app import db
-from app.models.schedule_mdl import Schedule
+from app.models.schedule_mdl import Schedule, ScheduleHistory
+
 from datetime import datetime
 
 class ScheduleService:
@@ -37,10 +38,28 @@ class ScheduleService:
     def update_schedule(schedule_id, data):
         schedule = Schedule.query.get(schedule_id)
         if schedule:
+            # 1. Capture Old State
+            old_deadline = schedule.deadline
+            new_deadline = data.get('deadline')
+            change_reason = data.get('change_reason')
+
+            # 2. Update Basic Fields
             schedule.title = data.get('title')
             schedule.details = data.get('details')
-            schedule.deadline = data.get('deadline')
             schedule.priority = data.get('priority')
+            schedule.deadline = new_deadline
+
+            # 3. Detect Date Change & Save History
+            # Ensure we only create history if the date actually CHANGED
+            if old_deadline != new_deadline:
+                history = ScheduleHistory(
+                    schedule_id=schedule.id,
+                    previous_deadline=old_deadline,
+                    new_deadline=new_deadline,
+                    reason=change_reason or "Date changed" # Fallback text
+                )
+                db.session.add(history)
+
             db.session.commit()
             return schedule
         return None

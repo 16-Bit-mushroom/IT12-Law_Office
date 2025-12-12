@@ -29,13 +29,29 @@
                 <div class="flex-grow-1">
                     <div class="d-flex justify-content-between align-items-start">
                         
-                        <div>
+                        <div style="cursor: pointer;" 
+                             data-id="{{ task.id }}"
+                             data-title="{{ task.title }}"
+                             data-details="{{ (task.details or '')|replace('\n', ' ') }}"
+                             data-deadline="{{ task.deadline }}"
+                             data-priority="{{ task.priority }}"
+                             onclick="openScheduleView(this.dataset.id, this.dataset.title, this.dataset.details, this.dataset.deadline, this.dataset.priority)">
+                             
                             <h6 class="mb-1 {% if task.is_done %}text-muted text-decoration-line-through{% endif %}" style="font-weight: 600;">
                                 {{ task.title }}
                             </h6>
                             <p class="mb-0 small text-muted {% if task.is_done %}text-decoration-line-through{% endif %}" style="line-height: 1.4;">
                                 {{ task.details or '' }}
                             </p>
+                            
+                            {% if task.history %}
+                                <div class="mt-1">
+                                    <small class="badge bg-light text-secondary border">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                        {{ task.history|length }} Date Change(s)
+                                    </small>
+                                </div>
+                            {% endif %}
                         </div>
 
                         <div class="d-flex align-items-start ms-3">
@@ -58,6 +74,17 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                     <li>
+                                        <a class="dropdown-item small" href="#" 
+                                           data-id="{{ task.id }}"
+                                           data-title="{{ task.title }}"
+                                           data-details="{{ (task.details or '')|replace('\n', ' ') }}"
+                                           data-deadline="{{ task.deadline }}"
+                                           data-priority="{{ task.priority }}"
+                                           onclick="openScheduleView(this.dataset.id, this.dataset.title, this.dataset.details, this.dataset.deadline, this.dataset.priority); return false;">
+                                            View History
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item small" href="{{ url_for('case.edit_schedule_page', case_id=case_id, schedule_id=task.id) }}">
                                             Edit Task
                                         </a>
@@ -75,6 +102,22 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="history-data-{{ task.id }}" style="display: none;">
+                [
+                {% if task.history %}
+                    {% for h in task.history %}
+                        {
+                            "old": "{{ h.previous_deadline }}",
+                            "new": "{{ h.new_deadline }}",
+                            "reason": "{{ h.reason }}",
+                            "date": "{{ h.created_at.strftime('%Y-%m-%d') }}"
+                        }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                {% endif %}
+                ]
+            </div>
+
         {% endfor %}
     </div>
     {% else %}
@@ -83,4 +126,82 @@
     </div>
     {% endif %}
 </div>
+
+<div class="modal fade" id="viewScheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="modal-title fw-bold" id="viewTitle">Task Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="border rounded p-3 mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-bold" id="viewDate">Date</span>
+                        <span class="badge" id="viewPriority">Priority</span>
+                    </div>
+                    <p class="text-muted mb-0" id="viewDetails">Details...</p>
+                </div>
+
+                <h6 class="text-muted small text-uppercase fw-bold mb-3">Changes History</h6>
+                <div id="viewHistoryList" class="d-flex flex-column gap-2">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openScheduleView(id, title, details, deadline, priority) {
+    // 1. Populate Basic Info
+    document.getElementById('viewTitle').textContent = title;
+    document.getElementById('viewDetails').textContent = details || 'No details provided.';
+    document.getElementById('viewDate').textContent = new Date(deadline).toDateString();
+    
+    const pBadge = document.getElementById('viewPriority');
+    if (pBadge) {
+        pBadge.textContent = (priority || 'Normal').toUpperCase();
+        pBadge.className = (priority === 'high') ? 'badge bg-danger' : 'badge bg-light text-dark border';
+    }
+
+    // 2. Populate History from hidden div
+    const historyDiv = document.getElementById(`history-data-${id}`);
+    const historyList = document.getElementById('viewHistoryList');
+    historyList.innerHTML = ''; // Clear old
+
+    if (historyDiv) {
+        try {
+            const history = JSON.parse(historyDiv.textContent);
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-muted small my-3">No changes recorded yet.</p>';
+            } else {
+                history.forEach(h => {
+                    const item = `
+                        <div class="border rounded p-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-bold small">Date Moved</span>
+                                <span class="text-muted small" style="font-size: 0.75rem;">
+                                    ${h.old} &rarr; ${h.new}
+                                </span>
+                            </div>
+                            <div class="small text-dark">${h.reason}</div>
+                            <div class="text-end text-muted" style="font-size: 0.65rem;">${h.date}</div>
+                        </div>
+                    `;
+                    historyList.insertAdjacentHTML('beforeend', item);
+                });
+            }
+        } catch (e) {
+            console.error("Error parsing history", e);
+            historyList.innerHTML = '<p class="text-danger small">Error loading history.</p>';
+        }
+    }
+
+    // 3. Show Modal
+    var myModal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
+    myModal.show();
+}
+</script>
 {% endmacro %}

@@ -375,6 +375,14 @@ def delete_case(case_id):
     """Delete a case"""
     try:
         case_number = CaseService.delete_case(case_id)
+        
+        SystemLogService.log(
+            action='Delete', 
+            module='Case', 
+            description=f"Moved Case {case_number} to Recycle Bin", 
+            entity_id=case_id
+        )
+        
         flash(f'Case {case_number} has been deleted successfully!', 'success')
         
     except ValueError as e:

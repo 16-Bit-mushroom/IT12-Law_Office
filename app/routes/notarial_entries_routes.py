@@ -246,6 +246,15 @@ def delete_entry(entry_id):
     try:
         success = NotarialEntryService.delete_entry(entry_id)
         if success:
+            
+            # --- LOGGING ---
+            SystemLogService.log(
+                action='Delete', 
+                module='Notarial', 
+                description=f"Moved Notarial Entry (ID: {entry_id}) to Recycle Bin", 
+                entity_id=entry_id
+            )
+            
             flash('Notarial entry deleted successfully!', 'success')
         else:
             flash('Notarial entry not found!', 'error')

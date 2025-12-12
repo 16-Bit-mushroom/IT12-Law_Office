@@ -6,6 +6,7 @@ from app.services.user_service import (
     update_user_profile_admin, delete_user, activate_user
 )
 from app.services.system_log_service import SystemLogService
+from werkzeug.security import check_password_hash
 
 settings_bp = Blueprint('settings', __name__, url_prefix='/settings')
 
@@ -13,12 +14,21 @@ settings_bp = Blueprint('settings', __name__, url_prefix='/settings')
 @login_required
 def settings_page():
     """Main settings page"""
-    if not current_user.is_admin:
-        flash('Access denied. Administrator privileges required.', 'error')
-        return redirect(url_for('dashboard.dashboard_page'))
     
-    users = get_all_users()
-    return render_template('settings_page.html', users=users)
+    # 1. Fetch Users (Everyone can see list? Usually Admin only)
+    users = []
+    if current_user.is_admin:
+        users = get_all_users()
+    
+    # 2. Fetch Logs (ADMIN ONLY)
+    system_logs = []
+    if current_user.is_admin:
+        # Fetch recent logs (e.g. last 50)
+        system_logs = SystemLogService.get_recent_logs(limit=50)
+
+    return render_template('settings_page.html', 
+                         users=users,
+                         system_logs=system_logs)
 
 @settings_bp.route('/users/data')
 @login_required
@@ -112,3 +122,21 @@ def reactivate_user(user_id):
     
     success, message = activate_user(user_id)
     return jsonify({'success': success, 'message': message})
+
+@settings_bp.route('/verify-access', methods=['POST'])
+@login_required
+def verify_settings_access():
+    """Verify password for sensitive access"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        
+    data = request.get_json()
+    password = data.get('password')
+    
+    # Check password against the current user's hash
+    # Note: Assuming your User model has 'password_hash'. 
+    # If your model uses a method like user.check_password(password), use that instead.
+    if current_user.check_password(password):
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'message': 'Incorrect password'})

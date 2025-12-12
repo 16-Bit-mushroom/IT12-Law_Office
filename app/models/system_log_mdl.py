@@ -1,6 +1,9 @@
 # app/models/system_log_mdl.py
 from . import db
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# Define PHT
+PHT = timezone(timedelta(hours=8))
 
 class SystemLog(db.Model):
     __tablename__ = 'system_logs'
@@ -9,23 +12,24 @@ class SystemLog(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     
     # Classification
-    action = db.Column(db.String(50), nullable=False)   # e.g., 'Update', 'Create', 'Login', 'Restore'
-    module = db.Column(db.String(50), nullable=False)   # e.g., 'Case', 'Client', 'Notarial', 'Document'
+    action = db.Column(db.String(50), nullable=False)
+    module = db.Column(db.String(50), nullable=False)
     
     # Entity Reference
-    entity_id = db.Column(db.Integer, nullable=True)    # ID of the specific item (Case ID, Client ID)
+    entity_id = db.Column(db.Integer, nullable=True)
     
     # Description
-    description = db.Column(db.String(255), nullable=False) # Human readable summary
+    description = db.Column(db.String(255), nullable=False)
     
-    # Audit Trail (The "Attorney-Ready" part)
-    # Stores dictionaries as JSON: {'status': 'Pending'} -> {'status': 'Active'}
+    # Audit Trail
     old_value = db.Column(db.JSON, nullable=True) 
     new_value = db.Column(db.JSON, nullable=True)
     
     # Metadata
     ip_address = db.Column(db.String(50), nullable=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # UPDATED: Use PHT default
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(PHT))
 
     # Relationship
     user = db.relationship('User', backref='logs', lazy=True)

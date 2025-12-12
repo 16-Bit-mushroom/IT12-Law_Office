@@ -6,6 +6,7 @@ from app.models.case_mdl import Case
 from app.models.client_mdl import Client
 from app.models.document_mdl import Document
 from app.models.notarial_entry_mdl import NotarialEntry
+from app.services.system_log_service import SystemLogService
 import os
 
 recycle_bp = Blueprint('recycle', __name__, url_prefix='/recycle-bin')
@@ -96,6 +97,15 @@ def restore_item(type, id):
         item = model_map[type].query.get(id)
         if item:
             item.restore() # Calls the Mixin method
+            
+            
+            SystemLogService.log(
+                action='Restore', 
+                module=type.capitalize(), 
+                description=f"Restored {type} (ID: {id}) from Recycle Bin", 
+                entity_id=id
+            )
+            
             return jsonify({'success': True})
             
     return jsonify({'error': 'Item not found'}), 404
@@ -131,6 +141,15 @@ def purge_item(type, id):
         if item:
             db.session.delete(item) # Hard delete
             db.session.commit()
+            
+            # --- LOGGING ---
+            SystemLogService.log(
+                action='Permanent Delete', 
+                module=type.capitalize(), 
+                description=f"Permanently deleted {type} (ID: {id})", 
+                entity_id=id
+            )
+            
             return jsonify({'success': True})
         
         return jsonify({'error': 'Item not found'}), 404

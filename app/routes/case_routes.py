@@ -1,7 +1,7 @@
 # routes/case_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import desc, asc, or_
 
 from app.services.case_service import CaseService
@@ -13,9 +13,13 @@ from app.utils.permissions import admin_required
 from app.services.schedule_service import ScheduleService # New import
 from app.models.schedule_mdl import Schedule # New import if needed directly
 from app.services.system_log_service import SystemLogService
+from app.models.transaction_mdl import TransactionItem # Ensure this is imported
+from app.services.transaction_service import mark_payment_paid
+from app.models import db
 
 
 case_bp = Blueprint('case', __name__, url_prefix='/cases')
+PHT = timezone(timedelta(hours=8))
 
 @case_bp.route('/')
 @admin_required
@@ -199,7 +203,18 @@ def view_case(case_id):
         schedules = ScheduleService.get_schedules_by_case(case_id)
         
         # Pass datetime.now() for the template to calculate "Overdue" logic
-        now = datetime.now().date()
+        now = datetime.now(PHT).date()
+        
+        # --- NEW: Get Primary Transaction for Payment Status ---
+        transaction = TransactionItem.query.filter_by(case_id=case_id).order_by(TransactionItem.id.asc()).first()
+        
+        return render_template('cases/case_detail.html', 
+                             case=case, 
+                             representatives=representatives,
+                             documents=documents,
+                             schedules=schedules,
+                             transaction=transaction, # Pass transaction to template
+                             now=now)
         
         return render_template('cases/case_detail.html', 
                              case=case, 
@@ -634,3 +649,72 @@ def delete_schedule(schedule_id):
     except Exception as e:
         flash(f'Error deleting schedule: {str(e)}', 'error')
         return redirect(url_for('case.list_cases'))
+
+
+@case_bp.route('/<int:case_id>/mark-paid', methods=['POST'])
+@login_required
+def mark_case_paid(case_id):
+    """Mark the case transaction as paid (Simplified)"""
+    try:
+        # Find the transaction
+        transaction = TransactionItem.query.filter_by(case_id=case_id).order_by(TransactionItem.id.asc()).first()
+        
+        if not transaction:
+            flash('No transaction found for this case.', 'error')
+            return redirect(url_for('case.view_case', case_id=case_id))
+            
+        # UPDATED: No longer reading from request.form
+        # We pass "Manual" as the method and empty string for OR since they are removed from UI
+        mark_payment_paid(transaction.id, payment_method="Manual", payment_reference="")
+        
+        # Log it
+        SystemLogService.log('Payment', 'Case', f"Case #{case.case_number} marked as Paid", case_id)
+        
+        flash('Case marked as Paid successfully!', 'success')
+        return redirect(url_for('case.view_case', case_id=case_id))
+        
+    except Exception as e:
+        flash(f'Error updating payment: {str(e)}', 'error')
+        return redirect(url_for('case.view_case', case_id=case_id))
+    
+# app/routes/case_routes.py
+
+@case_bp.route('/<int:case_id>/undo-payment', methods=['POST'])
+@login_required
+def undo_case_payment(case_id):
+    """Revert case payment status to Pending"""
+    try:
+        # Find the transaction
+        transaction = TransactionItem.query.filter_by(case_id=case_id).order_by(TransactionItem.id.asc()).first()
+        
+        if not transaction:
+            flash('No transaction found for this case.', 'error')
+            return redirect(url_for('case.view_case', case_id=case_id))
+            
+        # 1. Reset Transaction
+        transaction.payment_status = 'Pending'
+        transaction.payment_date = None
+        
+        # 2. Reset Linked Payment Record (ONLY if it exists)
+        # This check prevents the "NoneType" error
+        if transaction.payment:
+            transaction.payment.payment_status = 'Pending'
+            transaction.payment.pay_date = None
+            transaction.payment.pay_method = None
+            transaction.payment.pay_ref = None
+            
+        db.session.commit()
+        
+        # Log it
+        case = Case.query.get(case_id)
+        SystemLogService.log('Update', 'Case', f"Reverted payment status for Case #{case.case_number}", case_id)
+        
+        flash('Payment status reverted to Unpaid.', 'info')
+        return redirect(url_for('case.view_case', case_id=case_id))
+        
+    except Exception as e:
+        db.session.rollback()
+        # Print error to console for debugging
+        print(f"Error undoing payment: {e}") 
+        flash(f'Error undoing payment: {str(e)}', 'error')
+        return redirect(url_for('case.view_case', case_id=case_id))

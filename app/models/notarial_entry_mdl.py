@@ -1,7 +1,10 @@
 # notarial_entry_mdl.py - CORRECTED
 from . import db
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import Numeric
+
+PHT = timezone(timedelta(hours=8))  
+
 
 class NotarialEntry(db.Model):
     __tablename__ = 'notarial_entries'
@@ -18,7 +21,7 @@ class NotarialEntry(db.Model):
     not_title = db.Column(db.String(255), nullable=False)
     
     # Date & Time of Notarization
-    not_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    not_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(PHT))
     
     # type of notarial act
     not_type_act = db.Column(db.String(255), nullable=False)
@@ -99,7 +102,7 @@ class NotarialLastEntry(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     
     # Timestamp
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(PHT), onupdate=lambda: datetime.now(PHT))
     
     # Relationship
     user = db.relationship('User', backref='notarial_last_entry', lazy=True)

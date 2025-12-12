@@ -21,13 +21,14 @@
                                 <select class="form-control" id="status" name="status">
                                     <option value="active" {% if case.status=='active' %}selected{% endif %}>Active
                                     </option>
+
+                                    <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending
+                                    </option>
+
                                     <option value="completed" {% if case.status=='completed' %}selected{% endif %}>
                                         Completed
                                     </option>
-                                    <option value="pending" {% if case.status=='pending' %}selected{% endif %}>Pending
-                                    </option>
-                                    <option value="closed" {% if case.status=='closed' %}selected{% endif %}>Closed
-                                    </option>
+
                                 </select>
                             </div>
                             <div class="row">
@@ -360,8 +361,8 @@
         // 4. Initial Load (Optional: Pre-load suggestions if fields are empty)
         // If the case already has a type, we don't need to pop the dropdown immediately
         const caseTypeInput = document.getElementById('case_type');
-        if(!caseTypeInput.value) {
-             getSuggestions('case_type', '');
+        if (!caseTypeInput.value) {
+            getSuggestions('case_type', '');
         }
     });
 
@@ -377,13 +378,13 @@
             // Note: In your HTML loop, ensure you have a clean template or logic to clear values
             const entries = representativesContainer.querySelectorAll('.representative-entry');
             const template = entries[entries.length - 1]; // Grab the last one
-            
+
             const newEntry = template.cloneNode(true);
             newEntry.style.display = 'block';
-            
+
             // Clear inputs
             newEntry.querySelectorAll('input').forEach(input => input.value = '');
-            
+
             representativesContainer.appendChild(newEntry);
             updateRemoveButtons();
         });
@@ -393,7 +394,7 @@
 
     function updateRemoveButtons() {
         const container = document.getElementById('representativesContainer');
-        
+
         container.querySelectorAll('.remove-representative').forEach(button => {
             // Remove old listeners to prevent duplicates (simple approach)
             button.replaceWith(button.cloneNode(true));
@@ -423,7 +424,7 @@
 
     async function searchClients(query) {
         const dropdown = document.getElementById('client_suggestions');
-        
+
         if (query.length < 2) {
             dropdown.style.display = 'none';
             return;
@@ -464,13 +465,13 @@
     async function getSuggestions(field, query) {
         const dropdownId = `${field}_suggestions`;
         const dropdown = document.getElementById(dropdownId);
-        
+
         // Logic for the "Remove Suggestion" button visibility (optional)
         const removeBtn = document.getElementById(`remove_${field}_btn`);
         if (removeBtn) {
             // Only show remove button if the input matches exactly a known suggestion? 
             // Or usually hide it and only show "Remove" inside the dropdown list items.
-            removeBtn.style.display = 'none'; 
+            removeBtn.style.display = 'none';
         }
 
         let url;
@@ -489,24 +490,24 @@
             dropdown.innerHTML = '';
 
             if (suggestions.length === 0) {
-                if(query.length > 0) {
-                     // UX: Explicitly tell them this is a new entry
-                     dropdown.innerHTML = '<div class="autocomplete-item text-muted">New entry (will be saved)</div>';
+                if (query.length > 0) {
+                    // UX: Explicitly tell them this is a new entry
+                    dropdown.innerHTML = '<div class="autocomplete-item text-muted">New entry (will be saved)</div>';
                 } else {
-                     dropdown.style.display = 'none';
-                     return;
+                    dropdown.style.display = 'none';
+                    return;
                 }
             } else {
                 suggestions.forEach(suggestion => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
-                    
+
                     // Handle object or string response
-                    const val = suggestion.value || suggestion; 
-                    
+                    const val = suggestion.value || suggestion;
+
                     // Escape quotes for the onclick function
                     const safeVal = val.replace(/'/g, "\\'");
-                    
+
                     item.innerHTML = `
                         <span>${val}</span>
                         <span class="suggestion-actions">
@@ -516,12 +517,12 @@
                             </button>
                         </span>
                     `;
-                    
+
                     item.onclick = () => {
                         document.getElementById(field).value = val;
                         dropdown.style.display = 'none';
                     };
-                    
+
                     dropdown.appendChild(item);
                 });
             }

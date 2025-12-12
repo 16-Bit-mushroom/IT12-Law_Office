@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models.notarial_entry_mdl import NotarialEntry
 from app.models import db
 from app.services.notarial_entry_service import NotarialEntryService
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import joinedload
 from app.utils.permissions import staff_or_admin_required
 from app.services.system_log_service import SystemLogService
@@ -16,13 +16,15 @@ from app.models.suggestion_mdl import Suggestion
 
 notarial_entries_bp = Blueprint('notarial_entries', __name__, url_prefix='/notarial-entries')
 
+PHT = timezone(timedelta(hours=8))
+
 @notarial_entries_bp.route('/')
 @staff_or_admin_required
 @login_required
 def notarial_entries_page():
     """Display all notarial entries"""
     entries = NotarialEntryService.get_all_entries()
-    return render_template('notarial_entries.html', entries=entries, now=datetime.utcnow())
+    return render_template('notarial_entries.html', entries=entries, now=datetime.now(PHT))
 
 @notarial_entries_bp.route('/<int:entry_id>')
 @staff_or_admin_required
@@ -41,7 +43,7 @@ def entry_details(entry_id):
     return render_template('notarial_entry_details.html', 
                          entry=entry, 
                          documents=documents,
-                         now=datetime.utcnow())
+                         now=datetime.now(PHT))
 
 @notarial_entries_bp.route('/<int:entry_id>/json', methods=['GET'])
 @staff_or_admin_required

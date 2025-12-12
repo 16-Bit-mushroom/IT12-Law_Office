@@ -7,76 +7,11 @@
             <h1>Notarial Entries <span></span></h1>
             <p>Official notarial register - All notarial acts recorded chronologically</p>
         </div>
-
-        <div style="display: flex; gap: 12px;">
-            <div class="data-card data-card--sm">
-                <div class="data-card__info">
-                    <span class="data-card__title">Total Entries</span>
-                    <span class="data-card__value">{{ entries|length }}</span>
-                </div>
-                <div class="data-card__icon data-card__icon--blue"></div>
-            </div>
-
-            <div class="data-card data-card--sm">
-                <div class="data-card__info">
-                    <span class="data-card__title">This Month</span>
-                    <span class="data-card__value">
-                        {% set current_month = [] %}
-                        {% for entry in entries %}
-                        {% if entry.not_date.month == now.month and entry.not_date.year == now.year %}
-                        {% if current_month.append(1) %}{% endif %}
-                        {% endif %}
-                        {% endfor %}
-                        {{ current_month|length }}
-                    </span>
-                </div>
-                <div class="data-card__icon data-card__icon--gold"></div>
-            </div>
-
-            <div class="data-card data-card--sm">
-                <div class="data-card__info">
-                    <span class="data-card__title">Signed in Book</span>
-                    <span class="data-card__value">
-                        {% set signed_count = [] %}
-                        {% for entry in entries %}
-                        {% if entry.physical_book_signed %}
-                        {% if signed_count.append(1) %}{% endif %}
-                        {% endif %}
-                        {% endfor %}
-                        {{ signed_count|length }}
-                    </span>
-                </div>
-                <div class="data-card__icon data-card__icon--green"></div>
-            </div>
-
-            <div class="data-card data-card--sm">
-                <div class="data-card__info">
-                    <span class="data-card__title">Awiting Signature</span>
-                    <span class="data-card__value">
-                        {% set unsigned_count = [] %}
-                        {% for entry in entries %}
-                        {% if not entry.physical_book_signed %}
-                        {% if unsigned_count.append(1) %}{% endif %}
-                        {% endif %}
-                        {% endfor %}
-                        {{ unsigned_count|length }}
-                    </span>
-                </div>
-                <div class="data-card__icon data-card__icon--purple"></div>
-            </div>
-        </div>
-
-
     </header>
-
-
 
     <section class="content-section">
         <div class="panel-card">
-
             <div class="dashboard-actions" style="display: flex; justify-content: end; flex-shrink: 0; gap: 50px;">
-
-
                 <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entryModal">
                     <svg class="btn-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -93,68 +28,45 @@
                         <col class="medium">
                         <col class="medium">
                         <col class="long">
-
                         <col class="medium">
                         <col class="short">
                         <col class="actions">
                     </colgroup>
-
-                    <!-- Key updates to notarial_entries.html -->
-
-                    <!-- In the table header -->
                     <thead>
                         <tr>
                             <th data-sort-key="entry_ref">Entry Reference</th>
                             <th data-sort-key="series">Series Of</th>
                             <th data-sort-key="title">Title/Description</th>
                             <th data-sort-key="parties">Parties</th>
-
                             <th>Date</th>
                             <th>Payment Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-
-                    <!-- In the table body -->
                     <tbody>
                         {% for entry in entries %}
                         <tr>
-                            <td>
-                                <strong>{{ entry.not_book_num }}-{{ entry.not_page_num }}-{{ entry.not_entry_num
-                                    }}</strong>
-                            </td>
-                            <td>
-                                <strong>{{ entry.not_series }}</strong>
-                            </td>
-                            <td>
-                                <strong>{{ entry.not_title }}</strong>
-                            </td>
+                            <td><strong>{{ entry.not_book_num }}-{{ entry.not_page_num }}-{{ entry.not_entry_num
+                                    }}</strong></td>
+                            <td><strong>{{ entry.not_series }}</strong></td>
+                            <td><strong>{{ entry.not_title }}</strong></td>
                             <td>
                                 <div class="clickable-list">
-
-                                    <!-- Instead of button text, show party names -->
-                                    <button type="button" class="btn btn-sm btn-outline-primary view-parties-btn"
-                                        data-bs-target="#partiesModal">
-
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-parties-btn">
                                         {% for party in entry.parties %}
                                         {{ party.party_name }}{% if not loop.last %}, {% endif %}
                                         {% endfor %}
                                     </button>
-
                                     <div class="list-tooltip">
                                         {% for party in entry.parties %}
                                         <div class="party-item">
                                             <strong>{{ party.party_name }}</strong><br>
                                             <small class="text-muted">{{ party.party_address }}</small>
-
                                             {% if party.party_id_type %}
                                             <div
                                                 style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ddd;">
                                                 <small class="text-primary">
                                                     {{ party.party_id_type }}: {{ party.party_id_number }}
-                                                    {% if party.party_id_expiry %}
-                                                    <br>Valid until: {{ party.party_id_expiry.strftime('%Y-%m-%d') }}
-                                                    {% endif %}
                                                 </small>
                                             </div>
                                             {% endif %}
@@ -163,27 +75,24 @@
                                         <hr class="my-1">{% endif %}
                                         {% endfor %}
                                     </div>
-
                                 </div>
                             </td>
-
-
-
                             <td>
                                 <div>{{ entry.not_date.strftime('%Y-%m-%d') }}</div>
                                 <small class="text-muted">{{ entry.not_date.strftime('%I:%M %p') }}</small>
                             </td>
                             <td>
                                 {% if entry.not_fee_or %}
-                                <span class="status-tag status-tag--signed">Paid</span>
+                                <span class="status-tag status-tag--signed"
+                                    title="OR: {{ entry.not_fee_or }}">Paid</span>
+                                {% elif entry.transaction_status == 'paid' %}
+                                <span class="status-tag status-tag--signed">Paid (No OR)</span>
                                 {% else %}
                                 <span class="status-tag status-tag--unsigned">Unpaid</span>
                                 {% endif %}
                             </td>
-
                             <td>
                                 <div class="action-buttons">
-                                    <!-- View Details Button -->
                                     <a href="{{ url_for('notarial_entries.entry_details', entry_id=entry.id) }}"
                                         class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -194,10 +103,8 @@
                                         </svg>
                                     </a>
 
-                                    <!-- Transaction Actions -->
-                                    {% if entry.not_fee_or %}
-                                    <span class="btn-action btn-action--success"
-                                        title="Paid (OR: {{ entry.not_fee_or }})"
+                                    {% if entry.transaction_status == 'paid' %}
+                                    <span class="btn-action btn-action--success" title="Paid"
                                         style="background-color: #28a745; color: white; border-color: #28a745; cursor: default;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -206,23 +113,19 @@
                                         </svg>
                                     </span>
                                     {% else %}
-                                    <form method="POST"
-                                        action="{{ url_for('notarial_entries.mark_as_paid', entry_id=entry.id) }}"
-                                        style="display: inline;">
-                                        <button type="submit" class="btn-action btn-action--warning"
-                                            title="Mark as Paid (Amount: {{ entry.not_fee }})"
-                                            onclick="return confirm('Confirm payment of {{ entry.not_fee }} for this entry?');">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn-action btn-action--warning"
+                                        title="Mark as Paid (₱{{ entry.not_fee }})" data-id="{{ entry.id }}"
+                                        data-fee="{{ entry.not_fee }}" data-title="{{ entry.not_title }}"
+                                        onclick="openPaymentModal(this.dataset.id, this.dataset.fee, this.dataset.title)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                    </button>
                                     {% endif %}
 
-                                    <!-- Edit Button -->
                                     <a href="#" class="btn-action btn-action--secondary"
                                         style="background-color: rgb(99, 131, 168); color: white;" title="Edit"
                                         data-bs-toggle="modal" data-bs-target="#entryModal"
@@ -235,7 +138,6 @@
                                         </svg>
                                     </a>
 
-                                    <!-- Delete Button -->
                                     <form method="POST"
                                         action="{{ url_for('notarial_entries.delete_entry', entry_id=entry.id) }}"
                                         style="display: inline;"
@@ -278,7 +180,6 @@
                     <p class="text-muted">Complete all mandatory fields as required by the 2004 Rules on Notarial
                         Practice.</p>
 
-                    <!-- Entry Reference Numbers -->
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
@@ -294,14 +195,12 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Entry No. *</label>
-
                             <div class="mb-3">
                                 <input type="text" class="form-control" name="entry_number" required>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Series and Date -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -318,7 +217,6 @@
                         </div>
                     </div>
 
-                    <!-- Document Information -->
                     <div class="mb-3">
                         <label class="form-label">Title or Description of Document *</label>
                         <div class="autocomplete-wrapper">
@@ -330,105 +228,63 @@
                         </div>
                     </div>
 
-                    <!-- Parties Section -->
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6>Parties Involved *</h6>
-                            <button type="button" class="btn btn-sm btn-primary" id="addPartyBtn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Add Another Party
-                            </button>
+                            <button type="button" class="btn btn-sm btn-primary" id="addPartyBtn">Add Another
+                                Party</button>
                         </div>
-                        <div id="partiesContainer">
-                            <!-- Parties will be added here dynamically -->
-                        </div>
+                        <div id="partiesContainer"></div>
                     </div>
-
-                    <!-- Witnesses Section -->
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6>Witnesses (Optional, max 2)</h6>
-                            <button type="button" class="btn btn-sm btn-secondary" id="addWitnessBtn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Add Witness
-                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="addWitnessBtn">Add
+                                Witness</button>
                         </div>
-                        <div id="witnessesContainer">
-                            <!-- Witnesses will be added here dynamically -->
-                        </div>
+                        <div id="witnessesContainer"></div>
                     </div>
 
-                    <!-- Identity Verification -->
                     <div class="mb-3">
-                        <!-- <h6>Competent Evidence of Identity *</h6> -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <!-- <label class="form-label">ID Type *</label> -->
                                     <select class="form-control" name="not_comp_evidence_id" hidden>
                                         <option value="">Select ID type...</option>
-                                        <option value="Passport">Passport</option>
-                                        <option value="Driver's License">Driver's License</option>
-                                        <option value="SSS ID">SSS ID</option>
-                                        <option value="UMID">UMID</option>
-                                        <option value="PhilHealth ID">PhilHealth ID</option>
-                                        <option value="Voter's ID">Voter's ID</option>
-                                        <option value="Postal ID">Postal ID</option>
-                                        <option value="PRC ID">PRC ID</option>
-                                        <option value="School ID">School ID</option>
-                                        <option value="TIN ID">TIN ID</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <!-- <label class="form-label">ID Expiration Date *</label> -->
                                     <input type="date" class="form-control" name="id_expiration_date" hidden>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Type of Notarial Act *</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" class="form-control" id="notarial_act_type" name="notarial_act_type"
-                                placeholder="e.g., Acknowledgment, Jurat..." required autocomplete="off"
-                                oninput="getSuggestions('notarial_act', this.value, 'notarial_act_suggestions', 'notarial_act_type')">
-                            <div id="notarial_act_suggestions" class="autocomplete-dropdown"></div>
-                        </div>
-                    </div>
-
-                    <!-- Fees -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Notarial Fee *</label>
-                                <input type="number" step="0.01" class="form-control" name="notarial_fee" required>
+                                <label class="form-label">Type of Notarial Act *</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" class="form-control" id="notarial_act_type"
+                                        name="notarial_act_type" placeholder="e.g., Acknowledgment, Jurat..." required
+                                        autocomplete="off"
+                                        oninput="getSuggestions('notarial_act', this.value, 'notarial_act_suggestions', 'notarial_act_type')">
+                                    <div id="notarial_act_suggestions" class="autocomplete-dropdown"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">O.R. Number *</label>
-                                <input type="text" class="form-control" name="notarial_fee_or" pattern="[A-Za-z0-9\-]+"
-                                    title="Enter BIR OR number">
-                                <small class="form-text text-muted">Enter official receipt number from BIR</small>
+                                <label class="form-label">Notarial Fee (₱) *</label>
+                                <input type="number" step="0.01" class="form-control" name="notarial_fee" required>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Other Place of Notarization (if different from office)</label>
+                        <label class="form-label">Other Place of Notarization</label>
                         <div class="autocomplete-wrapper">
                             <input type="text" class="form-control" id="other_place" name="other_place"
                                 placeholder="If notarization was performed outside..." autocomplete="off"
@@ -440,6 +296,44 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Notarial Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Mark as Paid</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="paymentForm" method="POST">
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <strong>Confirm Payment for:</strong><br>
+                        <span id="paymentEntryTitle"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Amount Due</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₱</span>
+                            <input type="text" class="form-control" id="paymentEntryFee" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Official Receipt (OR) Number</label>
+                        <input type="text" class="form-control" name="or_number"
+                            placeholder="Optional (Leave empty if no OR)">
+                        <div class="form-text">If entered, this will be recorded in the Notarial Register.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Confirm Payment</button>
                 </div>
             </form>
         </div>
@@ -750,7 +644,7 @@
     // ==========================================
     //  CONFIGURATION & GLOBAL VARIABLES
     // ==========================================
-    
+
     // API Endpoints (Must match your Python routes)
     const getSuggestionsUrl = "{{ url_for('notarial_entries.get_suggestions_api', field='FIELD') }}";
     const searchSuggestionsUrl = "{{ url_for('notarial_entries.search_suggestions_api', field='FIELD') }}";
@@ -771,10 +665,10 @@
 
         // 3. Initialize Modals & Buttons
         setupModalListeners();
-        
+
         // 4. Initialize first party field for new entry
         // (Only if the container is empty, to avoid duplicating if browser restores state)
-        if(document.getElementById('partiesContainer').children.length === 0) {
+        if (document.getElementById('partiesContainer').children.length === 0) {
             addPartyField();
         }
 
@@ -803,8 +697,8 @@
     async function getSuggestions(apiField, query, dropdownId, inputId = null) {
         const dropdown = document.getElementById(dropdownId);
         // Default inputId to the same as apiField if not provided (standard for static fields)
-        const targetInputId = inputId || apiField; 
-        
+        const targetInputId = inputId || apiField;
+
         let url;
         if (query.length < 1) {
             // Load recent/top suggestions
@@ -832,9 +726,9 @@
                 suggestions.forEach(suggestion => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
-                    
+
                     const val = suggestion.value || suggestion;
-                    const safeVal = val.replace(/'/g, "\\'"); 
+                    const safeVal = val.replace(/'/g, "\\'");
 
                     item.innerHTML = `
                         <span>${val}</span>
@@ -844,16 +738,16 @@
                             &times;
                         </button>
                     `;
-                    
+
                     // Clicking text fills input
                     item.onclick = (e) => {
                         if (e.target.tagName !== 'BUTTON') {
                             const input = document.getElementById(targetInputId);
-                            if(input) input.value = val;
+                            if (input) input.value = val;
                             dropdown.style.display = 'none';
                         }
                     };
-                    
+
                     dropdown.appendChild(item);
                 });
             }
@@ -891,7 +785,7 @@
     function addPartyField(partyData = null) {
         const container = document.getElementById('partiesContainer');
         const index = container.children.length;
-        
+
         // Generate Unique IDs for this specific row's ID Type suggestion
         // This ensures every row has its own working dropdown
         const uniqueId = Date.now() + Math.random().toString(36).substr(2, 5);
@@ -1007,17 +901,27 @@
                 document.querySelector('input[name="entry_book_num"]').value = entry.not_book_num;
                 document.querySelector('input[name="not_series"]').value = entry.not_series;
                 document.querySelector('input[name="notarial_fee"]').value = entry.not_fee;
-                document.querySelector('input[name="notarial_fee_or"]').value = entry.not_fee_or;
+                
+                // REMOVED: This line caused the error because the input no longer exists
+                // document.querySelector('input[name="notarial_fee_or"]').value = entry.not_fee_or; 
 
                 // 2. Smart Suggestion Fields (Target by ID)
-                document.getElementById('document_title').value = entry.not_title;
-                document.getElementById('notarial_act_type').value = entry.not_type_act;
-                document.getElementById('other_place').value = entry.not_other_place || '';
+                // Use safe setters in case elements are missing
+                if(document.getElementById('document_title')) 
+                    document.getElementById('document_title').value = entry.not_title;
+                
+                if(document.getElementById('notarial_act_type'))
+                    document.getElementById('notarial_act_type').value = entry.not_type_act;
+                
+                if(document.getElementById('other_place'))
+                    document.getElementById('other_place').value = entry.not_other_place || '';
 
                 // 3. Date
-                const notDate = new Date(entry.not_date);
-                notDate.setMinutes(notDate.getMinutes() - notDate.getTimezoneOffset());
-                document.querySelector('input[name="notarization_date"]').value = notDate.toISOString().slice(0, 16);
+                if (entry.not_date) {
+                    const notDate = new Date(entry.not_date);
+                    notDate.setMinutes(notDate.getMinutes() - notDate.getTimezoneOffset());
+                    document.querySelector('input[name="notarization_date"]').value = notDate.toISOString().slice(0, 16);
+                }
 
                 // 4. Parties (Clear and Rebuild)
                 const partiesContainer = document.getElementById('partiesContainer');
@@ -1038,10 +942,10 @@
                 // 6. Update Modal UI
                 document.querySelector('#entryModal .modal-title').textContent = 'Edit Notarial Entry';
                 document.getElementById('entryForm').action = `/notarial-entries/${entryId}/update`;
-                
+
                 // Hide auto-increment button in edit mode
                 const autoIncBtn = document.querySelector('.auto-increment-btn');
-                if(autoIncBtn) autoIncBtn.style.display = 'none';
+                if (autoIncBtn) autoIncBtn.style.display = 'none';
 
             })
             .catch(error => {
@@ -1070,10 +974,10 @@
 
         // Initialize Auto-Increment for New Entry
         initAutoIncrement();
-        
+
         // Show auto-increment button
         const autoIncBtn = document.querySelector('.auto-increment-btn');
-        if(autoIncBtn) autoIncBtn.style.display = 'inline-flex';
+        if (autoIncBtn) autoIncBtn.style.display = 'inline-flex';
     }
 
     function setupModalListeners() {
@@ -1106,7 +1010,7 @@
                 if (bookInput) bookInput.placeholder = data.book;
                 if (pageInput) pageInput.placeholder = data.page;
                 if (entryInput) entryInput.placeholder = data.entry;
-                
+
                 // Ensure button exists
                 addAutoIncrementButton();
             })
@@ -1116,7 +1020,7 @@
     function addAutoIncrementButton() {
         const entryInput = document.querySelector('input[name="entry_number"]');
         const container = entryInput.parentElement; // The div around the input
-        
+
         // Avoid duplicates
         if (container.querySelector('.auto-increment-btn')) return;
 
@@ -1129,7 +1033,7 @@
         button.className = 'btn btn-outline-secondary auto-increment-btn';
         button.innerHTML = '↻'; // Refresh icon
         button.title = 'Auto-fill next entry number';
-        
+
         button.addEventListener('click', function () {
             fetch('/notarial-entries/increment-entry')
                 .then(response => response.json())
@@ -1143,7 +1047,7 @@
         container.appendChild(button);
     }
 
-    
+
 
     function addPrintButtonsToTable() {
         document.querySelectorAll('.action-buttons').forEach(actions => {
@@ -1156,7 +1060,7 @@
             const detailLink = row.querySelector('a[href*="/notarial-entries/"]');
             if (detailLink) {
                 const entryId = detailLink.getAttribute('href').split('/').pop();
-                
+
                 const printBtn = document.createElement('a');
                 printBtn.href = `/notarial-entries/${entryId}/print`;
                 printBtn.className = 'btn-action btn-action--primary btn-action--print';
@@ -1173,6 +1077,19 @@
                 actions.insertBefore(printBtn, actions.firstChild);
             }
         });
+    }
+
+    // NEW FUNCTION: Open Payment Modal
+    function openPaymentModal(entryId, fee, title) {
+        document.getElementById('paymentEntryTitle').textContent = title;
+        document.getElementById('paymentEntryFee').value = fee;
+
+        // Dynamically set the form action to point to the correct entry ID
+        const form = document.getElementById('paymentForm');
+        form.action = `/notarial-entries/${entryId}/mark-paid`;
+
+        var myModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+        myModal.show();
     }
 </script>
 

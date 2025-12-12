@@ -1,6 +1,8 @@
 # models/case_mdl.py
 from . import db
-from datetime import datetime
+from datetime import datetime, timezone, timedelta # <--- Add timedeltaPHT = timezone(timedelta(hours=8))
+
+PHT = timezone(timedelta(hours=8))
 
 class Case(db.Model):
     __tablename__ = 'cases'
@@ -22,8 +24,8 @@ class Case(db.Model):
     assigned_attorney_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     
     # Metadata
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(PHT))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(PHT), onupdate=lambda: datetime.now(PHT))
 
     cause_of_action = db.Column(db.String(255), nullable=True)  # Add this field
     

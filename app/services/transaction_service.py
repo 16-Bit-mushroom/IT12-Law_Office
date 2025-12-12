@@ -7,7 +7,9 @@ from app.models.service_mdl import Service
 # Add this import at the top of transaction_service.py
 from app.models.case_mdl import Case
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+PHT = timezone(timedelta(hours=8))
 
 
 def create_transaction_from_notarial_entry(notarial_entry, client_id, service_id):
@@ -122,7 +124,7 @@ def mark_payment_paid(transaction_id, payment_method, payment_reference):
     if transaction:
         # Update transaction
         transaction.payment_status = 'Paid'
-        transaction.payment_date = datetime.utcnow()
+        transaction.payment_date = datetime.now(PHT)
         
         # If this is a notarial transaction, also update the notarial entry
         if transaction.transaction_type == 'Notarial':
@@ -170,7 +172,7 @@ def create_notarial_entry(transaction):
         entry = NotarialEntry(
             not_entry_num=f"NOTARY-{transaction.id}-{datetime.utcnow().strftime('%Y%m%d')}",
             not_title=transaction.purpose,
-            not_date=datetime.utcnow(),
+            not_date=datetime.now(PHT),
             not_party_name=client.full_name,
             transaction_item_id=transaction.id
         )
@@ -231,7 +233,7 @@ def sync_notarial_entry_payment_status(transaction_id):
         if notarial_entry.transaction_status == 'paid':
             transaction.payment_status = 'Paid'
             if not transaction.payment_date:
-                transaction.payment_date = datetime.now(timezone.utc)
+                transaction.payment_date = datetime.now(PHT)
         else:
             transaction.payment_status = 'Pending'
         

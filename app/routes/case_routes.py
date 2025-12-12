@@ -607,6 +607,7 @@ def edit_schedule_submission(case_id, schedule_id):
         details = request.form.get('details')
         deadline_str = request.form.get('deadline')
         priority = request.form.get('priority')
+        change_reason = request.form.get('change_reason')
 
         if not title or not deadline_str:
             flash('Title and Deadline are required', 'error')
@@ -618,7 +619,8 @@ def edit_schedule_submission(case_id, schedule_id):
             'title': title,
             'details': details,
             'deadline': deadline,
-            'priority': priority
+            'priority': priority,
+            'change_reason': change_reason # Pass to service
         }
 
         ScheduleService.update_schedule(schedule_id, data)

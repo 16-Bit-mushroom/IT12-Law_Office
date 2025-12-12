@@ -2,7 +2,7 @@
 from app.models.notarial_entry_mdl import NotarialEntry, NotarialEntryParty, NotarialEntryWitness
 from app.models.transaction_mdl import TransactionItem
 from app.models import db
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from app.services.suggestion_service import SuggestionService
 from app.models.notarial_entry_mdl import NotarialLastEntry
@@ -85,7 +85,7 @@ class NotarialEntryService:
             last_entry.last_book_num = book_num
             last_entry.last_page_num = page_num
             last_entry.last_entry_num = entry_num
-            last_entry.updated_at = datetime.utcnow()
+            last_entry.updated_at = datetime.now(PHT) #
         
         db.session.commit()
     
@@ -183,7 +183,7 @@ class NotarialEntryService:
                 not_date=datetime.strptime(form_data['notarization_date'], '%Y-%m-%dT%H:%M'),
                 not_type_act=form_data['notarial_act_type'],
                 not_fee=float(form_data['notarial_fee']),
-                not_fee_or=form_data.get('notarial_fee_or', '').strip(),
+                not_fee_or=None,
                 not_other_place=form_data.get('other_place', ''),
                 not_comp_evidence_id=form_data.get('not_comp_evidence_id', '')  # ADDED
             )
@@ -261,16 +261,7 @@ class NotarialEntryService:
             # 8. Set entry_reference in transaction
             transaction.entry_reference = f"{entry.not_book_num}-{entry.not_page_num}-{entry.not_entry_num}"
             
-            # 9. Check if OR number is provided, update both entry and transaction
-            or_number = form_data.get('notarial_fee_or', '').strip()
-            if or_number:
-                entry.transaction_status = 'paid'
-                entry.not_fee_or = or_number
-                transaction.payment_status = 'Paid'
-                transaction.payment_date = datetime.now(timezone.utc)
-            else:
-                entry.transaction_status = 'unpaid'
-                transaction.payment_status = 'Pending'
+           
             
             db.session.commit()
             return entry
@@ -294,7 +285,6 @@ class NotarialEntryService:
             entry.not_date = datetime.strptime(form_data['notarization_date'], '%Y-%m-%dT%H:%M')
             entry.not_type_act = form_data['notarial_act_type']
             entry.not_fee = float(form_data.get('notarial_fee', 0))
-            entry.not_fee_or = form_data.get('notarial_fee_or', '')
             entry.not_other_place = form_data.get('other_place', '')
             entry.not_comp_evidence_id = form_data.get('not_comp_evidence_id', '')  # This might be empty
 
@@ -313,17 +303,6 @@ class NotarialEntryService:
                 entry.transaction_item.transaction_amount = entry.not_fee
                 entry.transaction_item.purpose = entry.not_title
                 
-            or_number = form_data.get('notarial_fee_or', '')
-            if or_number and or_number.strip():
-                entry.transaction_status = 'paid'
-                if hasattr(entry, 'transaction_item') and entry.transaction_item:
-                    entry.transaction_item.payment_status = 'Paid'
-                    entry.transaction_item.payment_date = datetime.now(timezone.utc)
-            else:
-                entry.transaction_status = 'unpaid'
-                if hasattr(entry, 'transaction_item') and entry.transaction_item:
-                    entry.transaction_item.payment_status = 'Pending'
-                    entry.transaction_item.payment_date = None
 
             # Delete existing parties and witnesses
             NotarialEntryParty.query.filter_by(notarial_entry_id=entry_id).delete()
@@ -392,7 +371,7 @@ class NotarialEntryService:
             # Update the actual TransactionItem
             if hasattr(entry, 'transaction_item') and entry.transaction_item:
                 entry.transaction_item.payment_status = 'Paid'
-                entry.transaction_item.payment_date = datetime.now(timezone.utc)
+                entry.transaction_item.payment_date = datetime.now(PHT)
             
             db.session.commit()
             return entry

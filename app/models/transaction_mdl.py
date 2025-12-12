@@ -1,7 +1,9 @@
 # transaction_mdl.py - OPTIMIZED STRUCTURE
 from . import db
-from datetime import UTC, datetime
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import Numeric
+
+PHT = timezone(timedelta(hours=8))
 
 class TransactionItem(db.Model):
     __tablename__ = 'transaction_items'
@@ -20,8 +22,8 @@ class TransactionItem(db.Model):
     transaction_amount = db.Column(Numeric(10, 2), nullable=False)
     payment_status = db.Column(db.String(50), nullable=False, default='Pending')  # Pending → Paid
     
-    transaction_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(UTC))
-    payment_date = db.Column(db.DateTime)  # When payment was made
+    transaction_date = db.Column(db.DateTime, default=lambda: datetime.now(PHT))
+    payment_date = db.Column(db.DateTime, nullable=True)  # When payment was made
     entry_reference = db.Column(db.String(100), nullable=True)  # Format: "Book-Page-Entry"
     
     # Foreign key to Payment - KEEP THIS

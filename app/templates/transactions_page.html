@@ -44,7 +44,6 @@
                 <div class="data-card__icon data-card__icon--purple"></div>
             </div>
 
-            <!-- Hide Case count card for staff -->
             {% if current_user.role != 'staff' %}
             <div class="data-card data-card--sm">
                 <div class="data-card__info">
@@ -70,7 +69,6 @@
                         Notarial
                     </button>
 
-                    <!-- Hide Case Logs filter button for staff -->
                     {% if current_user.role != 'staff' %}
                     <button type="button" class="btn btn-outline-primary" data-filter="case">
                         Case Logs
@@ -113,7 +111,6 @@
                     </thead>
                     <tbody>
                         {% for transaction in transactions %}
-                        <!-- Case transactions will be filtered out for staff users -->
                         <tr data-type="{{ transaction.transaction_type|lower }}"
                             data-status="{{ transaction.payment_status|lower }}">
                             <td>#{{ transaction.id }}</td>
@@ -146,16 +143,27 @@
                                 </span>
                             </td>
                             <td>{{ transaction.purpose }}</td>
-                            <td>₱{{ "%.2f"|format(transaction.transaction_amount) }}</td>
+                            <td>
+                                {% if transaction.transaction_type == 'Case' %}
+                                    <span class="text-muted fst-italic" hidden>Confidential</span>
+                                {% else %}
+                                    ₱{{ "%.2f"|format(transaction.transaction_amount) }}
+                                {% endif %}
+                            </td>
                             <td>
                                 <span class="status-tag status-tag--{{ transaction.payment_status|lower }}">
                                     {{ transaction.payment_status }}
                                 </span>
                             </td>
-                            <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</span>
+                                    <small class="text-muted">{{ transaction.transaction_date.strftime('%I:%M %p')
+                                        }}</small>
+                                </div>
+                            </td>
                             <td>
                                 <div class="action-buttons">
-                                    <!-- View Details -->
                                     <a href="{{ url_for('transaction.view_transaction_details', transaction_id=transaction.id) }}"
                                         class="btn-action btn-action--info" title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -166,10 +174,6 @@
                                         </svg>
                                     </a>
                                 </div>
-
-
-
-
                             </td>
                         </tr>
                         {% else %}

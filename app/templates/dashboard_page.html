@@ -672,26 +672,52 @@
                     <tbody>
                         {% for doc in action_docs %}
                         <tr>
-                            <td>
-                                <div class="text-sm"><strong>{{ doc.title }}</strong></div>
-                                <div class="text-muted">{{ doc.context }}</div>
+                            <td class="py-3">
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold text-dark mb-1">{{ doc.title }}</span>
+                                    <span class="text-muted small" style="font-size: 0.8rem;">
+                                        {{ doc.context }}
+                                    </span>
+                                </div>
                             </td>
-                            <td>
+                            <td class="py-3 align-middle">
                                 {% if doc.status == 'Lacking' or doc.status == 'Missing' %}
-                                <span class="status-tag status-tag--lacking">Missing</span>
+                                <span
+                                    class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
+                                    Lacking
+                                </span>
                                 {% elif doc.status == 'For Signature' %}
-                                <span class="status-tag status-tag--for-signature">Sign</span>
-                                {% elif doc.status == 'Completed' or doc.status == 'Released' %}
-                                <span class="status-tag status-tag--complete">{{ doc.status }}</span>
+                                <span
+                                    class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">
+                                    SIGNATURE
+                                </span>
                                 {% else %}
-                                <span class="status-tag status-tag--pending">{{ doc.status }}</span>
+                                <span
+                                    class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill">
+                                    {{ doc.status|title }}
+                                </span>
                                 {% endif %}
                             </td>
-                            <td><a href="{{ doc.target_url }}" style="color: var(--color-primary);">Review</a></td>
+                            <td class="py-3 align-middle text-end">
+                                <a href="{{ doc.target_url }}" class="btn btn-sm btn-link text-decoration-none fw-bold"
+                                    style="color: #4b5563;">
+                                    Review &rarr;
+                                </a>
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="3" style="text-align: center; color: #6b7280;">No items found.</td>
+                            <td colspan="3" class="text-center py-5">
+                                <div class="text-muted opacity-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                </div>
+                                <p class="small text-muted mt-2 mb-0">All clear! No actions required.</p>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -756,7 +782,7 @@
             </div>
         </div>
 
-        
+
     </section>
 
 </main>

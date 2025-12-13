@@ -1,220 +1,297 @@
-<!-- templates/cases/create.html -->
 {% extends "base.html" %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="mb-0">Create New Case</h4>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-0">
+                    <h4 class="mb-0 fw-bold text-dark">Create New Case</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('case.create_case') }}" id="caseForm">
-                        <!-- Client Selection with Auto-suggest -->
+                        
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Client Information</h5>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="mb-3">
-                                        <label for="client_search" class="form-label">Search Client *</label>
-                                        <div class="autocomplete-wrapper">
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Client Information</h5>
+
+                            {% if pre_selected_client %}
+                                <div class="card border-success bg-light mb-3">
+                                    <div class="card-body d-flex align-items-center justify-content-between py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3 text-success fs-4">
+                                                {% if pre_selected_client.client_type == 'corporate' %}🏢{% else %}👤{% endif %}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold text-dark">{{ pre_selected_client.full_name }}</h6>
+                                                <small class="text-muted">{{ pre_selected_client.email }}</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="hidden" name="client_id" value="{{ pre_selected_client.id }}">
+                                        
+                                        <a href="{{ url_for('case.create_case') }}" class="btn btn-sm btn-outline-secondary bg-white">
+                                            Change Client
+                                        </a>
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-8">
+                                        <label class="form-label small fw-bold">Search Client *</label>
+                                        <div class="autocomplete-wrapper position-relative">
                                             <input type="text" class="form-control" id="client_search"
-                                                name="client_search" placeholder="Type client name or email..."
-                                                autocomplete="off" oninput="searchClients(this.value)">
-                                            <div id="client_suggestions" class="autocomplete-dropdown"></div>
+                                                placeholder="Type client name or email..." autocomplete="off" 
+                                                oninput="searchClients(this.value)">
+                                            <div id="client_suggestions" class="list-group position-absolute w-100 shadow mt-1" style="z-index: 1050; display: none;"></div>
                                         </div>
                                         <input type="hidden" id="client_id" name="client_id" required>
-                                        <div class="form-text text-muted">
-                                            Start typing to search for existing clients
-                                        </div>
+                                        <div class="form-text">Start typing to search existing database.</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="{{ url_for('clients.new_client_form') }}" class="btn btn-outline-primary w-100 mb-3" style="height: 38px;">
+                                            + Create New Client
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-md-4 d-flex align-items-end">
-                                    <a href="{{ url_for('clients.new_client_form') }}"
-                                        class="btn btn-outline-primary w-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
-                                        Add New Client
-                                    </a>
-                                </div>
-                            </div>
+                            {% endif %}
                         </div>
 
-                        <!-- Case Category -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Case Category</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="case_category"
-                                            id="individual" value="individual" checked>
-                                        <label class="form-check-label" for="individual">
-                                            Individual Case
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="case_category" id="corporate"
-                                            value="corporate">
-                                        <label class="form-check-label" for="corporate">
-                                            Corporate Case
-                                        </label>
-                                    </div>
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Case Details</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label d-block small fw-bold text-muted text-uppercase">Case Category / Nature</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_civil" value="civil" checked><label class="form-check-label" for="cat_civil">Civil</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_criminal" value="criminal"><label class="form-check-label" for="cat_criminal">Criminal</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_labor" value="labor"><label class="form-check-label" for="cat_labor">Labor (NLRC)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_spec" value="special_proceedings"><label class="form-check-label" for="cat_spec">Special Proc.</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_admin" value="administrative"><label class="form-check-label" for="cat_admin">Administrative</label></div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Case Details with Auto-suggest -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2">Case Details</h5>
-                            <div class="row">
+                            <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="title" class="form-label">Case Title *</label>
-                                        <input type="text" class="form-control" id="title" name="title" required
-                                            placeholder="e.g., Smith vs. Johnson Contract Dispute">
-                                    </div>
+                                    <label class="form-label fw-bold">Case Title *</label>
+                                    <input type="text" class="form-control" name="title" required placeholder="e.g. People vs. Cruz">
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="case_type" class="form-label">Case Category *</label>
-                                        <div class="autocomplete-wrapper">
-                                            <input type="text" class="form-control" id="case_type" name="case_type"
-                                                required placeholder="Type or select case type..." autocomplete="off"
-                                                oninput="getSuggestions('case_type', this.value)">
-                                            <div id="case_type_suggestions" class="autocomplete-dropdown"></div>
-                                            <input type="hidden" id="case_type_id" name="case_type_id">
-                                        </div>
-                                        <div class="d-flex justify-content-between mt-1">
-                                            <small class="text-muted">Previous entries will appear as you type</small>
-                                            <button type="button" class="btn btn-sm btn-outline-danger"
-                                                onclick="removeSuggestion('case_type', document.getElementById('case_type').value)"
-                                                style="display: none;" id="remove_case_type_btn">
-                                                Remove Suggestion
-                                            </button>
-                                        </div>
+                                    <label class="form-label fw-bold">Case Type</label>
+                                    <div class="autocomplete-wrapper">
+                                        <input type="text" class="form-control" id="case_type" name="case_type" 
+                                            placeholder="Type or select (e.g. Estafa, Annulment)..." autocomplete="off"
+                                            oninput="getSuggestions('case_type', this.value)">
+                                        <div id="case_type_suggestions" class="autocomplete-dropdown"></div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="violation" class="form-label">Violation / Case Type</label>
+                                <label class="form-label fw-bold">Specific Violation / Cause of Action</label>
                                 <div class="autocomplete-wrapper">
-                                    <input type="text" class="form-control" id="violation" name="violation"
-                                        placeholder="e.g., Breach of Contract, Theft, etc." autocomplete="off"
+                                    <input type="text" class="form-control" id="violation" name="violation" 
+                                        placeholder="e.g. Art. 315 RPC, BP 22, Breach of Contract..." autocomplete="off"
                                         oninput="getSuggestions('violation', this.value)">
                                     <div id="violation_suggestions" class="autocomplete-dropdown"></div>
-                                    <input type="hidden" id="violation_id" name="violation_id">
-                                </div>
-                                <div class="d-flex justify-content-between mt-1">
-                                    <small class="text-muted">Previous entries will appear as you type</small>
-                                    <button type="button" class="btn btn-sm btn-outline-danger"
-                                        onclick="removeSuggestion('violation', document.getElementById('violation').value)"
-                                        style="display: none;" id="remove_violation_btn">
-                                        Remove Suggestion
-                                    </button>
                                 </div>
                             </div>
-
-
-                            <!-- Representatives Section -->
-                            <div class="mb-4" id="representativesSection">
-                                <h5 class="border-bottom pb-2">Representatives</h5>
-                                <p class="text-muted">Add representatives for this case (optional)</p>
-
-                                <div id="representativesContainer">
-                                    <!-- Representative template -->
-                                    <div class="representative-entry card mb-3">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Full Name</label>
-                                                        <input type="text" class="form-control"
-                                                            name="representative_name[]" placeholder="Full name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Email</label>
-                                                        <input type="email" class="form-control"
-                                                            name="representative_email[]" placeholder="Email">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Phone</label>
-                                                        <input type="text" class="form-control"
-                                                            name="representative_phone[]" placeholder="Phone">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Role</label>
-                                                        <input type="text" class="form-control"
-                                                            name="representative_role[]" placeholder="Role">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button type="button"
-                                                class="btn btn-sm btn-outline-danger remove-representative">Remove</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button type="button" class="btn btn-outline-primary" id="addRepresentative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-right: 5px;">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                    Add Representative
-                                </button>
-                            </div>
-
-                            <!-- Dates -->
-                            <div class="mb-4">
-                                <h5 class="border-bottom pb-2">Case Dates</h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="engagement_date" class="form-label">Engagement Date *</label>
-                                            <input type="date" class="form-control" id="engagement_date"
-                                                name="engagement_date" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="filing_date" class="form-label">Filing Date (if
-                                                applicable)</label>
-                                            <input type="date" class="form-control" id="filing_date" name="filing_date">
-                                        </div>
-                                    </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Cause of Action Description</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" class="form-control" id="cause_of_action" name="cause_of_action" 
+                                        placeholder="Brief description of the complaint..." autocomplete="off"
+                                        oninput="getSuggestions('cause_of_action', this.value)">
+                                    <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ url_for('case.list_cases') }}" class="btn btn-secondary">Cancel</a>
-                                <button type="submit" class="btn btn-primary">Create Case</button>
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Representatives</h5>
+                            <p class="text-muted small">Add opposing counsel, co-counsel, or other representatives (Optional).</p>
+                            
+                            <div id="representatives-container">
+                                </div>
+
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addRepresentative()">
+                                + Add Representative
+                            </button>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Case Dates</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Engagement Date *</label>
+                                    <input type="date" class="form-control" name="engagement_date" id="engagement_date" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Filing Date <span class="text-muted fw-normal small">(if applicable)</span></label>
+                                    <input type="date" class="form-control" name="filing_date">
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a href="{{ url_for('case.list_cases') }}" class="btn btn-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Create Case</button>
+                        </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
 
-<style>
-    .autocomplete-wrapper {
-        position: relative;
+<template id="rep-template">
+    <div class="card bg-light border mb-3 rep-row">
+        <div class="card-body p-3">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Full Name</label>
+                    <input type="text" class="form-control form-control-sm" name="representative_name[]" placeholder="Full Name">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Email</label>
+                    <input type="email" class="form-control form-control-sm" name="representative_email[]" placeholder="Email">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Phone</label>
+                    <input type="text" class="form-control form-control-sm" name="representative_phone[]" placeholder="Phone">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Role</label>
+                    <input type="text" class="form-control form-control-sm" name="representative_role[]" placeholder="e.g. Counsel">
+                </div>
+            </div>
+            <div class="mt-2 text-end">
+                <button type="button" class="btn btn-outline-danger btn-sm py-0" onclick="removeRepresentative(this)">Remove</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    // --- CONFIG ---
+    const searchClientsUrl = "{{ url_for('case.search_clients_api') }}";
+    // Suggestions URLs
+    const getSuggestionsUrl = "{{ url_for('case.get_suggestions_api', field='FIELD') }}";
+    const searchSuggestionsUrl = "{{ url_for('case.search_suggestions_api', field='FIELD') }}";
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Set Date Today
+        const d = document.getElementById('engagement_date');
+        if(d && !d.value) d.value = new Date().toISOString().split('T')[0];
+
+        // 2. Add one empty representative row by default (Optional, or leave empty)
+        // addRepresentative(); 
+
+        // 3. Click Outside Listener for Dropdowns
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.autocomplete-wrapper');
+            // Logic to close dropdowns
+            document.querySelectorAll('.autocomplete-dropdown, #client_suggestions').forEach(el => {
+               if (!el.parentElement.contains(e.target)) {
+                   el.style.display = 'none';
+               }
+            });
+        });
+    });
+
+    // --- CLIENT SEARCH LOGIC ---
+    async function searchClients(query) {
+        const dropdown = document.getElementById('client_suggestions');
+        if (query.length < 2) { dropdown.style.display = 'none'; return; }
+
+        try {
+            const response = await fetch(`${searchClientsUrl}?q=${encodeURIComponent(query)}`);
+            const clients = await response.json();
+            dropdown.innerHTML = '';
+
+            if (clients.length === 0) {
+                dropdown.innerHTML = '<div class="list-group-item text-muted small">No clients found.</div>';
+            } else {
+                clients.forEach(client => {
+                    const item = document.createElement('button');
+                    item.type = "button";
+                    item.className = 'list-group-item list-group-item-action py-2 text-start';
+                    let icon = client.type === 'corporate' ? '🏢' : '👤';
+                    item.innerHTML = `<span class="me-2">${icon}</span><strong>${client.full_name}</strong> <span class="text-muted small ms-1">(${client.email})</span>`;
+                    
+                    item.onclick = () => {
+                        window.location.href = "{{ url_for('case.create_case') }}?pre_select_client_id=" + client.id;
+                    };
+                    dropdown.appendChild(item);
+                });
+            }
+            dropdown.style.display = 'block';
+        } catch (e) { console.error(e); }
     }
 
+    // --- REPRESENTATIVE LOGIC ---
+    function addRepresentative() {
+        const container = document.getElementById('representatives-container');
+        const template = document.getElementById('rep-template');
+        const clone = template.content.cloneNode(true);
+        container.appendChild(clone);
+    }
+
+    function removeRepresentative(btn) {
+        btn.closest('.rep-row').remove();
+    }
+
+    // --- AUTO-SUGGEST LOGIC ---
+    async function getSuggestions(field, query) {
+        const dropdownId = `${field}_suggestions`;
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+
+        let url = query.length < 1 ? 
+            getSuggestionsUrl.replace('FIELD', field) : 
+            `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
+
+        try {
+            const response = await fetch(url);
+            const suggestions = await response.json();
+            dropdown.innerHTML = '';
+
+            if (suggestions.length === 0 && query.length > 0) {
+                dropdown.innerHTML = '<div class="autocomplete-item text-muted small">New entry</div>';
+                dropdown.style.display = 'block';
+                return;
+            } else if (suggestions.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            suggestions.forEach(s => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = s.value || s;
+                item.onclick = () => {
+                    document.getElementById(field).value = s.value || s;
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(item);
+            });
+            dropdown.style.display = 'block';
+        } catch (e) { console.error(e); }
+    }
+</script>
+
+<style>
+    /* Styling for autocompletes matching the rest of the app */
+    .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+    .autocomplete-item:hover {
+        background-color: #f8f9fa;
+    }
     .autocomplete-dropdown {
         position: absolute;
         top: 100%;
@@ -222,262 +299,11 @@
         right: 0;
         background: white;
         border: 1px solid #ddd;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
         max-height: 200px;
         overflow-y: auto;
         z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         display: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .autocomplete-item {
-        padding: 8px 12px;
-        cursor: pointer;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .autocomplete-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .autocomplete-item.selected {
-        background-color: #e9ecef;
-        font-weight: 600;
-    }
-
-    .suggestion-actions {
-        float: right;
-        font-size: 12px;
-        color: #6c757d;
-    }
-
-    .remove-suggestion-btn {
-        background: none;
-        border: none;
-        color: #dc3545;
-        cursor: pointer;
-        padding: 2px 6px;
-        font-size: 12px;
-    }
-
-    .remove-suggestion-btn:hover {
-        color: #b02a37;
-        text-decoration: underline;
     }
 </style>
-
-<!-- Update the JavaScript section in create.html -->
-<script>
-    // --- Configuration ---
-    const searchClientsUrl = "{{ url_for('case.search_clients_api') }}";
-    // Placeholders for dynamic URLs
-    const getSuggestionsUrl = "{{ url_for('case.get_suggestions_api', field='FIELD') }}";
-    const searchSuggestionsUrl = "{{ url_for('case.search_suggestions_api', field='FIELD') }}";
-    const removeSuggestionUrl = "{{ url_for('case.remove_suggestion_api', field='FIELD') }}";
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. Set Default Date (Today)
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('engagement_date');
-        if(dateInput && !dateInput.value) {
-            dateInput.value = today;
-        }
-
-        // 2. Setup Dynamic Representatives
-        setupRepresentatives();
-
-        // 3. Global Click Listener (Close Dropdowns)
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.autocomplete-wrapper')) {
-                closeAllDropdowns();
-            }
-        });
-    });
-
-    // --- Representatives Logic ---
-
-    function setupRepresentatives() {
-        const container = document.getElementById('representativesContainer');
-        const addBtn = document.getElementById('addRepresentative');
-
-        // Add Button Click
-        addBtn.addEventListener('click', function () {
-            // Clone the last visible entry
-            const entries = container.querySelectorAll('.representative-entry');
-            const template = entries[entries.length - 1]; 
-            
-            const newEntry = template.cloneNode(true);
-            
-            // Clear all inputs in the new row
-            newEntry.querySelectorAll('input').forEach(input => input.value = '');
-            
-            container.appendChild(newEntry);
-            updateRemoveButtons();
-        });
-
-        // Initialize Remove Buttons
-        updateRemoveButtons();
-    }
-
-    function updateRemoveButtons() {
-        const container = document.getElementById('representativesContainer');
-        
-        // Re-bind all remove buttons
-        container.querySelectorAll('.remove-representative').forEach(button => {
-            // Clone to strip old event listeners
-            const newBtn = button.cloneNode(true);
-            button.parentNode.replaceChild(newBtn, button);
-
-            newBtn.addEventListener('click', function () {
-                const entries = container.querySelectorAll('.representative-entry');
-                // If there's more than one row, remove it. 
-                // If it's the only row, just clear the inputs.
-                if (entries.length > 1) {
-                    this.closest('.representative-entry').remove();
-                } else {
-                    this.closest('.representative-entry').querySelectorAll('input').forEach(input => input.value = '');
-                }
-            });
-        });
-    }
-
-    // --- Client Search Logic ---
-
-    async function searchClients(query) {
-        const dropdown = document.getElementById('client_suggestions');
-        
-        if (query.length < 2) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
-        try {
-            const response = await fetch(`${searchClientsUrl}?q=${encodeURIComponent(query)}`);
-            const clients = await response.json();
-
-            dropdown.innerHTML = '';
-
-            if (clients.length === 0) {
-                dropdown.innerHTML = '<div class="autocomplete-item text-muted">No clients found</div>';
-            } else {
-                clients.forEach(client => {
-                    const item = document.createElement('div');
-                    item.className = 'autocomplete-item';
-                    item.innerHTML = `
-                        <strong>${client.full_name}</strong><br>
-                        <small class="text-muted">${client.email || 'No email'}</small>
-                    `;
-                    item.onclick = () => {
-                        document.getElementById('client_search').value = `${client.full_name}`;
-                        document.getElementById('client_id').value = client.id;
-                        dropdown.style.display = 'none';
-                    };
-                    dropdown.appendChild(item);
-                });
-            }
-            dropdown.style.display = 'block';
-        } catch (error) {
-            console.error('Error searching clients:', error);
-        }
-    }
-
-    // --- Smart Suggestion Logic (The "X" Button Style) ---
-
-    async function getSuggestions(field, query) {
-        const dropdownId = `${field}_suggestions`;
-        const dropdown = document.getElementById(dropdownId);
-        
-        // Hide the old standalone remove buttons if they exist in HTML
-        const oldRemoveBtn = document.getElementById(`remove_${field}_btn`);
-        if (oldRemoveBtn) oldRemoveBtn.style.display = 'none';
-
-        let url;
-        if (query.length < 1) {
-            // Fetch recent/top suggestions
-            url = getSuggestionsUrl.replace('FIELD', field);
-        } else {
-            // Search specific suggestions
-            url = `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
-        }
-
-        try {
-            const response = await fetch(url);
-            const suggestions = await response.json();
-
-            dropdown.innerHTML = '';
-
-            if (suggestions.length === 0) {
-                if (query.length > 0) {
-                    // UX: Show that this is a new custom entry
-                    dropdown.innerHTML = '<div class="autocomplete-item text-muted small">New entry (will be saved)</div>';
-                } else {
-                    dropdown.style.display = 'none';
-                    return;
-                }
-            } else {
-                suggestions.forEach(suggestion => {
-                    const item = document.createElement('div');
-                    item.className = 'autocomplete-item d-flex justify-content-between align-items-center';
-                    
-                    const val = suggestion.value || suggestion;
-                    const safeVal = val.replace(/'/g, "\\'"); // Escape for JS
-
-                    item.innerHTML = `
-                        <span>${val}</span>
-                        <button type="button" class="btn btn-link text-danger p-0 ms-2" style="text-decoration: none;"
-                            onclick="event.stopPropagation(); removeSuggestion('${field}', '${safeVal}')" title="Remove from suggestions">
-                            &times;
-                        </button>
-                    `;
-                    
-                    // Clicking the item text fills the input
-                    item.onclick = (e) => {
-                        // Ensure we didn't click the button
-                        if(e.target.tagName !== 'BUTTON') {
-                            document.getElementById(field).value = val;
-                            dropdown.style.display = 'none';
-                        }
-                    };
-                    
-                    dropdown.appendChild(item);
-                });
-            }
-            dropdown.style.display = 'block';
-        } catch (error) {
-            console.error('Error fetching suggestions:', error);
-        }
-    }
-
-    async function removeSuggestion(field, value) {
-        if (!confirm(`Remove "${value}" from the suggestion list?`)) {
-            return;
-        }
-
-        try {
-            const url = removeSuggestionUrl.replace('FIELD', field);
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ value: value })
-            });
-
-            if (response.ok) {
-                // Refresh the list immediately to show it's gone
-                const currentInput = document.getElementById(field).value;
-                getSuggestions(field, currentInput);
-            } else {
-                alert('Failed to remove suggestion');
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    function closeAllDropdowns() {
-        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
-            dropdown.style.display = 'none';
-        });
-    }
-</script>
 {% endblock %}

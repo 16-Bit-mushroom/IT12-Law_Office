@@ -20,55 +20,107 @@ def new_client_form():
     """Displays the form to add a new client."""
     return render_template('add_client.html')
 
-@clients_bp.route('/new', methods=['POST'])
-@login_required 
-def submit_new_client():
-    """Submits new client data."""
-    # Get form data including names
-    first_name = request.form['client_first_name']
-    last_name = request.form['client_last_name']
-    address = request.form['client_address']
-    email = request.form['client_email']
-    phone = request.form.get('client_phone')
-    role = request.form.get('client_role')
-    notes = request.form.get('internal_notes', '')
-
-    # Validation: Check for duplicate email
-    if get_client_by_email(email):
-        flash('A client with this email already exists.', 'error')
-        return redirect(url_for('clients.new_client_form'))
-
-    try:
-        new_client = add_client(address, email, phone, role, notes, first_name, last_name)
-        
-        # --- LOGGING ---
-        SystemLogService.log('Create', 'Client', f"Created new client: {first_name} {last_name}", new_client.id)
-        # ---------------
-        
-        flash(f'Client {first_name} {last_name} added successfully.', 'success')
-        
-        # Redirect to case creation with pre-selected client
-        return redirect(url_for('case.create_case', pre_select_client_id=new_client.id))
-        
-    except Exception as e:
-        flash(f'An error occurred while adding the client: {e}', 'error')
-        # Ensure we keep the return_to parameter if there is an error so they don't lose their place
-        return_to = request.args.get('return_to', '')
-        return redirect(url_for('clients.new_client_form', return_to=return_to))
-    
 
 @clients_bp.route('/api/clients/<int:client_id>')
 @login_required
 def get_client(client_id):
-    """API endpoint to get client details"""
+    """API endpoint to get FULL client details for editing"""
     client = Client.query.get(client_id)
     if client:
         return jsonify({
             'id': client.id,
-            'full_name': f"{client.client_first_name} {client.client_last_name}",  # FIXED: use client_first_name and client_last_name
-            'email': client.client_email  # FIXED: use client_email
+            'client_type': client.client_type,
+            'first_name': client.first_name,
+            'middle_name': client.middle_name,
+            'last_name': client.last_name,
+            'company_name': client.company_name,
+            'tax_id': client.tax_identification_number,
+            'representative': client.designated_representative,
+            'email': client.email,
+            'phone': client.phone,
+            
+            # --- FIX: Return Specific Address Parts ---
+            'street_address': client.street_address,
+            'barangay': client.barangay,
+            'city': client.city,
+            'province': client.province,
+            'zip_code': client.zip_code,
+            
+            'notes': client.notes
         })
     return jsonify(None)
+
+@clients_bp.route('/new', methods=['POST'])
+@login_required 
+def submit_new_client():
+    """Handles both CREATE and UPDATE for Step 1"""
+    data = request.form
+    client_id = data.get('client_id') # Hidden Input
+    
+    try:
+        if client_id:
+            # === UPDATE MODE ===
+            client = Client.query.get(client_id)
+            if not client:
+                flash('Client not found.', 'error')
+                return redirect(url_for('clients.new_client_form'))
+            
+            # Update fields
+            client.client_type = data.get('client_type')
+            client.email = data.get('email')
+            client.phone = data.get('phone')
+            client.street_address = data.get('street_address')
+            
+            if client.client_type == 'individual':
+                client.first_name = data.get('first_name')
+                client.middle_name = data.get('middle_name')
+                client.last_name = data.get('last_name')
+                # Clear corp fields if switching types
+                client.company_name = None
+            else:
+                client.company_name = data.get('company_name')
+                client.tax_identification_number = data.get('tax_id')
+                client.designated_representative = data.get('representative')
+                # Clear indiv fields
+                client.first_name = None
+                client.last_name = None
+            
+            db.session.commit()
+            SystemLogService.log('Update', 'Client', f"Updated client: {client.full_name}", client.id)
+            flash(f'Client details updated.', 'success')
+            
+        else:
+            # === CREATE MODE ===
+            # Duplicate Check (Only for Create)
+            if get_client_by_email(data.get('email')):
+                flash('Email already exists. Please search for the client.', 'error')
+                return redirect(url_for('clients.new_client_form'))
+
+            client = Client(
+                client_type=data.get('client_type'),
+                email=data.get('email'),
+                phone=data.get('phone'),
+                street_address=data.get('street_address'),
+                first_name=data.get('first_name'),
+                middle_name=data.get('middle_name'),
+                last_name=data.get('last_name'),
+                company_name=data.get('company_name'),
+                tax_identification_number=data.get('tax_id'),
+                designated_representative=data.get('representative')
+            )
+            db.session.add(client)
+            db.session.commit()
+            
+            SystemLogService.log('Create', 'Client', f"Created new client: {client.full_name}", client.id)
+            flash(f'New client created successfully.', 'success')
+
+        # === HANDOFF TO STEP 2 ===
+        return redirect(url_for('case.create_case', pre_select_client_id=client.id))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('clients.new_client_form'))
 
 # REMOVED DUPLICATE list_clients() FUNCTION - KEEP ONLY clients_page()
 

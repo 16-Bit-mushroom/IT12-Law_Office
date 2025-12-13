@@ -74,8 +74,8 @@
 
 
 
-                    <a href="{{ url_for('case.create_case') }}" class="btn btn-primary d-flex align-items-center gap-2"
-                        style="border-radius: 6px;">
+                    <a href="{{ url_for('case.create_case') }}"
+                        class="btn btn-primary d-flex align-items-center gap-2" style="border-radius: 6px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -181,8 +181,8 @@
                                     <form method="POST" action="{{ url_for('case.delete_case', case_id=case.id) }}"
                                         style="display: inline;"
                                         onsubmit="return confirm('Move this case to the Recycle Bin? You can restore it later from Settings.');">
-                                        <button type="submit" class="btn-action btn-action--danger" style="background-color: salmon;"
-                                            title="Move to Trash">
+                                        <button type="submit" class="btn-action btn-action--danger"
+                                            style="background-color: salmon;" title="Move to Trash">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">

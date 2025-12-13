@@ -188,19 +188,18 @@
             <section class="content-section">
                 {{ render_schedule_list(schedules=schedules, now=now, case_id=case.id) }}
 
-
                 <div class="panel-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="panel-card__title">Case Documents ({{ documents|length }})</h5>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#documentModal">
+                        <h5 class="panel-card__title">Case Documents</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2"
+                            data-bs-toggle="modal" data-bs-target="#requirementModal">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            Add Document
+                            Add Requirement
                         </button>
                     </div>
 
@@ -209,52 +208,118 @@
                         <table class="table document-table">
                             <thead>
                                 <tr>
-                                    <th>Document</th>
-                                    <th>Type</th>
-                                    <th>Size</th>
-                                    <th>Uploaded</th>
-                                    <th>Actions</th>
+                                    <th style="width: 50%;">Document</th>
+                                    <th style="width: 25%;">Status</th>
+                                    <th style="width: 25%; text-align: center;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for document in documents %}
                                 <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="file-icon me-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path
-                                                        d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z">
-                                                    </path>
-                                                    <polyline points="13 2 13 9 20 9"></polyline>
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <strong>{{ document.filename }}</strong>
-                                                {% if document.notes %}
-                                                <br>
-                                                <small class="text-muted">{{ document.notes }}</small>
-                                                {% endif %}
-                                            </div>
+                                    <td class="align-middle">
+                                        <div>
+                                            <span class="fw-bold text-dark">{{ document.document_type or
+                                                document.filename }}</span>
+                                            {% if document.notes %}
+                                            <div class="small text-muted text-truncate" style="max-width: 200px;">{{
+                                                document.notes }}</div>
+                                            {% endif %}
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ document.document_type or 'Unknown'
+
+                                    <td class="align-middle">
+                                        {% if document.document_status == 'Lacking' %}
+                                        <span
+                                            class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">Lacking</span>
+                                        {% elif document.document_status == 'Pending Review' %}
+                                        <span
+                                            class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Pending
+                                            Review</span>
+                                        {% elif document.document_status == 'Approved' %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Approved</span>
+                                        {% else %}
+                                        <span class="badge bg-light text-dark border">{{ document.document_status
                                             }}</span>
+                                        {% endif %}
                                     </td>
-                                    <td>
-                                        <small class="text-muted">{{ document.formatted_file_size }}</small>
-                                    </td>
-                                    <td>
-                                        <small class="text-muted">{{ document.uploaded_at.strftime('%Y-%m-%d')
-                                            }}</small>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
+
+                                    <td class="align-middle text-center">
+                                        <div class="action-buttons justify-content-center">
+
+                                            {% if document.document_status == 'Lacking' %}
+                                            <button class="btn-action btn-action--primary" type="button"
+                                                data-doc-id="{{ document.id }}"
+                                                data-doc-type="{{ document.document_type }}"
+                                                onclick="openUploadModalForRequirement(this.getAttribute('data-doc-id'), this.getAttribute('data-doc-type'))"
+                                                title="Upload File" data-bs-toggle="tooltip">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                </svg>
+                                            </button>
+
+                                            <form method="POST"
+                                                action="{{ url_for('documents.delete_document', document_id=document.id) }}"
+                                                style="display:inline;"
+                                                onsubmit="return confirm('Remove this requirement?');">
+                                                <button type="submit" class="btn-action btn-action--danger ms-1"
+                                                    style="background-color: salmon;" title="Remove Requirement"
+                                                    data-bs-toggle="tooltip">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                </button>
+                                            </form>
+
+
+                                            {% elif document.document_status == 'Pending Review' %}
                                             <a href="{{ url_for('documents.download_document', document_id=document.id) }}"
-                                                class="btn-action btn-action--info" title="Download">
+                                                class="btn-action btn-action--info" title="Review File" target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </a>
+
+                                            {% if current_user.is_admin %}
+                                            <form method="POST"
+                                                action="{{ url_for('documents.approve_document', document_id=document.id) }}"
+                                                style="display:inline;">
+                                                <button type="submit" class="btn-action btn-action--success ms-1"
+                                                    title="Approve">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                                    </svg>
+                                                </button>
+                                            </form>
+
+                                            <button type="button" class="btn-action btn-action--danger ms-1"
+                                                style="background-color: salmon;"
+                                                onclick="openRejectModal('{{ document.id }}')" title="Reject">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                            {% endif %}
+
+                                            {% else %}
+                                            <a href="{{ url_for('documents.download_document', document_id=document.id) }}"
+                                                class="btn-action btn-action--info" title="Download"
+                                                data-bs-toggle="tooltip">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -263,12 +328,29 @@
                                                     <line x1="12" y1="15" x2="12" y2="3"></line>
                                                 </svg>
                                             </a>
+
+                                            <button class="btn-action btn-action--secondary me-1" type="button"
+                                                data-bs-toggle="modal" data-bs-target="#editRequirementModal"
+                                                data-id="{{ document.id }}" data-title="{{ document.document_type }}"
+                                                data-note="{{ document.notes or '' }}" title="Edit Details">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path
+                                                        d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
+                                                    </path>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+
                                             <form method="POST"
                                                 action="{{ url_for('documents.delete_document', document_id=document.id) }}"
-                                                style="display: inline;"
-                                                onsubmit="return confirm('Are you sure you want to delete this document?');">
-                                                <button type="submit" class="btn-action btn-action--danger"
-                                                    title="Delete">
+                                                style="display:inline;"
+                                                onsubmit="return confirm('Move file to trash?');">
+                                                <button type="submit" class="btn-action btn-action--danger ms-1"
+                                                    style="background-color: salmon;" title="Trash"
+                                                    data-bs-toggle="tooltip">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -279,6 +361,7 @@
                                                     </svg>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                         </div>
                                     </td>
                                 </tr>
@@ -287,103 +370,177 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="text-center py-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
-                            class="text-muted mb-3">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                        <p class="text-muted">No documents attached to this case yet.</p>
-
+                    <div class="text-center py-5 border rounded bg-light mt-2">
+                        <p class="text-muted small mb-3">No documents or requirements yet.</p>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                            data-bs-target="#requirementModal">
+                            Start Checklist
+                        </button>
                     </div>
                     {% endif %}
                 </div>
             </section>
-
-
-
         </div>
     </div>
 </main>
 
-<!-- Add Document Modal -->
-<div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+<div class="modal fade" id="requirementModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="documentModalLabel">Add Document to Case</h5>
+                <h5 class="modal-title">Add Document Requirement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form method="POST" action="{{ url_for('documents.add_requirement') }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="parent_type" value="case">
+                    <input type="hidden" name="parent_id" value="{{ case.id }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Required Document Title *</label>
+                        <input type="text" class="form-control" name="document_type" placeholder="e.g. PSA Cenomar, Marriage Contract" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Notes / Instructions</label>
+                        <textarea class="form-control" name="notes" rows="2" placeholder="Specific instructions..."></textarea>
+                    </div>
+
+                    <div class="p-3 bg-light rounded border">
+                        <label class="form-label small fw-bold text-muted mb-2">
+                            <i class="bi bi-paperclip"></i> Have the file already? (Optional)
+                        </label>
+                        <input type="file" class="form-control form-control-sm" name="file">
+                        <div class="form-text text-muted" style="font-size: 0.75rem;">
+                            If you upload a file now, the status will be set to <span class="badge bg-warning text-dark">FOR REVIEW</span> immediately.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save & Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="requirementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Document Requirement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('documents.add_requirement') }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="parent_type" value="case">
+                    <input type="hidden" name="parent_id" value="{{ case.id }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Required Document Title *</label>
+                        <input type="text" class="form-control" name="document_type"
+                            placeholder="e.g. Cenomar, Marriage Contract" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Notes / Instructions</label>
+                        <textarea class="form-control" name="notes" rows="2"
+                            placeholder="Specific instructions..."></textarea>
+                    </div>
+
+                    <div class="p-3 bg-light rounded border">
+                        <label class="form-label small fw-bold text-muted mb-2">
+                            <i class="bi bi-paperclip"></i> Have the file already? (Optional)
+                        </label>
+                        <input type="file" class="form-control form-control-sm" name="file">
+                        <div class="form-text text-muted" style="font-size: 0.75rem;">
+                            If you upload a file now, the status will be set to <strong>"Pending Review"</strong>
+                            instead of "Lacking".
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Requirement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="documentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Document</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="{{ url_for('documents.upload_document') }}" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="parent_type" value="case">
                     <input type="hidden" name="parent_id" value="{{ case.id }}">
+                    <input type="hidden" name="document_id" id="modalDocId" value="">
 
-                    <div class="mb-3">
-                        <label class="form-label">Document Type</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" class="form-control" id="document_type" name="document_type"
-                                placeholder="e.g. Affidavit, ID, Deed of Sale..." required autocomplete="off"
-                                oninput="getSuggestions('document_type', this.value, 'document_type_suggestions')">
-                            <div id="document_type_suggestions" class="autocomplete-dropdown"></div>
-                        </div>
-                        <div class="form-text">Select from list or type a new one to save it.</div>
+                    <div id="uploadContextMsg" class="alert alert-info py-2 mb-3" style="display: none;">
+                        <small>Uploading file for:</small><br>
+                        <strong id="uploadContextTitle"></strong>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">File *</label>
-                        <input type="file" class="form-control" name="file" required
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx">
-                        <div class="form-text">Allowed formats: PDF, DOC, DOCX, JPG, JPEG, PNG, XLS, XLSX</div>
+                        <label class="form-label">Select File *</label>
+                        <input type="file" class="form-control" name="file" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Notes (Optional)</label>
-                        <textarea class="form-control" name="notes" rows="3"
-                            placeholder="Add any notes about this document..."></textarea>
+                    <div class="mb-3" id="docTypeGroup">
+                        <label class="form-label">Document Type / Title *</label>
+                        <input type="text" class="form-control" name="document_type"
+                            placeholder="e.g. Affidavit, IDs..." required>
+                    </div>
+
+                    <div class="mb-3" id="docNotesGroup">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Payment Status</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title text-danger">Reject Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ url_for('case.mark_case_paid', case_id=case.id) }}" method="POST">
+            <form id="rejectForm" method="POST">
                 <div class="modal-body">
-                    <div class="text-center py-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                            stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="mb-3">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        <h5>Mark Case as Paid?</h5>
-                        <p class="text-muted">This will update the transaction status to <strong>Paid</strong>.</p>
-                    </div>
+                    <p>Why is this document being rejected?</p>
+                    <textarea class="form-control" name="reason" rows="3"
+                        placeholder="e.g. Blurry image, Wrong document type..." required></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Confirm</button>
+                    <button type="submit" class="btn btn-danger">Reject & Mark Lacking</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    function openRejectModal(id) {
+        document.getElementById('rejectForm').action = `/documents/${id}/reject`;
+        new bootstrap.Modal(document.getElementById('rejectModal')).show();
+    }
+</script>
 
 <style>
     .detail-grid {
@@ -429,6 +586,30 @@
         cursor: pointer;
         text-decoration: none;
         transition: all 0.2s ease;
+    }
+
+    .btn-action--primary {
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+    }
+
+    .btn-action--primary:hover {
+        background-color: #0b5ed7;
+        color: white;
+    }
+
+    .badge {
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+
+    .bg-danger-subtle {
+        background-color: #fce8e6 !important;
+    }
+
+    .bg-success-subtle {
+        background-color: #dcfce7 !important;
     }
 
     .btn-action--info {
@@ -713,7 +894,80 @@
         }
     }
 
-
-
 </script>
+
+<script>
+    // Helper to open upload modal for a specific requirement
+    function openUploadModalForRequirement(docId, docType) {
+        const modalEl = document.getElementById('documentModal');
+        const modal = new bootstrap.Modal(modalEl);
+
+        // 1. Set Hidden ID
+        let idInput = modalEl.querySelector('input[name="document_id"]');
+        if (!idInput) {
+            const form = modalEl.querySelector('form');
+            idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'document_id';
+            form.appendChild(idInput);
+        }
+        idInput.value = docId;
+
+        // 2. Set the Hidden Type Value (Backend still needs this)
+        const typeInput = modalEl.querySelector('input[name="document_type"]');
+        if (typeInput) typeInput.value = docType;
+
+        // 3. UI: HIDE unnecessary fields
+        document.getElementById('docTypeGroup').style.display = 'none';
+        document.getElementById('docNotesGroup').style.display = 'none';
+
+        // 4. UI: SHOW Context Label
+        document.getElementById('uploadContextMsg').style.display = 'block';
+        document.getElementById('uploadContextTitle').textContent = docType;
+
+        // 5. Update Title & Show
+        modalEl.querySelector('.modal-title').textContent = 'Upload Requirement';
+        modal.show();
+
+        // 6. CLEANUP: Reset UI when closed (So general upload still works)
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            idInput.value = '';
+            if (typeInput) typeInput.value = '';
+
+            // Show fields again
+            document.getElementById('docTypeGroup').style.display = 'block';
+            document.getElementById('docNotesGroup').style.display = 'block';
+
+            // Hide context label
+            document.getElementById('uploadContextMsg').style.display = 'none';
+
+            modalEl.querySelector('.modal-title').textContent = 'Upload Document';
+        }, { once: true });
+    }
+
+    // --- EDIT MODAL LOGIC ---
+    document.addEventListener('DOMContentLoaded', function () {
+        const editModal = document.getElementById('editRequirementModal');
+        if (editModal) {
+            editModal.addEventListener('show.bs.modal', function (event) {
+                // Button that triggered the modal
+                const button = event.relatedTarget;
+
+                // Extract info from data-* attributes
+                const docId = button.getAttribute('data-id');
+                const docTitle = button.getAttribute('data-title');
+                const docNote = button.getAttribute('data-note');
+
+                // Update the modal's content.
+                const form = editModal.querySelector('form');
+                form.action = `/documents/${docId}/update`;
+
+                editModal.querySelector('#editDocType').value = docTitle;
+                editModal.querySelector('#editDocNote').value = docNote;
+            });
+        }
+    });
+</script>
+
+
 {% endblock %}

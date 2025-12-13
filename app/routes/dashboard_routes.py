@@ -54,8 +54,8 @@ def get_context_url(doc):
 def dashboard_page():
     filtered_data = filter_dashboard_data()
     
-    total_docs = filtered_data['documents'].count()
-    missing_docs = filtered_data['documents'].filter(Document.document_status.ilike('Lacking')).count()
+    total_docs = Document.query.filter(Document.deleted_at == None).count()
+    missing_docs = Document.query.filter(Document.document_status.ilike('Lacking'),Document.deleted_at == None).count()
     
     if current_user.role == 'staff':
         pending_payments_count = filtered_data['transactions'].filter_by(payment_status='Pending').count()
@@ -99,10 +99,17 @@ def dashboard_page():
         'case_count': case_count
     }
     
+    # FIX: Added .filter(Document.deleted_at == None)
     action_docs_query = Document.query.filter(
-        Document.document_status.in_(['Pending', 'Lacking', 'Draft', 'For Signature'])
+        Document.document_status.in_(['Pending', 'Lacking', 'Draft', 'For Signature', 'Pending Review']),
+        Document.deleted_at == None
     ).order_by(
-        db.case((Document.document_status == 'Lacking', 1), else_=2),
+        # Prioritize 'Pending Review' (needs approval) and 'Lacking'
+        db.case(
+            (Document.document_status == 'Pending Review', 1),
+            (Document.document_status == 'Lacking', 2),
+            else_=3
+        ),
         Document.last_modified.desc()
     ).limit(5).all()
 

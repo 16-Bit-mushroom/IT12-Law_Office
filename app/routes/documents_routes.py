@@ -104,6 +104,45 @@ def documents_page():
 
 # ... rest of your routes remain the same
 
+@documents_bp.route('/add-requirement', methods=['POST'])
+@login_required
+def add_requirement():
+    """Adds a requirement OR uploads a file directly if provided"""
+    try:
+        # Get form data
+        parent_type = request.form.get('parent_type')
+        parent_id = request.form.get('parent_id')
+        doc_type = request.form.get('document_type')
+        notes = request.form.get('notes')
+        file = request.files.get('file') # Check for file
+
+        if file and file.filename != '':
+            # CASE A: File Provided -> Create Full Document (Pending Review)
+            DocumentService.create_document(
+                file, parent_type, parent_id, doc_type, notes, 
+                current_user.id
+            )
+            # Log
+            from app.services.system_log_service import SystemLogService
+            SystemLogService.log('Upload', 'Document', f"Added & Uploaded: {doc_type}", parent_id)
+            flash('Document uploaded successfully for review', 'success')
+            
+        else:
+            # CASE B: No File -> Create Placeholder (Lacking)
+            DocumentService.create_requirement(
+                parent_type, parent_id, doc_type, notes, 
+                user_id=current_user.id
+            )
+            # Log
+            from app.services.system_log_service import SystemLogService
+            SystemLogService.log('Create', 'Document', f"Added requirement: {doc_type}", parent_id)
+            flash('Requirement added successfully', 'success')
+        
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        
+    return redirect(request.referrer or url_for('dashboard.dashboard_page'))
+
 
 # documents_routes.py - Remove or redirect the duplicate route
 @documents_bp.route('/notarial-entry/<int:entry_id>')
@@ -116,59 +155,30 @@ def notarial_entry_documents(entry_id):
 # ... rest of your routes remain the same
 
 @documents_bp.route('/upload', methods=['POST'])
-@staff_or_admin_required
 @login_required
 def upload_document():
-    """Upload a document"""
     try:
         file = request.files.get('file')
         parent_type = request.form.get('parent_type')
         parent_id = request.form.get('parent_id')
         document_type = request.form.get('document_type')
         notes = request.form.get('notes')
+        document_id = request.form.get('document_id') # Get ID for fulfillment
         
-        if not file:
-            flash('No file selected!', 'error')
-            return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
-        
-        document = DocumentService.create_document(
-            file=file,
-            parent_type=parent_type,
-            parent_id=int(parent_id),
-            document_type=document_type,
-            notes=notes,
-            user_id=current_user.id
+        doc = DocumentService.create_document(
+            file, parent_type, parent_id, document_type, notes, 
+            current_user.id, document_id
         )
         
-        # --- NEW LOGIC: LEARN THE SUGGESTION ---
-        if document_type:
-            # Map the parent_type to the correct suggestion module
-            # If uploaded to Notarial, save to 'notarial' module. 
-            # If uploaded to Case, save to 'case' module.
-            suggestion_module = 'general'
-            if parent_type == 'notarial_entry':
-                suggestion_module = 'notarial'
-            elif parent_type == 'case':
-                suggestion_module = 'case'
-                
-            SuggestionService.add_suggestion(suggestion_module, 'document_type', document_type)
-        # ---------------------------------------
-
-        # --- LOGGING ---
-        SystemLogService.log(
-            action='Upload',
-            module='Document',
-            description=f"Uploaded file '{document.filename}' ({document_type}) to {document.parent_type} #{document.parent_id}",
-            entity_id=document.id
-        )
-        # ---------------
+        action = "Fulfilled Requirement" if document_id else "Uploaded Document"
+        SystemLogService.log('Upload', 'Document', f"{action}: {doc.filename}", doc.id)
         
         flash('Document uploaded successfully!', 'success')
-        return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
         
     except Exception as e:
         flash(f'Error uploading document: {str(e)}', 'error')
-        return redirect(request.referrer or url_for('notarial_entries.notarial_entries_page'))
+        
+    return redirect(request.referrer or url_for('dashboard.dashboard_page'))
 
 @documents_bp.route('/download/<int:document_id>')
 @staff_or_admin_required
@@ -192,6 +202,27 @@ def download_document(document_id):
     except Exception as e:
         flash(f'Error sending file: {str(e)}', 'error')
         return redirect(request.referrer or url_for('documents.documents_page'))
+
+# app/routes/documents_routes.py
+
+@documents_bp.route('/<int:document_id>/update', methods=['POST'])
+@login_required
+def update_document_details(document_id):
+    try:
+        doc_type = request.form.get('document_type')
+        notes = request.form.get('notes')
+        
+        DocumentService.update_document_details(document_id, doc_type, notes)
+        
+        # Log it
+        from app.services.system_log_service import SystemLogService
+        SystemLogService.log('Update', 'Document', f"Updated details for: {doc_type}", document_id)
+        
+        flash('Requirement details updated successfully', 'success')
+    except Exception as e:
+        flash(f'Error updating details: {str(e)}', 'error')
+        
+    return redirect(request.referrer)
 
 @documents_bp.route('/delete/<int:document_id>', methods=['POST'])
 @staff_or_admin_required
@@ -242,6 +273,17 @@ def update_document_status(document_id):
         if new_status:
             document.document_status = new_status
             db.session.commit()
+            
+            # --- LOGGING ADDED ---
+            filename = document.filename or document.document_type
+            SystemLogService.log(
+                'Update', 
+                'Document', 
+                f"Manual status change for '{filename}': {old_status} -> {new_status}", 
+                document_id
+            )
+            # ---------------------
+            
             flash('Document status updated successfully!', 'success')
         else:
             flash('No status provided!', 'error')
@@ -252,3 +294,40 @@ def update_document_status(document_id):
         db.session.rollback()
         flash(f'Error updating status: {str(e)}', 'error')
         return redirect(request.referrer or url_for('documents.documents_page'))
+
+@documents_bp.route('/<int:document_id>/approve', methods=['POST'])
+@login_required
+def approve_document(document_id):
+    # Only Admins/Lawyers should approve
+    if not current_user.is_admin: # Or role check
+        flash('Permission denied', 'error')
+        return redirect(request.referrer)
+
+    DocumentService.approve_document(document_id, current_user.id)
+    
+    # --- LOGGING ADDED ---
+    doc = Document.query.get(document_id)
+    title = doc.document_type or doc.filename or "Document"
+    SystemLogService.log('Approve', 'Document', f"Approved: {title}", document_id)
+    # -
+    
+    flash('Document approved', 'success')
+    return redirect(request.referrer)
+
+@documents_bp.route('/<int:document_id>/reject', methods=['POST'])
+@login_required
+def reject_document(document_id):
+    if not current_user.is_admin:
+        flash('Permission denied', 'error')
+        return redirect(request.referrer)
+        
+    reason = request.form.get('reason', 'Invalid document')
+    DocumentService.reject_document(document_id, reason)
+    
+    # --- LOGGING ADDED ---
+    doc = Document.query.get(document_id)
+    title = doc.document_type or doc.filename or "Document"
+    SystemLogService.log('Reject', 'Document', f"Rejected {title}: {reason}", document_id)
+    # ---------------------
+    flash('Document rejected and marked as Lacking', 'warning')
+    return redirect(request.referrer)

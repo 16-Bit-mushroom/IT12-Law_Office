@@ -5,7 +5,9 @@ from app.models.case_mdl import Case
 from app.models.representative_mdl import Representative
 from app.models.service_mdl import Service
 from app.models.transaction_mdl import TransactionItem
+from app.models.document_mdl import Document
 from app.services.suggestion_service import SuggestionService
+
 
 
 PHT = timezone(timedelta(hours=8))
@@ -25,23 +27,21 @@ class CaseService:
     
     @staticmethod
     def create_case(case_data):
-        """Create a new case with automatic transaction"""
+        """Create a new case with Logic Validation"""
         try:
+            # --- LOGIC RULE 1: NO FILING DATE = PENDING ---
+            # If the user tries to set 'Active' but has no filing date, force 'Pending'
+            status = case_data.get('status', 'active')
+            filing_date = case_data.get('filing_date')
+            
+            if status == 'active' and not filing_date:
+                # Option A: Force it to Pending (User friendly)
+                status = 'pending' 
+                # Option B: Raise Error (Strict) -> raise ValueError("Active cases must have a filing date.")
+            
             # 1. Generate case number
             case_number = CaseService._generate_case_number()
             
-            # Helper to handle date parsing safely
-            def parse_date(date_val):
-                if not date_val:
-                    return None
-                if isinstance(date_val, str):
-                    if date_val.strip():
-                        return datetime.strptime(date_val, '%Y-%m-%d')
-                    else:
-                        return None
-                return date_val
-
-            # 2. Create case with cause_of_action
             case = Case(
                 case_number=case_number,
                 title=case_data['title'],
@@ -49,13 +49,13 @@ class CaseService:
                 case_type=case_data.get('case_type'),
                 violation=case_data.get('violation'),
                 cause_of_action=case_data.get('cause_of_action'),
-                status=case_data.get('status', 'active'),
-                engagement_date=parse_date(case_data.get('engagement_date')),
-                filing_date=parse_date(case_data.get('filing_date')),
+                status=status, # Use the validated status
+                engagement_date=case_data.get('engagement_date'),
+                filing_date=filing_date,
                 client_id=case_data['client_id'],
                 assigned_attorney_id=case_data.get('assigned_attorney_id'),
-                created_at=datetime.now(PHT),# UPDATED: UTC
-                updated_at=datetime.now(PHT)  # UPDATED: UTC
+                created_at=datetime.now(PHT),
+                updated_at=datetime.now(PHT)
             )
                 
             db.session.add(case)
@@ -135,63 +135,99 @@ class CaseService:
         return f"CASE-{year}-{new_number:04d}"
 
     @staticmethod
-    def update_case(case_id, case_data):
-        """Update an existing case"""
+    def update_case(case_id, case_data, user_role='staff'):
+        """Update case with strict Lifecycle Logic"""
         try:
             case = Case.query.get(case_id)
             if not case:
                 raise ValueError("Case not found")
             
-            # Update fields
+            # 1. IMMUTABILITY CHECK
+            if case.status == 'completed' and user_role != 'admin':
+                # Check for content edits (Title, Violation, Client)
+                is_editing_content = (
+                    case_data.get('title') != case.title or
+                    case_data.get('violation') != case.violation or
+                    str(case_data.get('client_id')) != str(case.client_id)
+                )
+                if is_editing_content:
+                    raise PermissionError("This case is Closed. Only Admins can edit historical details.")
+
+            # Get new values
+            new_status = case_data.get('status', case.status)
+            new_filing_date = case_data.get('filing_date') # None or Date object
+            
+            # --- LOGIC: AUTO-PROMOTE TO ACTIVE ---
+            # If currently Pending, and we just added a Filing Date, and user didn't select Complete...
+            # Then Auto-switch to Active.
+            if case.status == 'pending' and new_filing_date and new_status == 'pending':
+                new_status = 'active'
+            # -------------------------------------
+
+            # 2. LOGIC RULE: ACTIVE REQUIRES FILING DATE
+            if new_status == 'active':
+                has_date = new_filing_date or case.filing_date
+                if not has_date:
+                    raise ValueError("Cannot mark as Active. A Filing Date is required.")
+
+            # 3. LOGIC RULE: COMPLETED REQUIRES NO LACKING DOCS
+            if new_status == 'completed':
+                lacking_count = Document.query.filter_by(
+                    parent_type='case', 
+                    parent_id=case.id,
+                    document_status='Lacking'
+                ).filter(Document.deleted_at == None).count()
+                
+                if lacking_count > 0:
+                    raise ValueError(f"Cannot mark Completed. There are {lacking_count} lacking requirements.")
+
+            # --- SNAPSHOT LOGIC (For History) ---
+            if new_status == 'completed' and case.status != 'completed':
+                if case.client:
+                    # Safely get address
+                    addr = getattr(case.client, 'full_address', '')
+                    if not addr and hasattr(case.client, 'client_address'): # Fallback for old model
+                        addr = case.client.client_address
+
+                    snapshot = {
+                        "frozen_at": datetime.now(PHT).strftime('%Y-%m-%d'),
+                        "name": case.client.full_name,
+                        "email": case.client.email,
+                        "phone": case.client.phone,
+                        "address": addr,
+                        "representative": getattr(case.client, 'designated_representative', None)
+                    }
+                    case.client_snapshot = json.dumps(snapshot)
+
+            # Apply Updates
             case.title = case_data['title']
             case.case_category = case_data.get('case_category', case.case_category)
             case.case_type = case_data.get('case_type', case.case_type)
             case.violation = case_data.get('violation')
             case.cause_of_action = case_data.get('cause_of_action')
-            case.status = case_data.get('status', case.status)
             
-            # Handle date conversions safely (FIXED LOGIC)
+            # Handle Dates
             if 'engagement_date' in case_data:
-                e_date = case_data['engagement_date']
-                if isinstance(e_date, str) and e_date.strip():
-                    case.engagement_date = datetime.strptime(e_date, '%Y-%m-%d')
-                elif isinstance(e_date, (datetime, date)):
-                    case.engagement_date = e_date
-                
-            if 'filing_date' in case_data:
-                f_date = case_data['filing_date']
-                # Handle empty filing date logic
-                if f_date:
-                    if isinstance(f_date, str) and f_date.strip():
-                        case.filing_date = datetime.strptime(f_date, '%Y-%m-%d')
-                    elif isinstance(f_date, (datetime, date)):
-                        case.filing_date = f_date
-                else:
-                    # If it's empty string or None, set to None
-                    case.filing_date = None
+                case.engagement_date = case_data['engagement_date']
             
-            # Explicitly update timestamp
+            if 'filing_date' in case_data:
+                case.filing_date = case_data['filing_date']
+
+            case.status = new_status
             case.updated_at = datetime.now(PHT)
 
-            # Update the transaction purpose if exists
-            if hasattr(case, 'transactions') and case.transactions:
-                for transaction in case.transactions:
-                    transaction.purpose = f"Case: {case.title}"
-            
-            # Update representatives
+            # Update Representatives
             if 'representatives' in case_data:
                 CaseService._update_representatives(case_id, case_data['representatives'])
             
-            # Record suggestions
+            # Record Suggestions
             if case_data.get('case_type'):
                 SuggestionService.add_suggestion('case', 'case_type', case_data['case_type'])
-            if case_data.get('violation'):
-                SuggestionService.add_suggestion('case', 'violation', case_data['violation'])
-            if case_data.get('cause_of_action'):
-                SuggestionService.add_suggestion('case', 'cause_of_action', case_data['cause_of_action'])
-            
+            # ...
+
             db.session.commit()
             return case
+            
         except Exception as e:
             db.session.rollback()
             raise e

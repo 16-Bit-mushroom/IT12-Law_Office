@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import desc, asc, or_
 
+
 from app.services.case_service import CaseService
 from app.services.client_service import get_all_clients  # Only import get_all_clients
 from app.services.suggestion_service import SuggestionService
@@ -76,7 +77,14 @@ def create_case():
     """Create a new case"""
     if request.method == 'GET':
         clients = get_all_clients()
-        pre_select_client_id = request.args.get('pre_select_client_id', type=int)
+        
+        # 1. Get the ID from URL
+        client_id_arg = request.args.get('pre_select_client_id', type=int)
+        pre_selected_client = None
+        
+        # 2. FIX: Actually fetch the client object!
+        if client_id_arg:
+            pre_selected_client = Client.query.get(client_id_arg)
         
         # Get initial suggestions
         case_type_suggestions = SuggestionService.get_case_suggestions('case_type')
@@ -85,7 +93,8 @@ def create_case():
         
         return render_template('cases/create.html', 
                              clients=clients,
-                             pre_select_client_id=pre_select_client_id,
+                             # 3. Pass the OBJECT, not just the ID
+                             pre_selected_client=pre_selected_client,
                              case_type_suggestions=case_type_suggestions,
                              violation_suggestions=violation_suggestions,
                              cause_of_action_suggestions=cause_of_action_suggestions)
@@ -323,11 +332,11 @@ def edit_case(case_id):
         case_data = {
             'title': request.form.get('title'),
             'case_category': request.form.get('case_category', 'individual'),
-            'case_type': case_type,
-            'violation': violation,
-            'cause_of_action': cause_of_action,
-            'engagement_date': engagement_date,
-            'filing_date': filing_date,  # This can be None
+            'case_type': request.form.get('case_type'),
+            'violation': request.form.get('violation'),
+            'cause_of_action': request.form.get('cause_of_action'),
+            'engagement_date': engagement_date, # From your existing parsing
+            'filing_date': filing_date,         # From your existing parsing
             'client_id': int(request.form.get('client_id')),
             'assigned_attorney_id': current_user.id,
             'status': request.form.get('status', 'active'),
@@ -335,7 +344,11 @@ def edit_case(case_id):
         }
         
         # Update case
-        updated_case = CaseService.update_case(case_id, case_data)
+        updated_case = CaseService.update_case(
+            case_id, 
+            case_data, 
+            user_role=current_user.role # Pass the role for locking logic
+        )   
         
         new_data = {
             'title': updated_case.title,
@@ -358,15 +371,21 @@ def edit_case(case_id):
         
         flash(f'Case {updated_case.case_number} updated successfully!', 'success')
         return redirect(url_for('case.view_case', case_id=case_id))
+    
+    except PermissionError as e:
+        # Handle the Lock Error specifically
+        flash(str(e), 'error')
+        return redirect(url_for('case.view_case', case_id=case_id))
+    
+    except ValueError as e:
+        # Logic Validation (No Filing Date / Lacking Docs)
+        flash(f'Validation Error: {str(e)}', 'warning') # Use warning for logic issues
+        return redirect(url_for('case.view_case', case_id=case_id))
         
     except Exception as e:
+        # MERGED ERROR HANDLER: Logs error and re-renders form so user doesn't lose data
+        print(f"Error updating case: {e}") # Print to console for debugging
         flash(f'Error updating case: {str(e)}', 'error')
-        clients = get_all_clients()
-        representatives = CaseService.get_case_representatives(case_id)
-        return render_template('cases/edit_case.html', 
-                             case=case, 
-                             clients=clients,
-                             representatives=representatives)
 
 @case_bp.route('/<int:case_id>/delete', methods=['POST'])
 @admin_required
@@ -395,29 +414,33 @@ def delete_case(case_id):
 
 # ===== NEW API ENDPOINTS FOR AUTO-SUGGESTIONS =====
 
+# app/routes/case_routes.py
+
 @case_bp.route('/api/clients/search')
 @login_required
 def search_clients_api():
-    """Search clients for auto-suggest"""
+    """Search clients (Fixed for New Schema)"""
     query = request.args.get('q', '')
     limit = request.args.get('limit', 10, type=int)
     
     if not query or len(query) < 2:
         return jsonify([])
     
-    # Search clients by name or email
+    # FIX: Use new column names (first_name, email, company_name)
     clients = Client.query.filter(
-        (Client.client_first_name.ilike(f'%{query}%')) |
-        (Client.client_last_name.ilike(f'%{query}%')) |
-        (Client.client_email.ilike(f'%{query}%')) |
-        (Client.client_phone.ilike(f'%{query}%'))
-    ).limit(limit).all()
+        or_(
+            Client.first_name.ilike(f'%{query}%'),
+            Client.last_name.ilike(f'%{query}%'),
+            Client.company_name.ilike(f'%{query}%'),
+            Client.email.ilike(f'%{query}%')
+        )
+    ).filter(Client.deleted_at == None).limit(limit).all()
     
     result = [{
         'id': client.id,
-        'full_name': f"{client.client_first_name} {client.client_last_name}",
-        'email': client.client_email,
-        'phone': client.client_phone
+        'full_name': client.full_name, # Uses the smart property
+        'email': client.email,
+        'phone': client.phone or ''
     } for client in clients]
     
     return jsonify(result)

@@ -145,9 +145,9 @@
                             <td>{{ transaction.purpose }}</td>
                             <td>
                                 {% if transaction.transaction_type == 'Case' %}
-                                    <span class="text-muted fst-italic" hidden>Confidential</span>
+                                <span class="text-muted fst-italic" hidden>Confidential</span>
                                 {% else %}
-                                    ₱{{ "%.2f"|format(transaction.transaction_amount) }}
+                                ₱{{ "%.2f"|format(transaction.transaction_amount) }}
                                 {% endif %}
                             </td>
                             <td>
@@ -173,6 +173,16 @@
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </a>
+
+                                    <button class="btn-action btn-action--secondary"
+                                        onclick="openHistoryModal('{{ transaction.id }}')"
+                                        title="Manage Payments / Void">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -305,6 +315,43 @@
             });
         }
     });
+</script>
+
+<div class="modal fade" id="paymentHistoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Payment History</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="historyLoading" class="text-center p-3">Loading...</div>
+                <div id="historyContent">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function openHistoryModal(transactionId) {
+        var myModal = new bootstrap.Modal(document.getElementById('paymentHistoryModal'));
+        myModal.show();
+
+        document.getElementById('historyLoading').style.display = 'block';
+        document.getElementById('historyContent').innerHTML = '';
+
+        try {
+            // Fetch from the backend route
+            const response = await fetch(`/transactions/${transactionId}/history`);
+            const html = await response.text();
+
+            document.getElementById('historyLoading').style.display = 'none';
+            document.getElementById('historyContent').innerHTML = html;
+        } catch (e) {
+            document.getElementById('historyContent').innerHTML = '<p class="text-danger p-3 text-center">Error loading history.</p>';
+        }
+    }
 </script>
 {% endblock scripts %}
 

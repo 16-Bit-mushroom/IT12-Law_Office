@@ -67,6 +67,9 @@ def mark_payment_paid_route(transaction_id):
     try:
         # 1. Inputs
         amount_str = request.form.get('payment_amount', '0')
+        # Handle typo where amount might be empty
+        if not amount_str: amount_str = '0'
+        
         amount = Decimal(amount_str)
         method = request.form.get('payment_method')
         ref = request.form.get('payment_reference')
@@ -75,7 +78,10 @@ def mark_payment_paid_route(transaction_id):
         from app.models.payment_mdl import Payment
         from app.models.transaction_mdl import TransactionItem
         
-        transaction = TransactionItem.query.get(transaction_id)
+        transaction = TransactionItem.query.get_or_404(transaction_id)
+        if amount > transaction.balance:
+            flash(f'Error: Payment of ₱{amount:,.2f} exceeds the balance of ₱{transaction.balance:,.2f}.', 'error')
+            return redirect(request.referrer)
         
         new_payment = Payment(
             transaction_item_id=transaction.id,
@@ -85,29 +91,36 @@ def mark_payment_paid_route(transaction_id):
         )
         db.session.add(new_payment)
         
-        # 3. Recalculate Status
-        # We need to sum up including the new one. 
-        # Since it's not committed yet, we do manual math.
-        current_total = transaction.total_paid + amount # total_paid is a property
+        # --- THE FIX ---
+        # Flush sends the new payment to the DB transaction (but doesn't commit yet).
+        # This ensures transaction.payments includes the new record for calculation.
+        db.session.flush() 
         
-        if current_total >= transaction.transaction_amount:
+        # Now we check the balance property directly. 
+        # The 'balance' property in your model automatically subtracts all payments (including this new one).
+        if transaction.balance <= 0:
             transaction.payment_status = 'Paid'
         else:
             transaction.payment_status = 'Partial'
             
         db.session.commit()
         
-        flash(f'Payment of ₱{amount} recorded!', 'success')
+        # Log
+        from app.services.system_log_service import SystemLogService
+        SystemLogService.log('Payment', 'Finance', f"Received ₱{amount} ({method}) for {transaction.purpose}", transaction.id)
         
-        if transaction.case_id:
+        flash(f'Payment of ₱{amount} recorded successfully!', 'success')
+        
+        # Smart Redirect
+        if transaction.transaction_type == 'Case' and transaction.case_id:
              return redirect(url_for('case.view_case', case_id=transaction.case_id))
              
         return redirect(url_for('transaction.transactions_page'))
 
     except Exception as e:
         db.session.rollback()
-        flash(f'Error: {str(e)}', 'error')
-        return redirect(request.referrer)
+        flash(f'Error recording payment: {str(e)}', 'error')
+        return redirect(request.referrer or url_for('transaction.transactions_page'))
 
 @transaction_bp.route('/<int:transaction_id>/update_amount', methods=['POST'])
 @login_required
@@ -154,7 +167,7 @@ def get_payment_history(transaction_id):
     transaction = TransactionItem.query.get_or_404(transaction_id)
     
     # Render a small snippet of HTML
-    return render_template('transactions/_history_list.html', payments=transaction.payments)
+    return render_template('transactions/_history_list.html', transaction=transaction, payments=transaction.payments)
 
 # 2. VOID PAYMENT ROUTE
 @transaction_bp.route('/payments/<int:payment_id>/void', methods=['POST'])

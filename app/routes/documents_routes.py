@@ -76,7 +76,7 @@ def documents_page():
                 
                 # Get client name from case
                 if case.client:
-                    doc.context_name = f"{case.client.client_first_name} {case.client.client_last_name}"
+                    doc.context_name = f"{case.client.first_name} {case.client.last_name}"
                 else:
                     doc.context_name = case.title  # Fallback to case title if no client
             else:

@@ -12,6 +12,10 @@ from app.models.transaction_mdl import TransactionItem
 from app.models.case_logs_mdl import CaseDocument  # Assuming you have this model
 from app.utils.permissions import staff_or_admin_required
 from app.utils.query_filters import get_accessible_transactions
+# Add this with your other imports
+from app.services.system_log_service import SystemLogService
+from app.models import db
+from decimal import Decimal
 
 transaction_bp = Blueprint('transaction', __name__, url_prefix='/transactions')
 
@@ -60,17 +64,142 @@ def approve_transaction_route(transaction_id):
 @transaction_bp.route('/<int:transaction_id>/mark_paid', methods=['POST'])
 @login_required
 def mark_payment_paid_route(transaction_id):
-    """Mark transaction as paid"""
     try:
-        payment_method = request.form['payment_method']
-        payment_reference = request.form.get('payment_reference', '')
+        # 1. Inputs
+        amount_str = request.form.get('payment_amount', '0')
+        amount = Decimal(amount_str)
+        method = request.form.get('payment_method')
+        ref = request.form.get('payment_reference')
+
+        # 2. Add New Payment Record
+        from app.models.payment_mdl import Payment
+        from app.models.transaction_mdl import TransactionItem
         
-        transaction = mark_payment_paid(transaction_id, payment_method, payment_reference)
-        flash('Payment marked as paid!', 'success')
+        transaction = TransactionItem.query.get(transaction_id)
+        
+        new_payment = Payment(
+            transaction_item_id=transaction.id,
+            pay_amount=amount,
+            pay_method=method,
+            pay_ref=ref
+        )
+        db.session.add(new_payment)
+        
+        # 3. Recalculate Status
+        # We need to sum up including the new one. 
+        # Since it's not committed yet, we do manual math.
+        current_total = transaction.total_paid + amount # total_paid is a property
+        
+        if current_total >= transaction.transaction_amount:
+            transaction.payment_status = 'Paid'
+        else:
+            transaction.payment_status = 'Partial'
+            
+        db.session.commit()
+        
+        flash(f'Payment of ₱{amount} recorded!', 'success')
+        
+        if transaction.case_id:
+             return redirect(url_for('case.view_case', case_id=transaction.case_id))
+             
         return redirect(url_for('transaction.transactions_page'))
+
     except Exception as e:
-        flash(f'Error updating payment: {str(e)}', 'error')
-        return redirect(url_for('transaction.transactions_page'))
+        db.session.rollback()
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(request.referrer)
+
+@transaction_bp.route('/<int:transaction_id>/update_amount', methods=['POST'])
+@login_required
+def update_transaction_amount(transaction_id):
+    try:
+        new_amount = Decimal(request.form.get('new_amount', 0))
+        
+        # Get Transaction
+        from app.models.transaction_mdl import TransactionItem
+        transaction = TransactionItem.query.get_or_404(transaction_id)
+        
+        # Security Check: Prevent making bill smaller than what's already paid
+        if new_amount < transaction.total_paid:
+            flash(f'Cannot reduce bill to {new_amount}. Client already paid {transaction.total_paid}.', 'error')
+            return redirect(request.referrer)
+
+        # Log Logic
+        old_val = transaction.transaction_amount
+        transaction.transaction_amount = new_amount
+        
+        # Auto-update status
+        if transaction.total_paid >= new_amount:
+            transaction.payment_status = 'Paid'
+        else:
+            transaction.payment_status = 'Partial' # or Pending if 0 paid
+
+        db.session.commit()
+        
+        SystemLogService.log('Update', 'Finance', f"Adjusted bill from {old_val} to {new_amount}", transaction.id)
+        flash('Bill amount updated successfully.', 'success')
+        
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        
+    return redirect(request.referrer)
+
+# app/routes/transaction_routes.py
+
+# 1. GET HISTORY HTML (HTMX-style)
+@transaction_bp.route('/<int:transaction_id>/history')
+@login_required
+def get_payment_history(transaction_id):
+    from app.models.transaction_mdl import TransactionItem
+    transaction = TransactionItem.query.get_or_404(transaction_id)
+    
+    # Render a small snippet of HTML
+    return render_template('transactions/_history_list.html', payments=transaction.payments)
+
+# 2. VOID PAYMENT ROUTE
+@transaction_bp.route('/payments/<int:payment_id>/void', methods=['POST'])
+@login_required
+def void_payment(payment_id):
+    try:
+        from app.models.payment_mdl import Payment
+        from app.services.system_log_service import SystemLogService # Ensure import
+        
+        payment = Payment.query.get_or_404(payment_id)
+        transaction = payment.transaction # Access parent relationship
+        
+        # Capture details for log
+        amount = payment.pay_amount
+        ref = payment.pay_ref
+        trans_id = transaction.id
+        case_id = transaction.case_id
+        
+        # DELETE
+        db.session.delete(payment)
+        
+        # UPDATE PARENT STATUS
+        # We need to calculate balance *after* deletion. 
+        # Since flush/commit hasn't happened, we do it manually or commit first.
+        db.session.commit() # Commit delete first
+        
+        # Now re-check balance
+        # Force refresh of transaction relationship
+        db.session.refresh(transaction)
+        
+        if transaction.balance <= 0:
+            transaction.payment_status = 'Paid'
+        else:
+            transaction.payment_status = 'Pending' if transaction.total_paid == 0 else 'Partial'
+            
+        db.session.commit()
+        
+        SystemLogService.log('Delete', 'Finance', f"Voided payment of ₱{amount} ({ref})", trans_id)
+        flash(f'Payment {ref} voided successfully.', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error voiding payment: {str(e)}', 'error')
+        
+    return redirect(request.referrer)
 
 @transaction_bp.route('/<int:transaction_id>/complete', methods=['POST'])
 @login_required

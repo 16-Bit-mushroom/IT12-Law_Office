@@ -6,6 +6,7 @@ from app.models.representative_mdl import Representative
 from app.models.service_mdl import Service
 from app.models.transaction_mdl import TransactionItem
 from app.models.document_mdl import Document
+from app.models.payment_mdl import Payment
 from app.services.suggestion_service import SuggestionService
 
 
@@ -29,17 +30,14 @@ class CaseService:
     def create_case(case_data):
         """Create a new case with Logic Validation"""
         try:
-            # --- LOGIC RULE 1: NO FILING DATE = PENDING ---
-            # If the user tries to set 'Active' but has no filing date, force 'Pending'
+            # 1. Logic Rule: Active requires Filing Date
             status = case_data.get('status', 'active')
             filing_date = case_data.get('filing_date')
             
             if status == 'active' and not filing_date:
-                # Option A: Force it to Pending (User friendly)
-                status = 'pending' 
-                # Option B: Raise Error (Strict) -> raise ValueError("Active cases must have a filing date.")
+                status = 'pending'
             
-            # 1. Generate case number
+            # 2. Generate case number
             case_number = CaseService._generate_case_number()
             
             case = Case(
@@ -49,7 +47,7 @@ class CaseService:
                 case_type=case_data.get('case_type'),
                 violation=case_data.get('violation'),
                 cause_of_action=case_data.get('cause_of_action'),
-                status=status, # Use the validated status
+                status=status,
                 engagement_date=case_data.get('engagement_date'),
                 filing_date=filing_date,
                 client_id=case_data['client_id'],
@@ -74,7 +72,7 @@ class CaseService:
                         )
                         db.session.add(representative)
             
-            # 4. Get or Create Case Service
+            # 4. Get or Create Case Service (For billing category)
             case_service = Service.query.filter_by(is_notarization=False).first()
             if not case_service:
                 case_service = Service(
@@ -85,20 +83,40 @@ class CaseService:
                 db.session.add(case_service)
                 db.session.flush()
             
-            # 5. Automatically Create TransactionItem
+            # --- 5. FINANCIALS: CREATE BILLING ---
+            fee_amount = case_data.get('acceptance_fee', 0.0)
+            
             transaction = TransactionItem(
                 client_id=case.client_id,
                 service_id=case_service.id,
                 case_id=case.id,
                 transaction_type='Case',
-                purpose=f"Case: {case.title}",
-                transaction_amount=0.00,
+                purpose=f"Acceptance Fee: {case.title}",
+                transaction_amount=fee_amount,
                 payment_status='Pending'
             )
-            
             db.session.add(transaction)
+            db.session.flush()
+
+            # --- 6. INITIAL PAYMENT (Optional) ---
+            initial_pay = case_data.get('initial_payment', 0.0)
+            if initial_pay > 0:
+                payment = Payment(
+                    transaction_item_id=transaction.id,
+                    pay_amount=initial_pay,
+                    pay_method=case_data.get('pay_method', 'Cash'),
+                    pay_ref=case_data.get('pay_ref', 'Initial Deposit')
+                )
+                db.session.add(payment)
+                
+                # Update Status
+                if initial_pay >= fee_amount:
+                    transaction.payment_status = 'Paid'
+                else:
+                    transaction.payment_status = 'Partial'
+            # -------------------------------------
             
-            # 6. Record suggestions
+            # 7. Record suggestions
             if case_data.get('case_type'):
                 SuggestionService.add_suggestion('case', 'case_type', case_data['case_type'])
             if case_data.get('violation'):
@@ -180,6 +198,11 @@ class CaseService:
                 
                 if lacking_count > 0:
                     raise ValueError(f"Cannot mark Completed. There are {lacking_count} lacking requirements.")
+                
+                # transaction = TransactionItem.query.filter_by(case_id=case.id).first()
+                
+                # if transaction and transaction.payment_status != 'Paid':
+                #     raise ValueError("Cannot mark Completed. The acceptance fee is still Unpaid.")
 
             # --- SNAPSHOT LOGIC (For History) ---
             if new_status == 'completed' and case.status != 'completed':

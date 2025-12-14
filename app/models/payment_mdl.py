@@ -1,24 +1,23 @@
 from . import db
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import Numeric
 
-# In Payment model - REMOVE the transaction_item_id foreign key
-# In TransactionItem model - KEEP payment_id foreign key
+PHT = timezone(timedelta(hours=8))
 
 class Payment(db.Model):
     __tablename__ = 'payments'
     
     id = db.Column(db.Integer, primary_key=True)
-    pay_method = db.Column(db.String(50), nullable=False)
-    pay_ref = db.Column(db.String(100), unique=True, nullable=False)
-    pay_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    pay_type = db.Column(db.String(50), nullable=False)
-    pay_amount = db.Column(Numeric(10, 2), nullable=False)
-    payment_status = db.Column(db.String(50), nullable=False, default='Pending')
     
-    # NO foreign key to TransactionItem here
+    # Link to the main bill (Transaction)
+    transaction_item_id = db.Column(db.Integer, db.ForeignKey('transaction_items.id'), nullable=False)
     
+    pay_method = db.Column(db.String(50), nullable=False) # Cash, Check, etc.
+    pay_ref = db.Column(db.String(100), nullable=False)   # OR Number / Reference
+    pay_date = db.Column(db.DateTime, default=lambda: datetime.now(PHT))
+    pay_amount = db.Column(Numeric(10, 2), nullable=False) # Amount paid in this specific installment
+    
+    notes = db.Column(db.String(255), nullable=True) # Optional remarks
+
     def __repr__(self):
-        return f"<Payment(id={self.id}, status='{self.payment_status}', amount={self.pay_amount})>"
-    def __repr__(self):
-        return f"<Payment(id={self.id}, status='{self.payment_status}', amount={self.pay_amount})>"
+        return f"<Payment(amount={self.pay_amount}, ref='{self.pay_ref}')>"

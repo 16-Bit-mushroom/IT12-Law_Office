@@ -141,9 +141,9 @@ def mark_payment_paid(transaction_id, payment_method, payment_reference):
         # Update payment record if exists
         if transaction.payment:
             transaction.payment.payment_status = 'Paid'
-            transaction.payment.pay_method = payment_method
-            transaction.payment.pay_ref = payment_reference
-            transaction.payment.pay_date = datetime.utcnow()
+            transaction.payment.pay_method = payment_method      # <--- SAVE THIS
+            transaction.payment.pay_ref = payment_reference      # <--- SAVE THIS
+            transaction.payment.pay_date = datetime.now(PHT)
         
         db.session.commit()
     return transaction

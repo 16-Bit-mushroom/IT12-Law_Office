@@ -8,6 +8,8 @@ from sqlalchemy import desc, asc, or_
 from app.services.case_service import CaseService
 from app.services.client_service import get_all_clients  # Only import get_all_clients
 from app.services.suggestion_service import SuggestionService
+from app.models.service_mdl import Service
+
 from app.models.case_mdl import Case
 from app.models.client_mdl import Client
 from app.utils.permissions import admin_required
@@ -111,6 +113,11 @@ def create_case():
             return render_template('cases/create.html', 
                                  clients=clients,
                                  pre_select_client_id=pre_select_client_id)
+            
+        try:
+            acceptance_fee = float(request.form.get('acceptance_fee', 0))
+        except ValueError:
+            acceptance_fee = 0.0
         
         # Parse representatives data
         representatives = []
@@ -157,6 +164,18 @@ def create_case():
             except ValueError:
                 # If date format is invalid, leave as None
                 filing_date = None
+
+        try:
+            total_fee = float(request.form.get('acceptance_fee', 0))
+            initial_pay = float(request.form.get('initial_payment', 0))
+        except:
+            total_fee = 0
+            initial_pay = 0
+            
+        pay_method = request.form.get('pay_method')
+        pay_ref = request.form.get('pay_ref')
+                
+        
         
         case_data = {
             'title': request.form.get('title'),
@@ -169,7 +188,12 @@ def create_case():
             'client_id': int(request.form.get('client_id')),
             'assigned_attorney_id': current_user.id,
             'status': 'active',
-            'representatives': representatives
+            'representatives': representatives,
+            'acceptance_fee': acceptance_fee,
+            'initial_payment': initial_pay,
+            'pay_method': pay_method,
+            'pay_ref': pay_ref,
+            
         }
         
         # Create case
@@ -711,6 +735,50 @@ def mark_case_paid(case_id):
         return redirect(url_for('case.view_case', case_id=case_id))
     
 # app/routes/case_routes.py
+
+@case_bp.route('/<int:case_id>/add_fee', methods=['POST'])
+@login_required
+def add_case_fee(case_id):
+    """Add a new billable item (Appearance Fee, etc.) to a case"""
+    try:
+        case = Case.query.get_or_404(case_id)
+        
+        purpose = request.form.get('purpose')
+        amount = float(request.form.get('amount', 0))
+        fee_type = request.form.get('fee_type')
+        
+        # Validation
+        if not purpose or amount <= 0:
+            flash('Invalid details. Purpose and positive amount required.', 'error')
+            return redirect(url_for('case.view_case', case_id=case_id))
+
+        # Create Transaction
+        # We need to get a default service ID for 'Legal Fees' or similar
+        # For now, we reuse the first service found or a specific 'Appearance Fee' service if you have one
+        service = Service.query.filter_by(is_notarization=False).first()
+        
+        transaction = TransactionItem(
+            client_id=case.client_id,
+            service_id=service.id,
+            case_id=case.id,
+            transaction_type='Case',
+            purpose=f"{fee_type}: {purpose}", # e.g., "Appearance Fee: Hearing Oct 12"
+            transaction_amount=amount,
+            payment_status='Pending'
+        )
+        
+        db.session.add(transaction)
+        db.session.commit()
+        
+        SystemLogService.log('Create', 'Finance', f"Added bill: {purpose} (₱{amount}) to Case #{case.case_number}", case.id)
+        flash('New fee added successfully.', 'success')
+        
+        return redirect(url_for('case.view_case', case_id=case_id))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error adding fee: {str(e)}', 'error')
+        return redirect(url_for('case.view_case', case_id=case_id))
 
 @case_bp.route('/<int:case_id>/undo-payment', methods=['POST'])
 @login_required

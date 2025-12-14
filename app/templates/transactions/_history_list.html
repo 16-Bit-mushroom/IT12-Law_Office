@@ -1,0 +1,26 @@
+{% if payments %}
+    <ul class="list-group list-group-flush">
+        {% for p in payments %}
+        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+            <div style="line-height: 1.2;">
+                <div class="fw-bold text-dark">₱ {{ "{:,.2f}".format(p.pay_amount) }}</div>
+                <div class="small text-muted">
+                    {{ p.pay_date.strftime('%b %d') }} • {{ p.pay_method }}
+                </div>
+                <div class="small text-secondary fst-italic">{{ p.pay_ref }}</div>
+            </div>
+            
+            <form action="{{ url_for('transaction.void_payment', payment_id=p.id) }}" method="POST" 
+                  onsubmit="return confirm('Are you sure you want to VOID this payment? This will increase the balance due.');">
+                <button type="submit" class="btn btn-xs btn-outline-danger" title="Void / Undo">
+                    &times;
+                </button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="text-center p-4 text-muted small">
+        No payments recorded yet.
+    </div>
+{% endif %}

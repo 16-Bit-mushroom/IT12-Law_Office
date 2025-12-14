@@ -10,76 +10,95 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('case.create_case') }}" id="caseForm">
-                        
+
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Client Information</h5>
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary"
+                                style="font-size: 1rem; font-weight: 600;">Client Information</h5>
 
                             {% if pre_selected_client %}
-                                <div class="card border-success bg-light mb-3">
-                                    <div class="card-body d-flex align-items-center justify-content-between py-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-3 text-success fs-4">
-                                                {% if pre_selected_client.client_type == 'corporate' %}🏢{% else %}👤{% endif %}
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0 fw-bold text-dark">{{ pre_selected_client.full_name }}</h6>
-                                                <small class="text-muted">{{ pre_selected_client.email }}</small>
-                                            </div>
+                            <div class="card border-success bg-light mb-3">
+                                <div class="card-body d-flex align-items-center justify-content-between py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3 text-success fs-4">
+                                            {% if pre_selected_client.client_type == 'corporate' %}🏢{% else %}👤{%
+                                            endif %}
                                         </div>
-                                        
-                                        <input type="hidden" name="client_id" value="{{ pre_selected_client.id }}">
-                                        
-                                        <a href="{{ url_for('case.create_case') }}" class="btn btn-sm btn-outline-secondary bg-white">
-                                            Change Client
-                                        </a>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark">{{ pre_selected_client.full_name }}</h6>
+                                            <small class="text-muted">{{ pre_selected_client.email }}</small>
+                                        </div>
                                     </div>
+
+                                    <input type="hidden" name="client_id" value="{{ pre_selected_client.id }}">
+
+                                    <a href="{{ url_for('case.create_case') }}"
+                                        class="btn btn-sm btn-outline-secondary bg-white">
+                                        Change Client
+                                    </a>
                                 </div>
+                            </div>
 
                             {% else %}
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-md-8">
-                                        <label class="form-label small fw-bold">Search Client *</label>
-                                        <div class="autocomplete-wrapper position-relative">
-                                            <input type="text" class="form-control" id="client_search"
-                                                placeholder="Type client name or email..." autocomplete="off" 
-                                                oninput="searchClients(this.value)">
-                                            <div id="client_suggestions" class="list-group position-absolute w-100 shadow mt-1" style="z-index: 1050; display: none;"></div>
-                                        </div>
-                                        <input type="hidden" id="client_id" name="client_id" required>
-                                        <div class="form-text">Start typing to search existing database.</div>
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-bold">Search Client *</label>
+                                    <div class="autocomplete-wrapper position-relative">
+                                        <input type="text" class="form-control" id="client_search"
+                                            placeholder="Type client name or email..." autocomplete="off"
+                                            oninput="searchClients(this.value)">
+                                        <div id="client_suggestions"
+                                            class="list-group position-absolute w-100 shadow mt-1"
+                                            style="z-index: 1050; display: none;"></div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <a href="{{ url_for('clients.new_client_form') }}" class="btn btn-outline-primary w-100 mb-3" style="height: 38px;">
-                                            + Create New Client
-                                        </a>
-                                    </div>
+                                    <input type="hidden" id="client_id" name="client_id" required>
+                                    <div class="form-text">Start typing to search existing database.</div>
                                 </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('clients.new_client_form') }}"
+                                        class="btn btn-outline-primary w-100 mb-3" style="height: 38px;">
+                                        + Create New Client
+                                    </a>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
 
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Case Details</h5>
-                            
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary"
+                                style="font-size: 1rem; font-weight: 600;">Case Details</h5>
+
                             <div class="mb-3">
-                                <label class="form-label d-block small fw-bold text-muted text-uppercase">Case Category / Nature</label>
+                                <label class="form-label d-block small fw-bold text-muted text-uppercase">Case Category
+                                    / Nature</label>
                                 <div class="d-flex flex-wrap gap-3">
-                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_civil" value="civil" checked><label class="form-check-label" for="cat_civil">Civil</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_criminal" value="criminal"><label class="form-check-label" for="cat_criminal">Criminal</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_labor" value="labor"><label class="form-check-label" for="cat_labor">Labor (NLRC)</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_spec" value="special_proceedings"><label class="form-check-label" for="cat_spec">Special Proc.</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" name="case_category" id="cat_admin" value="administrative"><label class="form-check-label" for="cat_admin">Administrative</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio"
+                                            name="case_category" id="cat_civil" value="civil" checked><label
+                                            class="form-check-label" for="cat_civil">Civil</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio"
+                                            name="case_category" id="cat_criminal" value="criminal"><label
+                                            class="form-check-label" for="cat_criminal">Criminal</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio"
+                                            name="case_category" id="cat_labor" value="labor"><label
+                                            class="form-check-label" for="cat_labor">Labor (NLRC)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio"
+                                            name="case_category" id="cat_spec" value="special_proceedings"><label
+                                            class="form-check-label" for="cat_spec">Special Proc.</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio"
+                                            name="case_category" id="cat_admin" value="administrative"><label
+                                            class="form-check-label" for="cat_admin">Administrative</label></div>
                                 </div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Case Title *</label>
-                                    <input type="text" class="form-control" name="title" required placeholder="e.g. People vs. Cruz">
+                                    <input type="text" class="form-control" name="title" required
+                                        placeholder="e.g. People vs. Cruz">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Case Type</label>
                                     <div class="autocomplete-wrapper">
-                                        <input type="text" class="form-control" id="case_type" name="case_type" 
+                                        <input type="text" class="form-control" id="case_type" name="case_type"
                                             placeholder="Type or select (e.g. Estafa, Annulment)..." autocomplete="off"
                                             oninput="getSuggestions('case_type', this.value)">
                                         <div id="case_type_suggestions" class="autocomplete-dropdown"></div>
@@ -90,17 +109,17 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Specific Violation / Cause of Action</label>
                                 <div class="autocomplete-wrapper">
-                                    <input type="text" class="form-control" id="violation" name="violation" 
+                                    <input type="text" class="form-control" id="violation" name="violation"
                                         placeholder="e.g. Art. 315 RPC, BP 22, Breach of Contract..." autocomplete="off"
                                         oninput="getSuggestions('violation', this.value)">
                                     <div id="violation_suggestions" class="autocomplete-dropdown"></div>
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Cause of Action Description</label>
                                 <div class="autocomplete-wrapper">
-                                    <input type="text" class="form-control" id="cause_of_action" name="cause_of_action" 
+                                    <input type="text" class="form-control" id="cause_of_action" name="cause_of_action"
                                         placeholder="Brief description of the complaint..." autocomplete="off"
                                         oninput="getSuggestions('cause_of_action', this.value)">
                                     <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
@@ -109,27 +128,74 @@
                         </div>
 
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Representatives</h5>
-                            <p class="text-muted small">Add opposing counsel, co-counsel, or other representatives (Optional).</p>
-                            
-                            <div id="representatives-container">
-                                </div>
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary"
+                                style="font-size: 1rem; font-weight: 600;">Representatives</h5>
+                            <p class="text-muted small">Add opposing counsel, co-counsel, or other representatives
+                                (Optional).</p>
 
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addRepresentative()">
+                            <div id="representatives-container">
+                            </div>
+
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2"
+                                onclick="addRepresentative()">
                                 + Add Representative
                             </button>
                         </div>
 
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3 text-secondary" style="font-size: 1rem; font-weight: 600;">Case Dates</h5>
+                            <h5 class="border-bottom pb-2 mb-3 text-secondary"
+                                style="font-size: 1rem; font-weight: 600;">Case Dates</h5>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Engagement Date *</label>
-                                    <input type="date" class="form-control" name="engagement_date" id="engagement_date" required>
+                                    <input type="date" class="form-control" name="engagement_date" id="engagement_date"
+                                        required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Filing Date <span class="text-muted fw-normal small">(if applicable)</span></label>
+                                    <label class="form-label fw-bold">Filing Date <span
+                                            class="text-muted fw-normal small">(if applicable)</span></label>
                                     <input type="date" class="form-control" name="filing_date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-success">Total Acceptance Fee (₱) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₱</span>
+                                    <input type="number" class="form-control" name="acceptance_fee" required min="1"
+                                        step="0.01" placeholder="Total Contract Price">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card bg-light border-success">
+                                    <div class="card-body py-2 px-3">
+                                        <h6 class="text-success small fw-bold mb-2">INITIAL PAYMENT DETAILS (Required)
+                                        </h6>
+
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <label class="form-label small">Amount Paid Now *</label>
+                                                <input type="number" class="form-control form-control-sm"
+                                                    name="initial_payment" required min="1" step="0.01">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">Method</label>
+                                                <select class="form-select form-select-sm" name="pay_method">
+                                                    <option value="Cash">Cash</option>
+                                                    <option value="Check">Check</option>
+                                                    <option value="Online">Online/GCash</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small">Payment Ref / OR No. *</label>
+                                                <input type="text" class="form-control form-control-sm" name="pay_ref"
+                                                    required placeholder="OR Number or Reference">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -152,23 +218,28 @@
             <div class="row g-2">
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Full Name</label>
-                    <input type="text" class="form-control form-control-sm" name="representative_name[]" placeholder="Full Name">
+                    <input type="text" class="form-control form-control-sm" name="representative_name[]"
+                        placeholder="Full Name">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Email</label>
-                    <input type="email" class="form-control form-control-sm" name="representative_email[]" placeholder="Email">
+                    <input type="email" class="form-control form-control-sm" name="representative_email[]"
+                        placeholder="Email">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Phone</label>
-                    <input type="text" class="form-control form-control-sm" name="representative_phone[]" placeholder="Phone">
+                    <input type="text" class="form-control form-control-sm" name="representative_phone[]"
+                        placeholder="Phone">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Role</label>
-                    <input type="text" class="form-control form-control-sm" name="representative_role[]" placeholder="e.g. Counsel">
+                    <input type="text" class="form-control form-control-sm" name="representative_role[]"
+                        placeholder="e.g. Counsel">
                 </div>
             </div>
             <div class="mt-2 text-end">
-                <button type="button" class="btn btn-outline-danger btn-sm py-0" onclick="removeRepresentative(this)">Remove</button>
+                <button type="button" class="btn btn-outline-danger btn-sm py-0"
+                    onclick="removeRepresentative(this)">Remove</button>
             </div>
         </div>
     </div>
@@ -184,19 +255,19 @@
     document.addEventListener('DOMContentLoaded', () => {
         // 1. Set Date Today
         const d = document.getElementById('engagement_date');
-        if(d && !d.value) d.value = new Date().toISOString().split('T')[0];
+        if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
 
         // 2. Add one empty representative row by default (Optional, or leave empty)
         // addRepresentative(); 
 
         // 3. Click Outside Listener for Dropdowns
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const wrapper = document.querySelector('.autocomplete-wrapper');
             // Logic to close dropdowns
             document.querySelectorAll('.autocomplete-dropdown, #client_suggestions').forEach(el => {
-               if (!el.parentElement.contains(e.target)) {
-                   el.style.display = 'none';
-               }
+                if (!el.parentElement.contains(e.target)) {
+                    el.style.display = 'none';
+                }
             });
         });
     });
@@ -220,7 +291,7 @@
                     item.className = 'list-group-item list-group-item-action py-2 text-start';
                     let icon = client.type === 'corporate' ? '🏢' : '👤';
                     item.innerHTML = `<span class="me-2">${icon}</span><strong>${client.full_name}</strong> <span class="text-muted small ms-1">(${client.email})</span>`;
-                    
+
                     item.onclick = () => {
                         window.location.href = "{{ url_for('case.create_case') }}?pre_select_client_id=" + client.id;
                     };
@@ -249,8 +320,8 @@
         const dropdown = document.getElementById(dropdownId);
         if (!dropdown) return;
 
-        let url = query.length < 1 ? 
-            getSuggestionsUrl.replace('FIELD', field) : 
+        let url = query.length < 1 ?
+            getSuggestionsUrl.replace('FIELD', field) :
             `${searchSuggestionsUrl.replace('FIELD', field)}?q=${encodeURIComponent(query)}`;
 
         try {
@@ -289,9 +360,11 @@
         cursor: pointer;
         border-bottom: 1px solid #eee;
     }
+
     .autocomplete-item:hover {
         background-color: #f8f9fa;
     }
+
     .autocomplete-dropdown {
         position: absolute;
         top: 100%;
@@ -302,7 +375,7 @@
         max-height: 200px;
         overflow-y: auto;
         z-index: 1000;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         display: none;
     }
 </style>

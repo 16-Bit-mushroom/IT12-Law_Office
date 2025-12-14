@@ -1178,6 +1178,11 @@
         document.getElementById('payModalPurpose').textContent = purpose;
         document.getElementById('payModalBalance').textContent = '₱ ' + parseFloat(balance).toLocaleString();
 
+        // 2. NEW: Enforce Max Input
+        const amountInput = document.querySelector('input[name="payment_amount"]');
+        amountInput.value = balance; // Auto-fill full balance
+        amountInput.max = balance;   // Prevent typing more
+
         // 3. Show
         new bootstrap.Modal(document.getElementById('paymentModal')).show();
     }

@@ -8,6 +8,7 @@ from app.services.suggestion_service import SuggestionService
 from app.models.notarial_entry_mdl import NotarialLastEntry
 # from datetime import datetime
 from datetime import datetime, timezone, timedelta
+from app.models.payment_mdl import Payment
 
 
 PHT = timezone(timedelta(hours=8))
@@ -188,13 +189,15 @@ class NotarialEntryService:
                 not_date=datetime.strptime(form_data['notarization_date'], '%Y-%m-%dT%H:%M'),
                 not_type_act=form_data['notarial_act_type'],
                 not_fee=float(form_data['notarial_fee']),
-                not_fee_or=None,
+                not_fee_or=form_data.get('pay_ref'),
                 not_other_place=form_data.get('other_place', ''),
                 not_comp_evidence_id=form_data.get('not_comp_evidence_id', '')  # ADDED
             )
             
             db.session.add(entry)
             db.session.flush()
+            
+            entry.transaction_item_id = transaction.id
             
             # 2. Add Parties - FIXED with ID fields
             party_names = form_data.getlist('party_name')
@@ -247,24 +250,35 @@ class NotarialEntryService:
                 user_id
             )
             
-            # 6. Automatically Create TransactionItem
+            # Create the Bill (Transaction)
             transaction = TransactionItem(
-                client_id=1,  # Default client - should be updated based on your system
-                service_id=1,  # Default notarial service
+                client_id=1,  # Default 'Walk-in' client ID, or capture if needed
+                service_id=1,  # Default Notarial Service ID
                 transaction_type='Notarial',
                 purpose=entry.not_title,
                 transaction_amount=entry.not_fee,
+                entry_reference=f"{entry.not_book_num}-{entry.not_page_num}-{entry.not_entry_num}",
                 payment_status='Pending'
             )
-            
             db.session.add(transaction)
             db.session.flush()
             
-            # 7. Link Transaction to Entry
+            # Link Entry to Transaction
             entry.transaction_item_id = transaction.id
             
-            # 8. Set entry_reference in transaction
-            transaction.entry_reference = f"{entry.not_book_num}-{entry.not_page_num}-{entry.not_entry_num}"
+            # Create the Payment (Immediate)
+            # We assume full payment since they can't encode without it
+            payment = Payment(
+                transaction_item_id=transaction.id,
+                pay_amount=entry.not_fee, # Full amount
+                pay_method=form_data.get('pay_method', 'Cash'),
+                pay_ref=form_data.get('pay_ref', 'Cash')
+            )
+            db.session.add(payment)
+            
+            # Update Transaction Status to Paid
+            transaction.payment_status = 'Paid'
+            entry.transaction_status = 'paid'
             
            
             

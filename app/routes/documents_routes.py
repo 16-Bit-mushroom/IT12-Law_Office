@@ -163,17 +163,34 @@ def upload_document():
         parent_id = request.form.get('parent_id')
         document_type = request.form.get('document_type')
         notes = request.form.get('notes')
-        document_id = request.form.get('document_id') # Get ID for fulfillment
+        document_id = request.form.get('document_id') # For existing requirement
         
+        # 1. NEW: Get Custom Status (for Notarial Archive)
+        custom_status = request.form.get('custom_status') 
+        
+        # 2. Create the Document
         doc = DocumentService.create_document(
             file, parent_type, parent_id, document_type, notes, 
             current_user.id, document_id
         )
         
-        action = "Fulfilled Requirement" if document_id else "Uploaded Document"
+        # 3. NEW: Override Status if provided
+        if custom_status:
+            doc.document_status = custom_status
+            # We need to import db to save this change if the service committed already
+            from app.models import db 
+            db.session.commit()
+        
+        # 4. Smart Logging
+        action = "Uploaded Document"
+        if document_id:
+            action = "Fulfilled Requirement"
+        elif custom_status == 'Archived':
+            action = "Archived Document"
+            
         SystemLogService.log('Upload', 'Document', f"{action}: {doc.filename}", doc.id)
         
-        flash('Document uploaded successfully!', 'success')
+        flash('Document saved successfully!', 'success')
         
     except Exception as e:
         flash(f'Error uploading document: {str(e)}', 'error')

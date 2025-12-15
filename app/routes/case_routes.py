@@ -19,6 +19,7 @@ from app.services.system_log_service import SystemLogService
 from app.models.transaction_mdl import TransactionItem # Ensure this is imported
 from app.services.transaction_service import mark_payment_paid
 from app.models import db
+import json
 
 
 case_bp = Blueprint('case', __name__, url_prefix='/cases')
@@ -410,6 +411,7 @@ def edit_case(case_id):
         # MERGED ERROR HANDLER: Logs error and re-renders form so user doesn't lose data
         print(f"Error updating case: {e}") # Print to console for debugging
         flash(f'Error updating case: {str(e)}', 'error')
+        return redirect(url_for('case.view_case', case_id=case_id))
 
 @case_bp.route('/<int:case_id>/delete', methods=['POST'])
 @admin_required

@@ -70,6 +70,8 @@ class NotarialEntryParty(db.Model):
     party_name = db.Column(db.String(150), nullable=False)
     party_address = db.Column(db.String(150), nullable=False)
     
+    citizenship = db.Column(db.String(50), nullable=True, default='Filipino')
+    
     # ID Details for the party
     party_id_type = db.Column(db.String(50), nullable=True) # e.g., Passport, Drivers License
     party_id_number = db.Column(db.String(50), nullable=True)

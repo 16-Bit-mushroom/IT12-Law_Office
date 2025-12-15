@@ -143,16 +143,16 @@
                             <td>
                                 {% if case.status == 'active' %}
                                 <span
-                                    class="badge bg-success-subtle text-success border border-success-subtle me-2">Active</span>
+                                    class="status-tag bg-active-subtle text-active border border-active-subtle me-2">Active</span>
                                 {% elif case.status == 'completed' %}
                                 <span
-                                    class="badge bg-primary-subtle text-primary border border-primary-subtle me-2">Completed</span>
+                                    class="status-tag bg-success-subtle text-success border border-success-subtle me-2">Completed</span>
                                 {% elif case.status == 'pending' %}
                                 <span
-                                    class="badge bg-warning-subtle text-warning border border-warning-subtle me-2">Pending</span>
+                                    class="status-tag bg-warning-subtle text-warning border border-warning-subtle me-2">Pending</span>
                                 {% else %}
                                 <span
-                                    class="badge bg-secondary-subtle text-secondary border border-secondary-subtle me-2">{{
+                                    class="status-tag bg-secondary-subtle text-secondary border border-secondary-subtle me-2">{{
                                     case.status|title }}</span>
                                 {% endif %}
                             </td>

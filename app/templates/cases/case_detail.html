@@ -20,7 +20,7 @@
 
     <div class="row">
         <!-- Case Details Column -->
-        <div class="col-md-6">
+        <div class="col-md-5">
             <section class="content-section">
                 <div class="panel-card" style="margin-bottom: 20px;">
                     <h5 class="panel-card__title">Case Information</h5>
@@ -28,6 +28,11 @@
                         <div class="detail-item">
                             <span class="detail-label">Case Number</span>
                             <span class="detail-value"><code>{{ case.case_number }}</code></span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Case Title</span>
+                            <span class="detail-value">{{ case.title }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Case Category</span>
@@ -38,6 +43,9 @@
                                 </span>
                             </span>
                         </div>
+
+                        
+
                         <div class="detail-item">
                             <span class="detail-label">Status</span>
                             <span class="detail-value">
@@ -153,7 +161,7 @@
 
 
         <!-- Documents Column -->
-        <div class="col-md-6">
+        <div class="col-md-7">
 
             {% from 'schedules/_schedule_list.html' import render_schedule_list %}
 
@@ -213,7 +221,7 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="text-end fw-bold align-top py-3 {{ 'text-danger' if bill.balance > 0 else 'text-success' }}">
+                                        class="text-end fw-normal align-top py-3 {{ 'text-danger' if bill.balance > 0 else 'text-success' }}">
                                         <small>₱</small> {{ "{:,.0f}".format(bill.balance) }}
                                     </td>
                                     <td class="text-center align-top py-3">

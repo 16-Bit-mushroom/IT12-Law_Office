@@ -197,11 +197,11 @@ class NotarialEntryService:
             db.session.add(entry)
             db.session.flush()
             
-            entry.transaction_item_id = transaction.id
             
             # 2. Add Parties - FIXED with ID fields
             party_names = form_data.getlist('party_name')
             party_addresses = form_data.getlist('party_address')
+            party_citizenships = form_data.getlist('party_citizenship')
             party_id_types = form_data.getlist('party_id_type')
             party_id_numbers = form_data.getlist('party_id_number')
             party_id_expiries = form_data.getlist('party_id_expiry')
@@ -220,6 +220,7 @@ class NotarialEntryService:
                         notarial_entry_id=entry.id,
                         party_name=party_names[i].strip(),
                         party_address=party_addresses[i].strip() if i < len(party_addresses) else '',
+                        citizenship=party_citizenships[i].strip() if i < len(party_citizenships) else 'Filipino',
                         party_id_type=party_id_types[i].strip() if i < len(party_id_types) and party_id_types[i].strip() else None,
                         party_id_number=party_id_numbers[i].strip() if i < len(party_id_numbers) and party_id_numbers[i].strip() else None,
                         party_id_expiry=p_expiry

@@ -18,6 +18,8 @@ class TransactionItem(db.Model):
     # Total Amount to be paid (The Bill)
     transaction_amount = db.Column(Numeric(10, 2), nullable=False)
     
+    entry_reference = db.Column(db.String(100), nullable=True)
+    
     # Status: 'Pending', 'Partial', 'Paid'
     payment_status = db.Column(db.String(50), nullable=False, default='Pending')
     

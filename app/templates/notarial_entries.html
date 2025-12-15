@@ -48,12 +48,12 @@
                         {% for entry in entries %}
                         <tr>
                             <td class="align-middle">
-                                <span class="fw-bold text-dark" style="white-space: nowrap;">
-                                    Bk. {{ entry.not_book_num }},  p. {{ entry.not_page_num }}, ent. {{
+                                <span class="fw-normal text-dark" style="white-space: nowrap;">
+                                    Bk. {{ entry.not_book_num }}, p. {{ entry.not_page_num }}, ent. {{
                                     entry.not_entry_num }}
                                 </span>
                             </td>
-                            <td class="align-middle"><strong>{{ entry.not_series }}</strong></td>
+                            <td class="align-middle">{{ entry.not_series }}</td>
                             <td class="align-middle"><strong>{{ entry.not_title }}</strong></td>
                             <td class="align-middle">
                                 <div class="clickable-list">
@@ -123,18 +123,82 @@
                                         </svg>
                                     </a>
 
-                                    <a href="{{ url_for('notarial_entries.print_entry', entry_id=entry.id) }}"
-                                        target="_blank" class="btn-action btn-action--primary" title="Print Entry">
+                                    {% if 'Affidavit of Loss' in entry.not_title %}
+                                    <a href="{{ url_for('notarial_entries.generate_document', entry_id=entry.id, doc_type='affidavit_loss') }}"
+                                        class="btn-action btn-action--primary" title="Download Affidavit of Loss">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                                            <path
-                                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2">
-                                            </path>
-                                            <rect x="6" y="14" width="12" height="8"></rect>
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
                                         </svg>
                                     </a>
+                                    {% elif 'Joint Affidavit' in entry.not_title %}
+                                    <a href="{{ url_for('notarial_entries.generate_document', entry_id=entry.id, doc_type='joint_affidavit_two_disinterested_person') }}"
+                                        class="btn-action btn-action--primary" title="Download Joint Affidavit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </a>
+                                    {% elif 'Special Power' in entry.not_title %}
+                                    <a href="{{ url_for('notarial_entries.generate_document', entry_id=entry.id, doc_type='special_power_of_attorney') }}"
+                                        class="btn-action btn-action--primary" title="Download SPA">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </a>
+                                    {% elif 'No Income' in entry.not_title %}
+                                    <a href="{{ url_for('notarial_entries.generate_document', entry_id=entry.id, doc_type='affidavit-of-no-income') }}"
+                                        class="btn-action btn-action--primary" title="Download Affidavit No Income">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </a>
+                                    {% elif 'Undertaking' in entry.not_title %}
+                                    <a href="{{ url_for('notarial_entries.generate_document', entry_id=entry.id, doc_type='affidavit-of-undertaking') }}"
+                                        class="btn-action btn-action--primary" title="Download Affidavit Undertaking">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </a>
+                                    {% else %}
+                                    <button class="btn-action btn-action--secondary" disabled
+                                        title="No Template Available">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                    {% endif %}
 
                                     <a href="#" class="btn-action btn-action--secondary"
                                         style="background-color: rgb(99, 131, 168); color: white;" title="Edit Details"
@@ -147,7 +211,6 @@
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                         </svg>
                                     </a>
-
                                 </div>
                             </td>
                         </tr>
@@ -173,6 +236,29 @@
                 <div class="modal-body">
                     <p class="text-muted">Complete all mandatory fields as required by the 2004 Rules on Notarial
                         Practice.</p>
+
+                    <div class="card bg-light border-primary mb-4">
+                        <div class="card-body py-2 px-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold text-primary mb-0">Select Template:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <select class="form-select form-select-sm" id="templateSelector"
+                                        onchange="applyTemplate()">
+                                        <option value="">-- Custom / Manual Entry --</option>
+                                        <option value="Affidavit of Loss|Jurat">Affidavit of Loss</option>
+                                        <option value="Joint Affidavit of Two Disinterested Persons|Jurat">Joint
+                                            Affidavit (2 Disinterested Persons)</option>
+                                        <option value="Special Power of Attorney|Acknowledgment">Special Power of
+                                            Attorney</option>
+                                        <option value="Affidavit of No Income|Jurat">Affidavit of No Income</option>
+                                        <option value="Affidavit of Undertaking|Jurat">Affidavit of Undertaking</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-md-4">
@@ -655,6 +741,117 @@
         background-color: #fee2e2;
         border-radius: 4px;
     }
+
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        justify-content: start;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-action--info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-action--primary {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .btn-action--secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+    }
+
+    .autocomplete-wrapper {
+        position: relative;
+    }
+
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1050;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .autocomplete-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .suggestion-remove-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+    }
+
+    /* Make tooltip visible */
+    .table td {
+        position: relative;
+        overflow: visible !important;
+    }
+
+    .table-wrapper {
+        overflow: visible !important;
+    }
+
+    .clickable-list {
+        position: relative;
+        display: inline-block;
+    }
+
+    .clickable-list .list-tooltip {
+        visibility: hidden;
+        width: 320px;
+        background-color: #fff;
+        color: #333;
+        padding: 12px;
+        position: absolute;
+        z-index: 1050;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #dee2e6;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .clickable-list:hover .list-tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
 </style>
 
 <script>
@@ -662,37 +859,62 @@
     //  CONFIGURATION & GLOBAL VARIABLES
     // ==========================================
 
-    // API Endpoints (Must match your Python routes)
     const getSuggestionsUrl = "{{ url_for('notarial_entries.get_suggestions_api', field='FIELD') }}";
     const searchSuggestionsUrl = "{{ url_for('notarial_entries.search_suggestions_api', field='FIELD') }}";
     const removeSuggestionUrl = "{{ url_for('notarial_entries.remove_suggestion_api', field='FIELD') }}";
+    const searchPartiesUrl = "/notarial-entries/api/parties/search"; 
 
     let currentEditingId = null;
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. Set Default Date (Now)
-        resetDateToNow();
+    // STANDARD PHILIPPINE ID LIST (For Dropdown)
+    const STANDARD_PH_IDS = [
+        "Driver's License", "Passport", "UMID", "PhilHealth", "SSS", "TIN",
+        "Postal ID", "PRC ID", "Voter's ID", "National ID (PhilSys)",
+        "Senior Citizen ID", "PWD ID"
+    ];
 
-        // 2. Global Click Listener (Close Dropdowns)
+    // VALIDATION RULES
+    const ID_RULES = {
+        "Driver's License": { placeholder: 'N01-12-123456', pattern: '^[A-Z0-9]{1}\\d{2}-\\d{2}-\\d{6}$', hint: 'Format: L02-12-123456' },
+        "Passport": { placeholder: 'P1234567A', pattern: '^[A-Z]\\d{7}[A-Z]?$', hint: 'Format: P + 7 Digits' },
+        "UMID": { placeholder: '0000-0000000-0', pattern: '^\\d{4}-\\d{7}-\\d{1}$', hint: 'Format: 12 Digits' },
+        "PhilHealth": { placeholder: '00-000000000-0', pattern: '^\\d{2}-\\d{9}-\\d{1}$', hint: 'Format: 12 Digits' },
+        "SSS": { placeholder: '00-0000000-0', pattern: '^\\d{2}-\\d{7}-\\d{1}$', hint: 'Format: 10 Digits' },
+        "TIN": { placeholder: '000-000-000-000', pattern: '^\\d{3}-\\d{3}-\\d{3}-\\d{3}$', hint: 'Format: 12 Digits' },
+        "Postal ID": { placeholder: 'A123 B456 C789 D012', pattern: '^[A-Z0-9]{4} [A-Z0-9]{4} [A-Z0-9]{4} [A-Z0-9]{4}$', hint: 'Format: 16 Alphanumeric' },
+        "PRC ID": { placeholder: '0000000', pattern: '^\\d{7}$', hint: 'Format: 7 Digits' },
+        "National ID (PhilSys)": { placeholder: '0000-0000-0000-0000', pattern: '^\\d{4}-\\d{4}-\\d{4}-\\d{4}$', hint: 'Format: 16 Digits' }
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        resetDateToNow();
         document.addEventListener('click', function (event) {
             if (!event.target.closest('.autocomplete-wrapper')) {
                 document.querySelectorAll('.autocomplete-dropdown').forEach(d => d.style.display = 'none');
             }
         });
-
-        // 3. Initialize Modals & Buttons
         setupModalListeners();
 
-        // 4. Initialize first party field for new entry
-        // (Only if the container is empty, to avoid duplicating if browser restores state)
+        // Initial Party Field
         if (document.getElementById('partiesContainer').children.length === 0) {
             addPartyField();
         }
 
-        // 5. Add Print Buttons to UI
-        addPrintButtonToHeader();
         addPrintButtonsToTable();
     });
+
+    function applyTemplate() {
+        const selector = document.getElementById('templateSelector');
+        const selectedVal = selector.value;
+        if (selectedVal) {
+            const [title, act] = selectedVal.split('|');
+            document.getElementById('document_title').value = title;
+            document.getElementById('notarial_act_type').value = act;
+            if (title.includes('Joint') && document.getElementById('partiesContainer').children.length < 2) {
+                addPartyField();
+            }
+        }
+    }
 
     function resetDateToNow() {
         const now = new Date();
@@ -701,113 +923,112 @@
     }
 
     // ==========================================
-    //  SMART SUGGESTION LOGIC
+    //  SMART SUGGESTIONS (General)
     // ==========================================
-
-    /**
-     * Fetches and displays suggestions
-     * @param {string} apiField - The database field key (e.g., 'document_title', 'party_id')
-     * @param {string} query - The user's input text
-     * @param {string} dropdownId - The DOM ID of the dropdown div
-     * @param {string} inputId - (Optional) The DOM ID of the input field to update
-     */
     async function getSuggestions(apiField, query, dropdownId, inputId = null) {
         const dropdown = document.getElementById(dropdownId);
-        // Default inputId to the same as apiField if not provided (standard for static fields)
         const targetInputId = inputId || apiField;
 
-        let url;
-        if (query.length < 1) {
-            // Load recent/top suggestions
-            url = getSuggestionsUrl.replace('FIELD', apiField);
-        } else {
-            // Search suggestions
-            url = `${searchSuggestionsUrl.replace('FIELD', apiField)}?q=${encodeURIComponent(query)}`;
+        // Special handling for ID Type: Mix Standard List + DB Suggestions
+        if (apiField === 'party_id') {
+            await showMixedIdSuggestions(query, dropdown, targetInputId, apiField);
+            return;
         }
+
+        let url = query.length < 1 ? getSuggestionsUrl.replace('FIELD', apiField) : `${searchSuggestionsUrl.replace('FIELD', apiField)}?q=${encodeURIComponent(query)}`;
 
         try {
             const response = await fetch(url);
             const suggestions = await response.json();
-
-            dropdown.innerHTML = '';
-
-            if (suggestions.length === 0) {
-                if (query.length > 0) {
-                    // UX: Show that this is a new custom entry
-                    dropdown.innerHTML = '<div class="autocomplete-item text-muted small" style="cursor: default;">New entry (will be saved)</div>';
-                } else {
-                    dropdown.style.display = 'none';
-                    return;
-                }
-            } else {
-                suggestions.forEach(suggestion => {
-                    const item = document.createElement('div');
-                    item.className = 'autocomplete-item';
-
-                    const val = suggestion.value || suggestion;
-                    const safeVal = val.replace(/'/g, "\\'");
-
-                    item.innerHTML = `
-                        <span>${val}</span>
-                        <button type="button" class="suggestion-remove-btn" 
-                            title="Remove from history"
-                            onclick="event.stopPropagation(); removeSuggestion('${apiField}', '${safeVal}', '${dropdownId}', '${targetInputId}')">
-                            &times;
-                        </button>
-                    `;
-
-                    // Clicking text fills input
-                    item.onclick = (e) => {
-                        if (e.target.tagName !== 'BUTTON') {
-                            const input = document.getElementById(targetInputId);
-                            if (input) input.value = val;
-                            dropdown.style.display = 'none';
-                        }
-                    };
-
-                    dropdown.appendChild(item);
-                });
-            }
-            dropdown.style.display = 'block';
-        } catch (error) {
-            console.error('Error fetching suggestions:', error);
-        }
+            renderDropdown(dropdown, suggestions, apiField, dropdownId, targetInputId, query);
+        } catch (e) { console.error(e); }
     }
 
-    async function removeSuggestion(apiField, value, dropdownId, inputId) {
-        if (!confirm(`Permanently remove "${value}" from suggestions?`)) return;
+    // ==========================================
+    //  NEW: PARTY HISTORY SEARCH (MISSING PART 1)
+    // ==========================================
+    async function searchPartyHistory(input, dropdownId) {
+        const query = input.value.trim();
+        const dropdown = document.getElementById(dropdownId);
+        
+        if (query.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+        }
 
         try {
-            const url = removeSuggestionUrl.replace('FIELD', apiField);
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ value: value })
-            });
-
-            if (response.ok) {
-                // Refresh list
-                const currentVal = document.getElementById(inputId).value;
-                getSuggestions(apiField, currentVal, dropdownId, inputId);
+            const response = await fetch(`${searchPartiesUrl}?q=${encodeURIComponent(query)}`);
+            const parties = await response.json();
+            
+            dropdown.innerHTML = '';
+            
+            if (parties.length === 0) {
+                dropdown.style.display = 'none';
+                return;
             }
-        } catch (e) {
-            console.error(e);
+
+            parties.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="fw-bold">${p.party_name}</div>
+                        <div class="small text-muted" style="font-size: 0.75rem;">
+                            ${p.party_address} • ${p.party_id_type || 'No ID'}
+                        </div>
+                    </div>
+                `;
+                
+                item.onclick = (e) => {
+                    fillPartyFields(input, p);
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(item);
+            });
+            
+            dropdown.style.display = 'block';
+            
+        } catch (e) { console.error('Error searching parties:', e); }
+    }
+
+    function fillPartyFields(nameInput, data) {
+        const container = nameInput.closest('.party-field');
+        
+        nameInput.value = data.party_name;
+        
+        const addr = container.querySelector('input[name="party_address"]');
+        if(addr) addr.value = data.party_address;
+        
+        const cit = container.querySelector('input[name="party_citizenship"]');
+        if(cit) cit.value = data.citizenship || 'Filipino';
+        
+        const idType = container.querySelector('input[name="party_id_type"]');
+        if(idType) {
+            idType.value = data.party_id_type || '';
+            updateIdValidation(idType);
         }
+        
+        const idNum = container.querySelector('input[name="party_id_number"]');
+        if(idNum) idNum.value = data.party_id_number || '';
+        
+        const exp = container.querySelector('input[name="party_id_expiry"]');
+        if(exp && data.party_id_expiry) exp.value = data.party_id_expiry;
     }
 
     // ==========================================
-    //  DYNAMIC FIELDS (Parties & Witnesses)
+    //  DYNAMIC FIELDS (UPDATED PART 2)
     // ==========================================
-
     function addPartyField(partyData = null) {
         const container = document.getElementById('partiesContainer');
         const index = container.children.length;
-
-        // Generate Unique IDs for this specific row's ID Type suggestion
-        // This ensures every row has its own working dropdown
         const uniqueId = Date.now() + Math.random().toString(36).substr(2, 5);
+
         const idTypeInputId = `party_id_type_${uniqueId}`;
         const idTypeDropdownId = `party_id_type_suggestions_${uniqueId}`;
+        
+        // NEW IDs for Name Search
+        const nameInputId = `party_name_${uniqueId}`;
+        const nameDropdownId = `party_name_suggestions_${uniqueId}`;
 
         const partyHtml = `
         <div class="party-field border p-3 mb-3 rounded" style="background-color: #f8f9fa;">
@@ -817,13 +1038,29 @@
             </div>
             
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="mb-3">
                         <label class="form-label small">Party Name *</label>
-                        <input type="text" class="form-control" name="party_name" value="${partyData ? partyData.party_name : ''}" required>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" class="form-control" 
+                                id="${nameInputId}"
+                                name="party_name" 
+                                value="${partyData ? partyData.party_name : ''}" 
+                                placeholder="Search existing or type new..."
+                                required
+                                autocomplete="off"
+                                oninput="searchPartyHistory(this, '${nameDropdownId}')">
+                            <div id="${nameDropdownId}" class="autocomplete-dropdown"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label small">Citizenship</label>
+                        <input type="text" class="form-control" name="party_citizenship" value="${partyData ? (partyData.citizenship || 'Filipino') : 'Filipino'}">
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label class="form-label small">Party Address *</label>
                         <input type="text" class="form-control" name="party_address" value="${partyData ? partyData.party_address : ''}" required>
@@ -839,11 +1076,13 @@
                             <input type="text" class="form-control" 
                                 id="${idTypeInputId}" 
                                 name="party_id_type" 
-                                placeholder="Passport, UMID..." 
+                                placeholder="Select or Type ID..." 
                                 value="${partyData ? partyData.party_id_type : ''}" 
                                 required
                                 autocomplete="off"
-                                oninput="getSuggestions('party_id', this.value, '${idTypeDropdownId}', '${idTypeInputId}')">
+                                onfocus="getSuggestions('party_id', this.value, '${idTypeDropdownId}', '${idTypeInputId}')"
+                                oninput="getSuggestions('party_id', this.value, '${idTypeDropdownId}', '${idTypeInputId}'); updateIdValidation(this)"
+                                onblur="setTimeout(() => updateIdValidation(this), 200)">
                             <div id="${idTypeDropdownId}" class="autocomplete-dropdown"></div>
                         </div>
                     </div>
@@ -851,7 +1090,8 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label class="form-label small">ID Number *</label>
-                        <input type="text" class="form-control" name="party_id_number" value="${partyData ? partyData.party_id_number : ''}" required>
+                        <input type="text" class="form-control" name="party_id_number" 
+                               value="${partyData ? partyData.party_id_number : ''}" required>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -861,114 +1101,176 @@
                     </div>
                 </div>
             </div>
-        </div>
-        `;
+        </div>`;
 
         container.insertAdjacentHTML('beforeend', partyHtml);
+
+        if (partyData && partyData.party_id_type) {
+            setTimeout(() => {
+                const input = document.getElementById(idTypeInputId);
+                if (input) updateIdValidation(input);
+            }, 100);
+        }
     }
+
+    // ==========================================
+    //  HELPER FUNCTIONS (Dropdowns, ID Validation)
+    // ==========================================
+    
+    async function showMixedIdSuggestions(query, dropdown, targetInputId, apiField) {
+        let combinedList = [];
+        if (!query) {
+            combinedList = [...STANDARD_PH_IDS];
+        } else {
+            combinedList = STANDARD_PH_IDS.filter(id => id.toLowerCase().includes(query.toLowerCase()));
+        }
+
+        try {
+            let url = query.length < 1 ? getSuggestionsUrl.replace('FIELD', apiField) : `${searchSuggestionsUrl.replace('FIELD', apiField)}?q=${encodeURIComponent(query)}`;
+            const response = await fetch(url);
+            const dbSuggestions = await response.json();
+            dbSuggestions.forEach(item => {
+                const val = item.value || item;
+                if (!combinedList.includes(val)) combinedList.push(val);
+            });
+        } catch (e) { console.error(e); }
+
+        dropdown.innerHTML = '';
+        if (combinedList.length === 0) { dropdown.style.display = 'none'; return; }
+
+        combinedList.forEach(val => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            const isStandard = STANDARD_PH_IDS.includes(val);
+            const badge = isStandard ? '<span class="badge bg-light text-dark border ms-2" style="font-size:0.6em">STD</span>' : '';
+            const removeBtn = !isStandard ? `<button type="button" class="suggestion-remove-btn" onclick="event.stopPropagation(); removeSuggestion('${apiField}', '${val.replace(/'/g, "\\'")}', '${dropdown.id}', '${targetInputId}')">&times;</button>` : '';
+
+            item.innerHTML = `<span>${val}${badge}</span>${removeBtn}`;
+            item.onclick = (e) => {
+                if (e.target.tagName !== 'BUTTON') {
+                    const input = document.getElementById(targetInputId);
+                    if (input) { input.value = val; updateIdValidation(input); }
+                    dropdown.style.display = 'none';
+                }
+            };
+            dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+    }
+
+    function renderDropdown(dropdown, suggestions, apiField, dropdownId, targetInputId, query) {
+        dropdown.innerHTML = '';
+        if (suggestions.length === 0) {
+            if (query.length > 0) dropdown.innerHTML = '<div class="autocomplete-item text-muted small">New entry (will be saved)</div>';
+            else dropdown.style.display = 'none';
+            return;
+        }
+        suggestions.forEach(s => {
+            const val = s.value || s;
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.innerHTML = `<span>${val}</span><button type="button" class="suggestion-remove-btn" onclick="event.stopPropagation(); removeSuggestion('${apiField}', '${val.replace(/'/g, "\\'")}', '${dropdownId}', '${targetInputId}')">&times;</button>`;
+            item.onclick = (e) => {
+                if (e.target.tagName !== 'BUTTON') {
+                    document.getElementById(targetInputId).value = val;
+                    dropdown.style.display = 'none';
+                }
+            };
+            dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+    }
+
+    async function removeSuggestion(apiField, value, dropdownId, inputId) {
+        if (!confirm(`Remove "${value}"?`)) return;
+        try {
+            await fetch(removeSuggestionUrl.replace('FIELD', apiField), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value: value })
+            });
+            const input = document.getElementById(inputId);
+            getSuggestions(apiField, input.value, dropdownId, inputId);
+        } catch (e) { console.error(e); }
+    }
+
+    function updateIdValidation(typeInput) {
+        const row = typeInput.closest('.row'); 
+        if (!row) return;
+        const numberInput = row.querySelector('input[name="party_id_number"]');
+        const selectedType = typeInput.value;
+        const ruleKey = Object.keys(ID_RULES).find(key => selectedType.includes(key));
+        const rule = ID_RULES[ruleKey];
+        const existingHint = numberInput.parentNode.querySelector('.id-hint');
+        if (existingHint) existingHint.remove();
+
+        if (rule) {
+            numberInput.placeholder = rule.placeholder;
+            numberInput.pattern = rule.pattern;
+            numberInput.title = rule.hint;
+            const hint = document.createElement('div');
+            hint.className = 'form-text text-primary id-hint small mt-0';
+            hint.textContent = rule.hint;
+            numberInput.parentNode.appendChild(hint);
+        } else {
+            numberInput.placeholder = 'ID Number';
+            numberInput.removeAttribute('pattern');
+            numberInput.removeAttribute('title');
+        }
+    }
+
+    // ==========================================
+    //  OTHER HELPERS
+    // ==========================================
 
     function addWitnessField(witnessData = null) {
         const container = document.getElementById('witnessesContainer');
-        if (container.children.length >= 2) {
-            alert('Maximum of 2 witnesses allowed');
-            return;
-        }
-
+        if (container.children.length >= 2) { alert('Maximum of 2 witnesses allowed'); return; }
         const witnessHtml = `
         <div class="witness-field border p-3 mb-3 rounded">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Witness Name</label>
-                        <input type="text" class="form-control" name="witness_name" value="${witnessData ? witnessData.witness_name : ''}">
-                    </div>
+                    <div class="mb-3"><label class="form-label">Witness Name</label><input type="text" class="form-control" name="witness_name" value="${witnessData ? witnessData.witness_name : ''}"></div>
                 </div>
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Witness Address</label>
-                        <textarea class="form-control" name="witness_address" rows="1">${witnessData ? witnessData.witness_address : ''}</textarea>
-                    </div>
+                    <div class="mb-3"><label class="form-label">Witness Address</label><textarea class="form-control" name="witness_address" rows="1">${witnessData ? witnessData.witness_address : ''}</textarea></div>
                 </div>
             </div>
             <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="this.closest(\'.witness-field\').remove()">Remove Witness</button>
-        </div>
-        `;
-
+        </div>`;
         container.insertAdjacentHTML('beforeend', witnessHtml);
     }
 
-    // ==========================================
-    //  EDIT / LOAD / RESET LOGIC
-    // ==========================================
-
     function loadEntryData(entryId) {
-        fetch(`/notarial-entries/${entryId}/json`)
-            .then(response => response.json())
-            .then(entry => {
-                if (entry.error) {
-                    alert('Error loading entry: ' + entry.error);
-                    return;
-                }
+        fetch(`/notarial-entries/${entryId}/json`).then(r => r.json()).then(entry => {
+            if (entry.error) { alert(entry.error); return; }
+            currentEditingId = entryId;
+            document.querySelector('input[name="entry_number"]').value = entry.not_entry_num;
+            document.querySelector('input[name="entry_page_num"]').value = entry.not_page_num;
+            document.querySelector('input[name="entry_book_num"]').value = entry.not_book_num;
+            document.querySelector('input[name="not_series"]').value = entry.not_series;
+            document.querySelector('input[name="notarial_fee"]').value = entry.not_fee;
 
-                currentEditingId = entryId;
+            if (document.getElementById('document_title')) document.getElementById('document_title').value = entry.not_title;
+            if (document.getElementById('notarial_act_type')) document.getElementById('notarial_act_type').value = entry.not_type_act;
+            if (document.getElementById('other_place')) document.getElementById('other_place').value = entry.not_other_place || '';
 
-                // 1. Basic Fields
-                document.querySelector('input[name="entry_number"]').value = entry.not_entry_num;
-                document.querySelector('input[name="entry_page_num"]').value = entry.not_page_num;
-                document.querySelector('input[name="entry_book_num"]').value = entry.not_book_num;
-                document.querySelector('input[name="not_series"]').value = entry.not_series;
-                document.querySelector('input[name="notarial_fee"]').value = entry.not_fee;
+            if (entry.not_date) {
+                const d = new Date(entry.not_date);
+                d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                document.querySelector('input[name="notarization_date"]').value = d.toISOString().slice(0, 16);
+            }
 
-                // REMOVED: This line caused the error because the input no longer exists
-                // document.querySelector('input[name="notarial_fee_or"]').value = entry.not_fee_or; 
+            document.getElementById('partiesContainer').innerHTML = '';
+            (entry.parties && entry.parties.length > 0) ? entry.parties.forEach(p => addPartyField(p)) : addPartyField();
 
-                // 2. Smart Suggestion Fields (Target by ID)
-                // Use safe setters in case elements are missing
-                if (document.getElementById('document_title'))
-                    document.getElementById('document_title').value = entry.not_title;
+            document.getElementById('witnessesContainer').innerHTML = '';
+            if (entry.witnesses) entry.witnesses.forEach(w => addWitnessField(w));
 
-                if (document.getElementById('notarial_act_type'))
-                    document.getElementById('notarial_act_type').value = entry.not_type_act;
-
-                if (document.getElementById('other_place'))
-                    document.getElementById('other_place').value = entry.not_other_place || '';
-
-                // 3. Date
-                if (entry.not_date) {
-                    const notDate = new Date(entry.not_date);
-                    notDate.setMinutes(notDate.getMinutes() - notDate.getTimezoneOffset());
-                    document.querySelector('input[name="notarization_date"]').value = notDate.toISOString().slice(0, 16);
-                }
-
-                // 4. Parties (Clear and Rebuild)
-                const partiesContainer = document.getElementById('partiesContainer');
-                partiesContainer.innerHTML = '';
-                if (entry.parties && entry.parties.length > 0) {
-                    entry.parties.forEach(party => addPartyField(party));
-                } else {
-                    addPartyField();
-                }
-
-                // 5. Witnesses
-                const witnessesContainer = document.getElementById('witnessesContainer');
-                witnessesContainer.innerHTML = '';
-                if (entry.witnesses && entry.witnesses.length > 0) {
-                    entry.witnesses.forEach(witness => addWitnessField(witness));
-                }
-
-                // 6. Update Modal UI
-                document.querySelector('#entryModal .modal-title').textContent = 'Edit Notarial Entry';
-                document.getElementById('entryForm').action = `/notarial-entries/${entryId}/update`;
-
-                // Hide auto-increment button in edit mode
-                const autoIncBtn = document.querySelector('.auto-increment-btn');
-                if (autoIncBtn) autoIncBtn.style.display = 'none';
-
-            })
-            .catch(error => {
-                console.error('Error loading entry:', error);
-                alert('Error loading entry data');
-            });
+            document.querySelector('#entryModal .modal-title').textContent = 'Edit Notarial Entry';
+            document.getElementById('entryForm').action = `/notarial-entries/${entryId}/update`;
+            const btn = document.querySelector('.auto-increment-btn'); if (btn) btn.style.display = 'none';
+        }).catch(console.error);
     }
 
     function resetForm() {
@@ -976,137 +1278,67 @@
         document.getElementById('entryForm').reset();
         document.getElementById('entryForm').action = '/notarial-entries/create-manual';
         document.querySelector('#entryModal .modal-title').textContent = 'New Notarial Entry';
-
-        // Clear containers
         document.getElementById('partiesContainer').innerHTML = '';
         document.getElementById('witnessesContainer').innerHTML = '';
-
-        // Defaults
-        const currentYear = new Date().getFullYear();
-        document.querySelector('input[name="not_series"]').value = currentYear;
         resetDateToNow();
-
-        // Add one empty party
         addPartyField();
-
-        // Initialize Auto-Increment for New Entry
         initAutoIncrement();
-
-        // Show auto-increment button
-        const autoIncBtn = document.querySelector('.auto-increment-btn');
-        if (autoIncBtn) autoIncBtn.style.display = 'inline-flex';
+        const btn = document.querySelector('.auto-increment-btn'); if (btn) btn.style.display = 'inline-flex';
     }
 
     function setupModalListeners() {
-        // Reset form when modal opens if it's a "New Entry" click
-        document.getElementById('entryModal')?.addEventListener('show.bs.modal', function (event) {
-            // Check if triggered by "New Entry" button (has data-bs-target but NO onclick loadEntryData)
-            if (event.relatedTarget && !event.relatedTarget.getAttribute('onclick')) {
-                resetForm();
-            }
+        document.getElementById('entryModal')?.addEventListener('show.bs.modal', function (e) {
+            if (e.relatedTarget && !e.relatedTarget.getAttribute('onclick')) resetForm();
         });
-
-        // Add Button Listeners
         document.getElementById('addPartyBtn')?.addEventListener('click', () => addPartyField());
         document.getElementById('addWitnessBtn')?.addEventListener('click', () => addWitnessField());
     }
 
-    // ==========================================
-    //  AUTO-INCREMENT LOGIC
-    // ==========================================
-
     function initAutoIncrement() {
-        fetch('/notarial-entries/last-entry')
-            .then(response => response.json())
-            .then(data => {
-                // Set placeholders to suggest next values
-                const bookInput = document.querySelector('input[name="entry_book_num"]');
-                const pageInput = document.querySelector('input[name="entry_page_num"]');
-                const entryInput = document.querySelector('input[name="entry_number"]');
-
-                if (bookInput) bookInput.placeholder = data.book;
-                if (pageInput) pageInput.placeholder = data.page;
-                if (entryInput) entryInput.placeholder = data.entry;
-
-                // Ensure button exists
-                addAutoIncrementButton();
-            })
-            .catch(error => console.error('Error loading last entry:', error));
+        fetch('/notarial-entries/last-entry').then(r => r.json()).then(data => {
+            const i1 = document.querySelector('input[name="entry_book_num"]'); if (i1) i1.placeholder = data.book;
+            const i2 = document.querySelector('input[name="entry_page_num"]'); if (i2) i2.placeholder = data.page;
+            const i3 = document.querySelector('input[name="entry_number"]'); if (i3) i3.placeholder = data.entry;
+            addAutoIncrementButton();
+        });
     }
 
     function addAutoIncrementButton() {
-        const entryInput = document.querySelector('input[name="entry_number"]');
-        const container = entryInput.parentElement; // The div around the input
-
-        // Avoid duplicates
-        if (container.querySelector('.auto-increment-btn')) return;
-
-        // Create container wrapper if needed to align input and button
-        // (Assuming standard BS5 mb-3, we might need flex)
-        container.classList.add('d-flex', 'align-items-center', 'gap-2');
-
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'btn btn-outline-secondary auto-increment-btn';
-        button.innerHTML = '↻'; // Refresh icon
-        button.title = 'Auto-fill next entry number';
-
-        button.addEventListener('click', function () {
-            fetch('/notarial-entries/increment-entry')
-                .then(response => response.json())
-                .then(data => {
-                    document.querySelector('input[name="entry_book_num"]').value = data.book;
-                    document.querySelector('input[name="entry_page_num"]').value = data.page;
-                    document.querySelector('input[name="entry_number"]').value = data.entry;
-                });
+        const c = document.querySelector('input[name="entry_number"]')?.parentElement;
+        if (!c || c.querySelector('.auto-increment-btn')) return;
+        c.classList.add('d-flex', 'gap-2');
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'btn btn-outline-secondary auto-increment-btn'; b.innerHTML = '↻';
+        b.onclick = () => fetch('/notarial-entries/increment-entry').then(r => r.json()).then(d => {
+            document.querySelector('input[name="entry_book_num"]').value = d.book;
+            document.querySelector('input[name="entry_page_num"]').value = d.page;
+            document.querySelector('input[name="entry_number"]').value = d.entry;
         });
-
-        container.appendChild(button);
+        c.appendChild(b);
     }
-
-
 
     function addPrintButtonsToTable() {
         document.querySelectorAll('.action-buttons').forEach(actions => {
-            if (actions.querySelector('.btn-action--print')) return; // Avoid duplicates
-
-            const row = actions.closest('tr');
-            if (!row) return;
-
-            // Find entry ID from existing links (e.g., View Details link)
-            const detailLink = row.querySelector('a[href*="/notarial-entries/"]');
-            if (detailLink) {
-                const entryId = detailLink.getAttribute('href').split('/').pop();
-
-                const printBtn = document.createElement('a');
-                printBtn.href = `/notarial-entries/${entryId}/print`;
-                printBtn.className = 'btn-action btn-action--primary btn-action--print';
-                printBtn.title = 'Print';
-                printBtn.target = '_blank';
-                printBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                `;
-                // Insert as first action
-                actions.insertBefore(printBtn, actions.firstChild);
+            if (actions.querySelector('.btn-action--print')) return;
+            const link = actions.closest('tr')?.querySelector('a[href*="/notarial-entries/"]');
+            if (link) {
+                const id = link.getAttribute('href').split('/').pop();
+                const btn = document.createElement('a');
+                btn.href = `/notarial-entries/${id}/print`;
+                btn.className = 'btn-action btn-action--secondary btn-action--print ms-1';
+                btn.target = '_blank';
+                btn.title = "Print Registry Details";
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>';
+                actions.appendChild(btn);
             }
         });
     }
 
-    // NEW FUNCTION: Open Payment Modal
     function openPaymentModal(entryId, fee, title) {
         document.getElementById('paymentEntryTitle').textContent = title;
         document.getElementById('paymentEntryFee').value = fee;
-
-        // Dynamically set the form action to point to the correct entry ID
-        const form = document.getElementById('paymentForm');
-        form.action = `/notarial-entries/${entryId}/mark-paid`;
-
-        var myModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-        myModal.show();
+        document.getElementById('paymentForm').action = `/notarial-entries/${entryId}/mark-paid`;
+        new bootstrap.Modal(document.getElementById('paymentModal')).show();
     }
 </script>
 

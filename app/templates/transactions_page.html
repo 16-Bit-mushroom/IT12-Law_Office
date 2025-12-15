@@ -138,17 +138,15 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <span class="type-tag type-tag--{{ transaction.transaction_type|lower }}">
+                                <span>
                                     {{ transaction.transaction_type }}
                                 </span>
                             </td>
                             <td>{{ transaction.purpose }}</td>
                             <td>
-                                {% if transaction.transaction_type == 'Case' %}
-                                <span class="text-muted fst-italic" hidden>Confidential</span>
-                                {% else %}
-                                ₱{{ "%.2f"|format(transaction.transaction_amount) }}
-                                {% endif %}
+                                <span class="font-monospace">
+                                    ₱{{ "{:,.2f}".format(transaction.transaction_amount) }}
+                                </span>
                             </td>
                             <td>
                                 <span class="status-tag status-tag--{{ transaction.payment_status|lower }}">

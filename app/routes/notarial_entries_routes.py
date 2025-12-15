@@ -1,7 +1,7 @@
 # notarial_entries_routes.py
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, current_app, send_file
 from flask_login import login_required, current_user
-from app.models.notarial_entry_mdl import NotarialEntry
+from app.models.notarial_entry_mdl import NotarialEntry, NotarialEntryParty
 from app.models import db
 from app.services.notarial_entry_service import NotarialEntryService
 from datetime import datetime, timezone, timedelta
@@ -12,6 +12,9 @@ from app.services.system_log_service import SystemLogService
 # --- NEW IMPORTS FOR SUGGESTIONS ---
 from app.services.suggestion_service import SuggestionService
 from app.models.suggestion_mdl import Suggestion
+from docxtpl import DocxTemplate
+import os
+import tempfile
 # -----------------------------------
 
 notarial_entries_bp = Blueprint('notarial_entries', __name__, url_prefix='/notarial-entries')
@@ -297,3 +300,135 @@ def print_entry(entry_id):
     print_data['prepared_by'] = current_user.full_name if hasattr(current_user, 'full_name') else current_user.username
     
     return render_template('notarial_entry_print.html', **print_data)
+
+@notarial_entries_bp.route('/<int:entry_id>/generate/<doc_type>')
+@login_required
+def generate_document(entry_id, doc_type):
+    try:
+        # 1. Load Data
+        entry = NotarialEntry.query.get_or_404(entry_id)
+        if not entry.parties:
+            flash("No parties found in this entry.", "error")
+            return redirect(request.referrer)
+
+        # 2. Select Template
+        template_filename = ""
+        if doc_type == 'affidavit_loss':
+            template_filename = "affidavit-of-loss-template.docx"
+        elif doc_type == 'special_power_of_attorney':
+            template_filename = "special-power-of-attorney.docx"
+        elif doc_type == 'affidavit-of-undertaking':
+            template_filename = 'affidavit-of-undertaking.docx'
+        elif doc_type == 'affidavit-of-no-income':
+            template_filename = "affidavit-of-no-income.docx"
+        elif doc_type == 'joint_affidavit_two_disinterested_person': # New Template
+            template_filename = "joint-affidavit-two-disenterested-person.docx"
+            
+        template_path = os.path.join(current_app.root_path, 'static', 'templates', template_filename)
+        
+        # 3. Prepare Context (The Mapping)
+        # Party 1 (Primary Affiant)
+        affiant = entry.parties[0]
+        
+        # Party 2 (Secondary Affiant for Joint Affidavits)
+        affiant2_name = ""
+        if len(entry.parties) > 1:
+            affiant2_name = entry.parties[1].party_name.upper()
+
+        # Date Logic (e.g., "8th", "January 2024")
+        day_val = entry.not_date.strftime("%d")
+        # Add ordinal suffix (st, nd, rd, th)
+        if 4 <= int(day_val) <= 20 or 24 <= int(day_val) <= 30:
+            suffix = "th"
+        else:
+            suffix = ["st", "nd", "rd"][int(day_val) % 10 - 1]
+        day_str = f"{day_val}{suffix}"
+
+        context = {
+            # Party Details
+            'Full_name': affiant.party_name.upper(),  # Matches {{ Full_name }}
+            'Full_name1': affiant2_name,            # Matches {{ Full_name1 }} (2nd Party)
+            'Citizenship': affiant.citizenship.title() if affiant.citizenship else 'Filipino',
+            'Address': affiant.party_address,
+            'Affiant': affiant.party_name.upper(),
+            'ID_type': affiant.party_id_type,
+            'ID_num': affiant.party_id_number,
+            
+            # Notarial Details
+            'Doc_No': entry.not_entry_num,   # Ensure Word has {{ Doc_No }}
+            'Page_No': entry.not_page_num,   # Ensure Word has {{ Page_No }}
+            'Book_No': entry.not_book_num,   # Ensure Word has {{ Book_No }}
+            'Series_of': entry.not_series,   # Ensure Word has {{ Series_of }}
+        
+            
+            # Dates
+            'day_of_month': day_str,  # Matches {{ day_of_month }}
+            'month_year': entry.not_date.strftime("%B, %Y"), # Matches {{ month_year }}
+        }
+
+        # 4. Render
+        doc = DocxTemplate(template_path)
+        doc.render(context)
+        
+        # 5. Save & Send
+        doc_ref = f"{entry.not_book_num}-{entry.not_page_num}-{entry.not_entry_num}-{entry.not_series}"
+        temp_dir = tempfile.gettempdir()
+        output_filename = f"{template_filename.rstrip('.docx')}-{doc_ref}.docx"
+        output_path = os.path.join(temp_dir, output_filename)
+        doc.save(output_path)
+        
+        return send_file(output_path, as_attachment=True)
+
+    except Exception as e:
+        flash(f"Error generating document: {str(e)}", "error")
+        return redirect(request.referrer)
+
+
+# app/routes/notarial_entries_routes.py
+
+from sqlalchemy import func
+
+@notarial_entries_bp.route('/api/parties/search', methods=['GET'])
+@staff_or_admin_required
+@login_required
+def search_previous_parties_api():
+    """
+    Search for parties from previous notarial entries to auto-fill.
+    """
+    query = request.args.get('q', '').strip()
+    
+    # Don't search if less than 2 letters
+    if not query or len(query) < 2:
+        return jsonify([])
+    
+    try:
+        # Search for parties matching the name (Case Insensitive)
+        # Limit to 20 results to stay fast
+        results = NotarialEntryParty.query.filter(
+            NotarialEntryParty.party_name.ilike(f'%{query}%')
+        ).order_by(NotarialEntryParty.id.desc()).limit(20).all()
+        
+        # Deduplicate (If Juan Cruz appears 10 times, show him once)
+        unique_map = {}
+        suggestions = []
+        
+        for p in results:
+            # Use name as key to ensure uniqueness
+            clean_name = p.party_name.strip()
+            if clean_name.lower() not in unique_map:
+                unique_map[clean_name.lower()] = True
+                
+                suggestions.append({
+                    'party_name': clean_name,
+                    'party_address': p.party_address,
+                    'citizenship': p.citizenship,
+                    'party_id_type': p.party_id_type,
+                    'party_id_number': p.party_id_number,
+                    'party_id_expiry': p.party_id_expiry.strftime('%Y-%m-%d') if p.party_id_expiry else ''
+                })
+        
+        return jsonify(suggestions)
+        
+    except Exception as e:
+        print(f"Error searching parties: {e}")
+        return jsonify([])

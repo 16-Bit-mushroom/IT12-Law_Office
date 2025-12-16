@@ -70,7 +70,7 @@ def update_profile():
                     flash(f"Password update failed: {pw_message}", 'danger')
     
     # Redirect back to the profile page to see the changes/messages
-    return redirect(url_for('admin.admin_page'))
+    return redirect(url_for('settings.settings_page'))
 
 @admin_bp.route('/users')
 @login_required
@@ -116,7 +116,7 @@ def add_new_user():
         
         if success:
             flash(message, 'success')
-            return redirect(url_for('admin.manage_users_page'))
+            return redirect(url_for('settings.settings_page'))
         else:
             flash(f'Failed to create user: {message}', 'danger')
             return render_template('add_user.html')
@@ -126,9 +126,8 @@ def add_new_user():
 @admin_bp.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_user(user_id):
-    """Handles editing an existing user."""
     if not current_user.is_admin:
-        abort(403)  # Forbidden
+        abort(403)
     
     user = get_user_by_id(user_id)
     if not user:
@@ -136,34 +135,38 @@ def edit_user(user_id):
         return redirect(url_for('admin.manage_users_page'))
     
     if request.method == 'POST':
-        # Get form data
-        username = request.form.get('username')
-        email = request.form.get('email')
-        is_admin = 'is_admin' in request.form
-        new_password = request.form.get('new_password')
+        # Collect all form data into a dictionary
+        data = {
+            'username': request.form.get('username'),
+            'email': request.form.get('email'),
+            'contact_number': request.form.get('contact_number'),
+            'role': request.form.get('role'),
+            'first_name': request.form.get('first_name'),
+            'middle_name': request.form.get('middle_name'),
+            'last_name': request.form.get('last_name'),
+            'gender': request.form.get('gender'),
+            'address': request.form.get('address'),
+            'birth_date': request.form.get('birth_date'),
+            'is_admin': 'is_admin' in request.form,
+            'is_active': 'is_active' in request.form
+        }
         
-        # Update user profile (username, email, admin status)
-        success, message = update_user_profile_admin(
-            user_id, username, email, is_admin
-        )
+        success, message = update_user_profile_admin(user_id, data)
         
         if success:
             flash('Profile updated successfully.', 'success')
-        else:
-            flash(f'Profile update failed: {message}', 'danger')
-            return render_template('edit_user.html', user=user)
-        
-        # Update password if provided
-        if new_password:
-            if len(new_password) < 8:
-                flash('Password must be at least 8 characters long.', 'danger')
-            else:
-                pw_success, pw_message = update_user_password(user_id, new_password)
-                if pw_success:
-                    flash('Password updated successfully.', 'success')
+            
+            # Update password if provided
+            new_password = request.form.get('new_password')
+            if new_password:
+                if len(new_password) < 8:
+                    flash('Password too short (min 8 chars). Profile info updated, but password kept.', 'warning')
                 else:
-                    flash(f'Password update failed: {pw_message}', 'danger')
-        
-        return redirect(url_for('admin.manage_users_page'))
-    
+                    update_user_password(user_id, new_password)
+                    flash('Password updated.', 'success')
+            
+            return redirect(url_for('settings.settings_page'))
+        else:
+            flash(f'Update failed: {message}', 'danger')
+            
     return render_template('edit_user.html', user=user)

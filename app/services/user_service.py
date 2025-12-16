@@ -101,26 +101,49 @@ def create_new_user(username, email, password, contact_number=None, role='attorn
         logging.error(f"Error creating new user {username}: {e}")
         return False, "A database error occurred during user creation."
 
-def update_user_profile_admin(user_id, username, email, contact_number, role, is_admin, is_active):
+# In app/services/user_service.py
+
+def update_user_profile_admin(user_id, data):
     """Updates user profile information (admin version)."""
     try:
         user = db.session.get(User, user_id)
         if not user:
             return False, "User not found."
             
-        # Check for unique constraints before updating
-        if user.username != username and User.query.filter_by(username=username).first():
-            return False, "Username is already taken."
+        # Check uniqueness only if changed
+        if data.get('username') and user.username != data['username']:
+            if User.query.filter_by(username=data['username']).first():
+                return False, "Username is already taken."
         
-        if user.email != email and User.query.filter_by(email=email).first():
-            return False, "Email is already in use."
+        if data.get('email') and user.email != data['email']:
+            if User.query.filter_by(email=data['email']).first():
+                return False, "Email is already in use."
 
-        user.username = username
-        user.email = email
-        user.contact_number = contact_number
-        user.role = role
-        user.is_admin = is_admin
-        user.is_active = is_active
+        # Apply Updates
+        user.username = data.get('username', user.username)
+        user.email = data.get('email', user.email)
+        user.contact_number = data.get('contact_number', user.contact_number)
+        user.role = data.get('role', user.role)
+        
+        # Boolean fields
+        user.is_admin = data.get('is_admin', user.is_admin)
+        user.is_active = data.get('is_active', user.is_active)
+
+        # === NEW FIELDS ===
+        user.first_name = data.get('first_name', user.first_name)
+        user.middle_name = data.get('middle_name', user.middle_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.gender = data.get('gender', user.gender)
+        user.address = data.get('address', user.address)
+        
+        # Handle Date
+        if data.get('birth_date'):
+            from datetime import datetime
+            if isinstance(data['birth_date'], str):
+                user.birth_date = datetime.strptime(data['birth_date'], '%Y-%m-%d').date()
+            else:
+                user.birth_date = data['birth_date']
+        # ==================
         
         db.session.commit()
         return True, "Profile updated successfully."
@@ -128,7 +151,7 @@ def update_user_profile_admin(user_id, username, email, contact_number, role, is
     except SQLAlchemyError as e:
         db.session.rollback()
         logging.error(f"Error updating profile for user ID {user_id}: {e}")
-        return False, "A database error occurred during profile update."
+        return False, f"Database error: {str(e)}"
 
 def delete_user(user_id):
     """Soft deletes a user by setting is_active to False."""

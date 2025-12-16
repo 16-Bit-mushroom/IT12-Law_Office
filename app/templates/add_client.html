@@ -30,15 +30,18 @@
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="first_name" id="req_fname" required>
+                                    <input type="text" class="form-control" name="first_name" id="req_fname" required 
+                                           pattern="[A-Za-z\s\-\.]+" title="Letters only">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Middle Name</label>
-                                    <input type="text" class="form-control" name="middle_name">
+                                    <input type="text" class="form-control" name="middle_name" 
+                                           pattern="[A-Za-z\s\-\.]+" title="Letters only">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="last_name" id="req_lname" required>
+                                    <input type="text" class="form-control" name="last_name" id="req_lname" required 
+                                           pattern="[A-Za-z\s\-\.]+" title="Letters only">
                                 </div>
                             </div>
                         </div>
@@ -50,10 +53,12 @@
                                 <input type="text" class="form-control" name="company_name" id="req_company">
                             </div>
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <!-- <div class="col-md-6">
                                     <label class="form-label small fw-bold">Tax ID (TIN)</label>
-                                    <input type="text" class="form-control" name="tax_id">
-                                </div>
+                                    <input type="text" class="form-control" name="tax_id" 
+                                           placeholder="000-000-000-000"
+                                           pattern="\d{3}-\d{3}-\d{3}-\d{3}" title="Format: 000-000-000-000">
+                                </div> -->
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold">Designated Representative</label>
                                     <input type="text" class="form-control" name="representative" placeholder="e.g. John Doe (Manager)">
@@ -65,11 +70,15 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" name="email" required>
+                                <input type="email" class="form-control" name="email" required 
+                                       placeholder="client@example.com">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Phone Number</label>
-                                <input type="text" class="form-control" name="phone">
+                                <label class="form-label small fw-bold">Phone / Mobile No.</label>
+                                <input type="tel" class="form-control" name="phone" 
+                                       placeholder="09171234567"
+                                       pattern="[0-9\-\+\(\)\s]+" 
+                                       title="Numbers, spaces, dashes only">
                             </div>
                         </div>
 
@@ -85,15 +94,36 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold">City / Municipality *</label>
-                                <input type="text" class="form-control" name="city" required>
+                                <input type="text" class="form-control" name="city" required 
+                                       list="citiesList"
+                                       pattern="[A-Za-z\s\-\.]+" title="Letters only">
+                                <datalist id="citiesList">
+                                    <option value="Davao City">
+                                    <option value="Panabo City">
+                                    <option value="Tagum City">
+                                    <option value="Digos City">
+                                    <option value="Mati City">
+                                </datalist>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold">Province</label>
-                                <input type="text" class="form-control" name="province">
+                                <input type="text" class="form-control" name="province"
+                                       list="provincesList"
+                                       pattern="[A-Za-z\s\-\.]+" title="Letters only">
+                                <datalist id="provincesList">
+                                    <option value="Davao del Sur">
+                                    <option value="Davao del Norte">
+                                    <option value="Davao de Oro">
+                                    <option value="Davao Oriental">
+                                    <option value="Davao Occidental">
+                                </datalist>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold">Zip Code</label>
-                                <input type="text" class="form-control" name="zip_code">
+                                <input type="text" class="form-control" name="zip_code" 
+                                       placeholder="8000" maxlength="4"
+                                       pattern="\d{4}" title="4-digit zip code"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             </div>
                         </div>
 
@@ -109,17 +139,152 @@
 </div>
 
 <script>
+    // 1. Storage for our auto-fill maps
+    let cityToProvinceMap = {};
+    
+    // 2. MANUAL ZIP CODE DATABASE
+    // Since the JSON file doesn't have zip codes, we define common ones here.
+    const cityToZipMap = {
+        // Davao Region
+        "Davao City": "8000",
+        "Panabo City": "8105",
+        "Tagum City": "8100",
+        "Digos City": "8002",
+        "Mati City": "8200",
+        "Island Garden City Of Samal": "8119",
+        
+        // Major Mindanao Cities
+        "General Santos City": "9500",
+        "Cagayan De Oro City": "9000",
+        "Butuan City": "8600",
+        "Cotabato City": "9600",
+        "Iligan City": "9200",
+        "Zamboanga City": "7000",
+        
+        // Major Visayas/Luzon
+        "Cebu City": "6000",
+        "Manila City": "1000",
+        "Quezon City": "1100",
+        "Makati City": "1200",
+        "Pasig City": "1600",
+        "Taguig City": "1630"
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataUrl = "{{ url_for('static', filename='data/philippine_provinces_cities_municipalities_and_barangays_2019v2.json') }}";
+
+        fetch(dataUrl)
+            .then(response => response.json())
+            .then(data => {
+                let provinces = [];
+                let cities = [];
+
+                Object.keys(data).forEach(regionKey => {
+                    const region = data[regionKey];
+                    let regionProvinceName = "";
+
+                    // NCR Handling
+                    if (regionKey === 'NCR') {
+                        if (!provinces.includes('Metro Manila')) {
+                            provinces.push('Metro Manila');
+                        }
+                    }
+
+                    if (region.province_list) {
+                        Object.keys(region.province_list).forEach(rawProvinceName => {
+                            let finalProvince = "";
+                            
+                            if (regionKey === 'NCR') {
+                                finalProvince = "Metro Manila";
+                            } else {
+                                finalProvince = toTitleCase(rawProvinceName);
+                                provinces.push(finalProvince);
+                            }
+
+                            // Special Case: Manila City
+                            if (rawProvinceName === 'NATIONAL CAPITAL REGION - MANILA') {
+                                const city = "Manila City";
+                                cities.push(city);
+                                cityToProvinceMap[city] = finalProvince;
+                            }
+
+                            const provinceData = region.province_list[rawProvinceName];
+                            if (provinceData.municipality_list) {
+                                Object.keys(provinceData.municipality_list).forEach(rawCityName => {
+                                    const city = toTitleCase(rawCityName);
+                                    cities.push(city);
+                                    
+                                    // Map City -> Province
+                                    cityToProvinceMap[city] = finalProvince;
+                                });
+                            }
+                        });
+                    }
+                });
+
+                // Sort and Populate
+                provinces = [...new Set(provinces)].sort();
+                cities = [...new Set(cities)].sort();
+
+                populateDatalist('provincesList', provinces);
+                populateDatalist('citiesList', cities);
+            })
+            .catch(error => console.error('Error loading locations:', error));
+            
+        // 3. LISTEN FOR CHANGES
+        document.querySelector('input[name="city"]').addEventListener('input', function(e) {
+            const selectedCity = e.target.value; // Case sensitive based on Title Case helper
+            
+            // Auto-Fill Province
+            const provinceInput = document.querySelector('input[name="province"]');
+            if (cityToProvinceMap[selectedCity]) {
+                provinceInput.value = cityToProvinceMap[selectedCity];
+                flashInput(provinceInput);
+            }
+
+            // Auto-Fill Zip Code
+            const zipInput = document.querySelector('input[name="zip_code"]');
+            if (cityToZipMap[selectedCity]) {
+                zipInput.value = cityToZipMap[selectedCity];
+                flashInput(zipInput);
+            }
+        });
+    });
+
+    function toTitleCase(str) {
+        return str.replace(/\w\S*/g, function(txt){
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
+
+    function populateDatalist(listId, items) {
+        const dataList = document.getElementById(listId);
+        if (!dataList) return;
+        const fragment = document.createDocumentFragment();
+        items.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item;
+            fragment.appendChild(option);
+        });
+        dataList.innerHTML = ''; 
+        dataList.appendChild(fragment);
+    }
+
+    function flashInput(element) {
+        element.style.backgroundColor = "#e8f0fe";
+        element.style.transition = "background-color 0.5s";
+        setTimeout(() => element.style.backgroundColor = "", 500);
+    }
+
     function toggleClientType() {
         const isIndividual = document.getElementById('type_individual').checked;
         const indSection = document.getElementById('section_individual');
         const corpSection = document.getElementById('section_corporate');
         
-        // Toggle Required Fields
         document.getElementById('req_fname').required = isIndividual;
         document.getElementById('req_lname').required = isIndividual;
         document.getElementById('req_company').required = !isIndividual;
 
-        // Toggle Visibility
         indSection.style.display = isIndividual ? 'block' : 'none';
         corpSection.style.display = isIndividual ? 'none' : 'block';
     }

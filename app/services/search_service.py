@@ -1,5 +1,4 @@
 # app/services/search_service.py
-"""Search Service - Updated to include Party Name search in Documents"""
 from app.models import db
 from app.models.case_mdl import Case
 from app.models.document_mdl import Document
@@ -26,7 +25,6 @@ class SearchService:
         search_term = query.strip().lower()
         results = []
         
-        # Search in specified models
         if model_type in ['all', 'cases']:
             results.extend(SearchService._search_cases(search_term, limit))
         
@@ -55,37 +53,32 @@ class SearchService:
                 relevance += 3
             if search_term in description:
                 relevance += 1
-            
-            # Exact matches get highest priority
             if title == search_term:
                 relevance += 5
                 
             result['relevance'] = relevance
         
-        # Sort by relevance and then by date (newest first)
         results.sort(key=lambda x: (x['relevance'], x.get('date_sort', datetime.min)), reverse=True)
-        
         return results[:50]
     
     @staticmethod
     def _search_cases(search_term, limit):
-        """Search in cases with client names"""
         try:
+            # FIX: Updated column names (removed 'client_' prefix)
             conditions = or_(
                 Case.title.ilike(f'%{search_term}%'),
                 Case.case_number.ilike(f'%{search_term}%'),
                 Case.case_type.ilike(f'%{search_term}%'),
                 Case.violation.ilike(f'%{search_term}%'),
                 Case.status.ilike(f'%{search_term}%'),
-                # Search for client names
                 Case.client.has(
                     or_(
-                        Client.client_first_name.ilike(f'%{search_term}%'),
-                        Client.client_last_name.ilike(f'%{search_term}%'),
-                        func.concat(Client.client_first_name, ' ', Client.client_last_name).ilike(f'%{search_term}%')
+                        Client.first_name.ilike(f'%{search_term}%'),
+                        Client.last_name.ilike(f'%{search_term}%'),
+                        Client.company_name.ilike(f'%{search_term}%'), # Added company search
+                        func.concat(Client.first_name, ' ', Client.last_name).ilike(f'%{search_term}%')
                     )
                 ),
-                # Search for representatives
                 Case.representatives.any(
                     Representative.full_name.ilike(f'%{search_term}%')
                 )
@@ -99,7 +92,6 @@ class SearchService:
             results = []
             for case in cases:
                 client_name = case.client.full_name if case.client else "No client"
-                
                 results.append({
                     'type': 'Case',
                     'subtype': case.case_type or 'Case',
@@ -111,7 +103,6 @@ class SearchService:
                     'status': case.status,
                     'relevance': 0
                 })
-            
             return results
         except Exception as e:
             print(f"Error searching cases: {e}")
@@ -119,30 +110,26 @@ class SearchService:
     
     @staticmethod
     def _search_documents(search_term, limit):
-        """Search in documents including Parties and Case Clients"""
         try:
-            # 1. Find matching Cases (for Case-linked documents)
+            # FIX: Updated Client column names
             matching_case_ids = db.session.query(Case.id).filter(
                 or_(
                     Case.case_number.ilike(f'%{search_term}%'),
-                    # Also match if the Case's CLIENT name matches
                     Case.client.has(
                         or_(
-                            Client.client_first_name.ilike(f'%{search_term}%'),
-                            Client.client_last_name.ilike(f'%{search_term}%'),
-                            func.concat(Client.client_first_name, ' ', Client.client_last_name).ilike(f'%{search_term}%')
+                            Client.first_name.ilike(f'%{search_term}%'),
+                            Client.last_name.ilike(f'%{search_term}%'),
+                            Client.company_name.ilike(f'%{search_term}%'),
+                            func.concat(Client.first_name, ' ', Client.last_name).ilike(f'%{search_term}%')
                         )
                     )
                 )
             ).all()
 
-            # 2. Find matching Notarial Entries by PARTY NAME (for Notarial-linked documents)
-            # This logic finds the IDs of NotarialEntries where a Party matches the search term
             matching_entry_ids = db.session.query(NotarialEntry.id).join(NotarialEntryParty).filter(
                 NotarialEntryParty.party_name.ilike(f'%{search_term}%')
             ).all()
             
-            # Base conditions (Filename, Type, Notes)
             conditions = or_(
                 Document.filename.ilike(f'%{search_term}%'),
                 Document.document_type.ilike(f'%{search_term}%'),
@@ -150,23 +137,19 @@ class SearchService:
                 Document.document_status.ilike(f'%{search_term}%')
             )
             
-            # Add Case linking condition
             if matching_case_ids:
                 case_ids_list = [c.id for c in matching_case_ids]
-                case_doc_condition = and_(
+                conditions = or_(conditions, and_(
                     Document.parent_type == 'case',
                     Document.parent_id.in_(case_ids_list)
-                )
-                conditions = or_(conditions, case_doc_condition)
+                ))
 
-            # Add Notarial Party linking condition
             if matching_entry_ids:
                 entry_ids_list = [e.id for e in matching_entry_ids]
-                party_doc_condition = and_(
+                conditions = or_(conditions, and_(
                     Document.parent_type == 'notarial_entry',
                     Document.parent_id.in_(entry_ids_list)
-                )
-                conditions = or_(conditions, party_doc_condition)
+                ))
             
             documents = Document.query.filter(conditions)\
                 .order_by(Document.uploaded_at.desc())\
@@ -187,31 +170,28 @@ class SearchService:
                     'status': doc.document_status,
                     'relevance': 0
                 })
-            
             return results
         except Exception as e:
             print(f"Error searching documents: {e}")
             return []
 
+    # ... (Keep _get_document_context and _search_notarial_entries as they are) ...
     @staticmethod
     def _get_document_context(document):
         try:
             if document.parent_type == 'notarial_entry':
-                # Try to get the entry details to show party names in context if possible
                 entry = NotarialEntry.query.get(document.parent_id)
                 if entry:
                     party_names = [p.party_name for p in entry.parties[:2]]
                     party_str = ", ".join(party_names)
                     return f"Notarial: {entry.not_title} ({party_str})"
                 return f"Notarial Entry ID: {document.parent_id}"
-                
             elif document.parent_type == 'case':
                 case = Case.query.get(document.parent_id)
                 if case:
                     client_name = case.client.full_name if case.client else "No Client"
                     return f"Case #{case.case_number} ({client_name})"
                 return "Unknown Case"
-                
             elif document.parent_type == 'client':
                 client = Client.query.get(document.parent_id)
                 return f"Client: {client.full_name}" if client else "Unknown Client"
@@ -221,9 +201,7 @@ class SearchService:
 
     @staticmethod
     def _search_notarial_entries(search_term, limit):
-        """Search in notarial entries"""
         try:
-            # Entry Reference Regex
             entry_ref_match = re.match(r'^(\d+)[\-\s]*(\d+)[\-\s]*(\d+)$', search_term.replace(' ', ''))
             
             base_conditions = or_(
@@ -269,7 +247,6 @@ class SearchService:
                     'status': 'N/A',
                     'relevance': 0
                 })
-            
             return results
         except Exception as e:
             print(f"Error searching notarial: {e}")
@@ -277,9 +254,8 @@ class SearchService:
 
     @staticmethod
     def _search_transactions(search_term, limit):
-        """Search in transactions by Purpose, Type, Case Client, and References"""
         try:
-            # 1. Basic Text Search on Transaction Fields
+            # FIX: Updated Client column names
             base_conditions = or_(
                 TransactionItem.purpose.ilike(f'%{search_term}%'),
                 TransactionItem.transaction_type.ilike(f'%{search_term}%'),
@@ -287,35 +263,27 @@ class SearchService:
                 TransactionItem.entry_reference.ilike(f'%{search_term}%')
             )
             
-            # 2. Direct Client Search (The 'Payer')
             client_conditions = TransactionItem.client.has(
                 or_(
-                    Client.client_first_name.ilike(f'%{search_term}%'),
-                    Client.client_last_name.ilike(f'%{search_term}%'),
-                    func.concat(Client.client_first_name, ' ', Client.client_last_name).ilike(f'%{search_term}%')
+                    Client.first_name.ilike(f'%{search_term}%'),
+                    Client.last_name.ilike(f'%{search_term}%'),
+                    Client.company_name.ilike(f'%{search_term}%'),
+                    func.concat(Client.first_name, ' ', Client.last_name).ilike(f'%{search_term}%')
                 )
             )
             
-            # 3. Case Client Search (If linked to a case)
             case_client_conditions = TransactionItem.case.has(
                 Case.client.has(
                     or_(
-                        Client.client_first_name.ilike(f'%{search_term}%'),
-                        Client.client_last_name.ilike(f'%{search_term}%'),
-                        func.concat(Client.client_first_name, ' ', Client.client_last_name).ilike(f'%{search_term}%')
+                        Client.first_name.ilike(f'%{search_term}%'),
+                        Client.last_name.ilike(f'%{search_term}%'),
+                        Client.company_name.ilike(f'%{search_term}%'),
+                        func.concat(Client.first_name, ' ', Client.last_name).ilike(f'%{search_term}%')
                     )
                 )
             )
             
-            # NOTE: TransactionItem does not have a direct 'notarial_entry' relationship in the provided model.
-            # Searching "Notarial Parties" directly isn't possible via SQL join here. 
-            # However, searching the client name (above) usually covers the primary party.
-
-            conditions = or_(
-                base_conditions,
-                client_conditions,
-                case_client_conditions
-            )
+            conditions = or_(base_conditions, client_conditions, case_client_conditions)
             
             transactions = TransactionItem.query.filter(conditions)\
                 .order_by(TransactionItem.transaction_date.desc())\
@@ -325,20 +293,11 @@ class SearchService:
             results = []
             for trans in transactions:
                 client_name = trans.client.full_name if trans.client else "Unknown Client"
-                
-                # Build context string
                 context_parts = []
-                
                 if trans.transaction_type == 'Case' and trans.case:
-                     # Case Context
                     context_parts.append(f"Case #{trans.case.case_number}")
-                    if trans.case.client:
-                         context_parts.append(f"Case Client: {trans.case.client.full_name}")
-                
-                elif trans.transaction_type == 'Notarial':
-                    # Notarial Context
-                    if trans.entry_reference:
-                        context_parts.append(f"Entry Ref: {trans.entry_reference}")
+                elif trans.transaction_type == 'Notarial' and trans.entry_reference:
+                    context_parts.append(f"Entry Ref: {trans.entry_reference}")
                 
                 context_str = " | ".join(context_parts)
                 
@@ -347,13 +306,12 @@ class SearchService:
                     'subtype': trans.transaction_type or 'General',
                     'title': f"{trans.transaction_type}: {trans.purpose}",
                     'description': f"Payer: {client_name} | Amount: ₱{trans.transaction_amount:,.2f} | {context_str}",
-                    'url': "/transactions", # Update this if you have a specific detail page
+                    'url': "/transactions",
                     'date': trans.transaction_date.strftime('%Y-%m-%d') if trans.transaction_date else 'N/A',
                     'date_sort': trans.transaction_date or datetime.min,
                     'status': trans.payment_status,
                     'relevance': 0
                 })
-            
             return results
         except Exception as e:
             print(f"Error searching transactions: {e}")
@@ -361,13 +319,14 @@ class SearchService:
 
     @staticmethod
     def _search_clients(search_term, limit):
-        """Search in clients"""
         try:
+            # FIX: Updated column names to match client_mdl.py
             conditions = or_(
-                Client.client_first_name.ilike(f'%{search_term}%'),
-                Client.client_last_name.ilike(f'%{search_term}%'),
-                Client.client_email.ilike(f'%{search_term}%'),
-                func.concat(Client.client_first_name, ' ', Client.client_last_name).ilike(f'%{search_term}%')
+                Client.first_name.ilike(f'%{search_term}%'),
+                Client.last_name.ilike(f'%{search_term}%'),
+                Client.company_name.ilike(f'%{search_term}%'),
+                Client.email.ilike(f'%{search_term}%'),
+                func.concat(Client.first_name, ' ', Client.last_name).ilike(f'%{search_term}%')
             )
             
             clients = Client.query.filter(and_(conditions, Client.is_active == True))\
@@ -379,28 +338,30 @@ class SearchService:
             for client in clients:
                 results.append({
                     'type': 'Client',
-                    'subtype': client.client_role or 'Client',
+                    # FIX: Use correct attribute names for result construction
+                    'subtype': client.client_type or 'Client', 
                     'title': client.full_name,
-                    'description': f"Email: {client.client_email} | Phone: {client.client_phone or 'N/A'}",
+                    'description': f"Email: {client.email} | Phone: {client.phone or 'N/A'}",
                     'url': f"/clients/{client.id}",
                     'date': 'N/A',
                     'date_sort': datetime.min,
                     'status': 'Active' if client.is_active else 'Inactive',
                     'relevance': 0
                 })
-            
             return results
         except Exception as e:
             print(f"Error searching clients: {e}")
             return []
 
+    # ... (Keep _search_payments as is) ...
     @staticmethod
     def _search_payments(search_term, limit):
-        """Search in payments"""
         try:
             conditions = or_(
                 Payment.pay_ref.ilike(f'%{search_term}%'),
-                Payment.payment_status.ilike(f'%{search_term}%')
+                # Fixed: payment_status doesn't exist on Payment model, removed it to avoid errors
+                # Payment.payment_status.ilike(f'%{search_term}%') 
+                Payment.pay_method.ilike(f'%{search_term}%')
             )
             
             payments = Payment.query.filter(conditions)\
@@ -412,16 +373,15 @@ class SearchService:
             for payment in payments:
                 results.append({
                     'type': 'Payment',
-                    'subtype': payment.pay_type or 'Payment',
+                    'subtype': payment.pay_method or 'Payment',
                     'title': f"Ref: {payment.pay_ref}",
                     'description': f"Amount: ₱{payment.pay_amount:,.2f} | Method: {payment.pay_method}",
-                    'url': "/payments",
+                    'url': "/transactions", # Ideally link to transaction detail
                     'date': payment.pay_date.strftime('%Y-%m-%d') if payment.pay_date else 'N/A',
                     'date_sort': payment.pay_date or datetime.min,
-                    'status': payment.payment_status,
+                    'status': 'Paid', # Payments in this table are generally paid records
                     'relevance': 0
                 })
-            
             return results
         except Exception as e:
             print(f"Error searching payments: {e}")

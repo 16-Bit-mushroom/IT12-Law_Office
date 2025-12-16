@@ -67,25 +67,63 @@
                             <h5 class="border-bottom pb-2 mb-3 text-secondary"
                                 style="font-size: 1rem; font-weight: 600;">Case Details</h5>
 
-                            <div class="mb-3">
-                                <label class="form-label d-block small fw-bold text-muted text-uppercase">Case Category
-                                    / Nature</label>
-                                <div class="d-flex flex-wrap gap-3">
-                                    <div class="form-check"><input class="form-check-input" type="radio"
-                                            name="case_category" id="cat_civil" value="civil" checked><label
-                                            class="form-check-label" for="cat_civil">Civil</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio"
-                                            name="case_category" id="cat_criminal" value="criminal"><label
-                                            class="form-check-label" for="cat_criminal">Criminal</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio"
-                                            name="case_category" id="cat_labor" value="labor"><label
-                                            class="form-check-label" for="cat_labor">Labor (NLRC)</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio"
-                                            name="case_category" id="cat_spec" value="special_proceedings"><label
-                                            class="form-check-label" for="cat_spec">Special Proc.</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio"
-                                            name="case_category" id="cat_admin" value="administrative"><label
-                                            class="form-check-label" for="cat_admin">Administrative</label></div>
+                            <div class="col-md-5" style="margin-bottom: 15px;">
+                                <label class="form-label small fw-bold">Case Number / Docket No. <span
+                                        class="text-danger">*</span></label>
+
+                                <div class="input-group has-validation">
+                                    <input type="text" class="form-control text-uppercase" id="caseNumberInput"
+                                        name="case_number" required placeholder="e.g. R-DVO-24-01234-CV"
+                                        pattern="^[A-Z0-9\-\.\s\/]{5,}$"
+                                        title="Must be uppercase alphanumeric, dashes, or dots."
+                                        oninput="validateCaseNumber(this)">
+
+                                    <div class="invalid-feedback" id="caseNumberFeedback">
+                                        Please enter a valid docket number (e.g. R-DVO-24-01234-CV).
+                                    </div>
+                                </div>
+
+                                <div class="form-text small" id="caseNumberHelp">
+                                    Official court docket format (letters, numbers, dashes).
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-primary">
+                                    <i class="bi bi-tags-fill me-2"></i>Case Category
+                                </label>
+                                <div class="bg-light p-3 rounded border">
+                                    <select class="form-select" id="caseCategorySelect" name="case_category" required>
+                                        <option value="" selected disabled>Select Category...</option>
+                                        <option value="Cadastral and Land Registration">Cadastral and Land Registration
+                                            Cases</option>
+                                        <option value="Civil">Civil Case</option>
+                                        <option value="Corporate">Corporate / Commercial</option>
+                                        <option value="Criminal">Criminal Case</option>
+                                        <option value="Environmental">Criminal Case</option>
+                                        <option value="Family">Family Court Cases</option>
+                                        <option value="Administrative">Administrative Case</option>
+                                        <option value="Labor">Labor Case</option>
+                                        <option value="Real Estate">Real Estate / Property</option>
+                                        <option value="Special Civil Actions">Special Civil Actions</option>
+                                        <option value="Special Proceedings">Special Proceedings</option>
+                                        <option value="Others">Others (Please Specify)</option>
+
+
+                                    </select>
+
+                                    <div id="otherCategoryContainer" class="mt-2 d-none">
+                                        <label for="otherCategoryInput" class="form-label small text-muted">Specify
+                                            Category:</label>
+                                        <input type="text" class="form-control" id="otherCategoryInput"
+                                            name="other_case_category_details" placeholder="Enter custom category name">
+                                        <div class="invalid-feedback">
+                                            Please specify the category.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-text small text-muted mt-2">
+                                    Select the primary legal category for this case.
                                 </div>
                             </div>
 
@@ -116,7 +154,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label class="form-label fw-bold">Cause of Action Description</label>
                                 <div class="autocomplete-wrapper">
                                     <input type="text" class="form-control" id="cause_of_action" name="cause_of_action"
@@ -124,14 +162,13 @@
                                         oninput="getSuggestions('cause_of_action', this.value)">
                                     <div id="cause_of_action_suggestions" class="autocomplete-dropdown"></div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <div class="mb-4">
                             <h5 class="border-bottom pb-2 mb-3 text-secondary"
                                 style="font-size: 1rem; font-weight: 600;">Representatives</h5>
-                            <p class="text-muted small">Add opposing counsel, co-counsel, or other representatives
-                                (Optional).</p>
+                            <p class="text-muted small">Add opposing counsel, co-counsel, or other representatives.</p>
 
                             <div id="representatives-container">
                             </div>
@@ -152,8 +189,7 @@
                                         required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Filing Date <span
-                                            class="text-muted fw-normal small">(if applicable)</span></label>
+                                    <label class="form-label fw-bold">Filing Date</label>
                                     <input type="date" class="form-control" name="filing_date">
                                 </div>
                             </div>
@@ -161,7 +197,7 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-success">Total Acceptance Fee (₱) *</label>
+                                <label class="form-label fw-bold text-success">Total Legal Fee (₱) *</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₱</span>
                                     <input type="number" class="form-control" name="acceptance_fee" required min="1"
@@ -169,30 +205,37 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="card bg-light border-success">
-                                    <div class="card-body py-2 px-3">
-                                        <h6 class="text-success small fw-bold mb-2">INITIAL PAYMENT DETAILS (Required)
-                                        </h6>
+                            <div class="card-body py-2 px-3">
+                                <h6 class="text-success small fw-bold mb-2">Acceptance Fee(Required)</h6>
 
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <label class="form-label small">Amount Paid Now *</label>
-                                                <input type="number" class="form-control form-control-sm"
-                                                    name="initial_payment" required min="1" step="0.01">
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="form-label small">Method</label>
-                                                <select class="form-select form-select-sm" name="pay_method">
-                                                    <option value="Cash">Cash</option>
-                                                    <option value="Check">Check</option>
-                                                    <option value="Online">Online/GCash</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-12">
-                                                <label class="form-label small">Payment Ref / OR No. *</label>
-                                                <input type="text" class="form-control form-control-sm" name="pay_ref"
-                                                    required placeholder="OR Number or Reference">
+                                <input type="hidden" name="payment_note" value="Acceptance Fee">
+
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label small">Amount Paid Now *</label>
+                                        <input type="number" class="form-control form-control-sm" name="initial_payment"
+                                            required min="1" step="0.01">
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="form-label small">Method</label>
+                                        <select class="form-select form-select-sm" name="pay_method" id="payMethod"
+                                            onchange="updatePaymentRules()">
+                                            <option value="Cash">Cash</option>
+                                            <option value="Cash_Staff">Cash (Handed to Staff)</option>
+                                            <option value="GCash">GCash</option>
+                                            <option value="Bank Transfer">Bank Transfer</option>
+                                            <option value="Check">Check</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label small">Payment Ref / OR No. *</label>
+                                        <div class="input-group has-validation">
+                                            <input type="text" class="form-control form-control-sm" name="pay_ref"
+                                                id="payRef" required placeholder="OR Number">
+                                            <div class="invalid-feedback" id="payRefFeedback">
+                                                Please enter a valid reference.
                                             </div>
                                         </div>
                                     </div>
@@ -351,6 +394,146 @@
             dropdown.style.display = 'block';
         } catch (e) { console.error(e); }
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categorySelect = document.getElementById('caseCategorySelect');
+        const otherContainer = document.getElementById('otherCategoryContainer');
+        const otherInput = document.getElementById('otherCategoryInput');
+
+        // Function to handle validation logic
+        function toggleOtherInput() {
+            if (categorySelect.value === 'Others') {
+                // Show input container
+                otherContainer.classList.remove('d-none');
+                // Make the text input required for form validation
+                otherInput.setAttribute('required', 'required');
+            } else {
+                // Hide input container
+                otherContainer.classList.add('d-none');
+                // Remove required attribute
+                otherInput.removeAttribute('required');
+                // Optional: clear the input if they switch away from "Others"
+                otherInput.value = '';
+            }
+        }
+
+        // Listen for changes on the dropdown
+        categorySelect.addEventListener('change', toggleOtherInput);
+
+        // Run immediately on load in case the form was re-rendered with "Others" pre-selected (e.g., after a server validation error)
+        toggleOtherInput();
+    });
+</script>
+
+<script>
+    function validateCaseNumber(input) {
+        // 1. Force Uppercase immediately
+        let start = input.selectionStart; // Save cursor position
+        input.value = input.value.toUpperCase();
+        input.setSelectionRange(start, start); // Restore cursor position
+
+        // 2. Define the Regex Pattern
+        // Allows: A-Z, 0-9, dash (-), dot (.), slash (/), and space
+        // Must be at least 5 characters long to be considered "valid"
+        const validPattern = /^[A-Z0-9\-\.\s\/]{5,}$/;
+
+        // 3. Check specific "docket-like" structure (Optional strict check)
+        // Checks if it contains at least one dash or number (common in PH dockets)
+        const hasStructure = /[\-0-9]/.test(input.value);
+
+        if (validPattern.test(input.value) && hasStructure) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            // Only show invalid error if they have typed something significant (> 3 chars)
+            if (input.value.length > 3) {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+            } else {
+                // Reset if empty or too short
+                input.classList.remove('is-valid', 'is-invalid');
+            }
+        }
+    }
+</script>
+
+<script>
+    function updatePaymentRules() {
+        const method = document.getElementById('payMethod').value;
+        const refInput = document.getElementById('payRef');
+        const feedback = document.getElementById('payRefFeedback');
+        
+        // Get current user name from Jinja (Server-side injection)
+        const currentUserName = "{{ current_user.full_name }}"; 
+
+        // 1. Reset State
+        refInput.readOnly = false;
+        refInput.classList.remove('is-invalid', 'is-valid');
+        
+        // If switching away from "Cash_Staff", clear the auto-filled name
+        if (refInput.value.includes('Received by')) {
+            refInput.value = '';
+        }
+
+        // 2. Apply Rules based on Method
+        switch (method) {
+            case 'GCash':
+                // Rule: Exactly 13 digits
+                refInput.pattern = "^\\d{13}$";
+                refInput.placeholder = "Ref No. (e.g. 0912345678901)";
+                refInput.title = "GCash reference must be exactly 13 digits";
+                feedback.textContent = "GCash reference must be exactly 13 digits.";
+                break;
+
+            case 'Cash_Staff':
+                // Rule: Auto-fill, Read-only
+                refInput.value = "Received by " + currentUserName;
+                refInput.readOnly = true;
+                refInput.pattern = ".*"; // Always valid
+                refInput.classList.remove('is-invalid'); // Clear errors
+                break;
+
+            case 'Check':
+                // Rule: Numeric Check Number
+                refInput.pattern = "^[0-9]+$";
+                refInput.placeholder = "Check Number";
+                feedback.textContent = "Check number must be numeric.";
+                break;
+
+            case 'Bank Transfer':
+                // Rule: Alphanumeric, at least 6 chars
+                refInput.pattern = "^[A-Za-z0-9\\-]{6,}$";
+                refInput.placeholder = "Transaction / Confirmation No.";
+                feedback.textContent = "Enter a valid bank transaction ID.";
+                break;
+
+            case 'Cash':
+            default:
+                // Rule: Default (Requires value, lenient format)
+                refInput.pattern = ".*";
+                refInput.placeholder = "Official Receipt (OR) Number";
+                feedback.textContent = "Please enter the OR Number.";
+                break;
+        }
+    }
+
+    // Attach real-time validation listener to show the red box immediately
+    document.getElementById('payRef').addEventListener('input', function() {
+        if (this.readOnly) return; // Skip if read-only
+        
+        const pattern = new RegExp(this.pattern);
+        if (pattern.test(this.value)) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            if (this.value.length > 0) {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        }
+    });
 </script>
 
 <style>

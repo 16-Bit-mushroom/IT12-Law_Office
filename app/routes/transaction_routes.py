@@ -73,6 +73,8 @@ def mark_payment_paid_route(transaction_id):
         amount = Decimal(amount_str)
         method = request.form.get('payment_method')
         ref = request.form.get('payment_reference')
+        note = request.form.get('payment_note')
+        
 
         # 2. Add New Payment Record
         from app.models.payment_mdl import Payment
@@ -87,7 +89,8 @@ def mark_payment_paid_route(transaction_id):
             transaction_item_id=transaction.id,
             pay_amount=amount,
             pay_method=method,
-            pay_ref=ref
+            pay_ref=ref,
+            notes=note
         )
         db.session.add(new_payment)
         
@@ -160,14 +163,27 @@ def update_transaction_amount(transaction_id):
 # app/routes/transaction_routes.py
 
 # 1. GET HISTORY HTML (HTMX-style)
-@transaction_bp.route('/<int:transaction_id>/history')
+from flask import render_template  # Make sure to import this
+
+@transaction_bp.route('/<int:transaction_id>/history', methods=['GET'])
 @login_required
-def get_payment_history(transaction_id):
-    from app.models.transaction_mdl import TransactionItem
+def get_transaction_history(transaction_id):
+    # Ensure TransactionItem is imported at the top of the file
+    from app.models.transaction_mdl import TransactionItem 
+    
     transaction = TransactionItem.query.get_or_404(transaction_id)
     
-    # Render a small snippet of HTML
-    return render_template('transactions/_history_list.html', transaction=transaction, payments=transaction.payments)
+    # ✅ SORTING FIX: Sort payments by pay_date descending (Latest First)
+    sorted_payments = sorted(
+        transaction.payments, 
+        key=lambda p: p.pay_date, 
+        reverse=True
+    )
+    
+    # Pass the 'sorted_payments' list instead of the raw 'transaction.payments'
+    return render_template('/transactions/_history_list.html', 
+                           transaction=transaction, 
+                           payments=sorted_payments)
 
 # 2. VOID PAYMENT ROUTE
 @transaction_bp.route('/payments/<int:payment_id>/void', methods=['POST'])

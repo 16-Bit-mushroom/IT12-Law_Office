@@ -38,18 +38,18 @@
                             <span class="detail-label">Case Category</span>
                             <span class="detail-value">
                                 <span
-                                    class="badge {% if case.case_category == 'corporate' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                    class="{{ case.case_category }}">
                                     {{ case.case_category|title }}
                                 </span>
                             </span>
                         </div>
 
-                        
+
 
                         <div class="detail-item">
                             <span class="detail-label">Status</span>
                             <span class="detail-value">
-                                <span class="status-tag status-tag--{{ case.status }}">
+                                <span class="{{ case.status }}">
                                     {{ case.status|title }}
                                 </span>
                             </span>
@@ -186,10 +186,10 @@
                         <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.9rem;">
                             <thead class="bg-light text-secondary">
                                 <tr>
-                                    <th class="ps-2 py-2" style="width: 45%">Particulars</th>
-                                    <th class="text-end py-2" style="width: 15%">Amount</th>
-                                    <th class="text-end py-2" style="width: 15%">Balance</th>
-                                    <th class="text-center py-2" style="width: 10%">Stat</th>
+                                    <th class="ps-2 py-2" style="width: 40%">Particulars</th>
+                                    <th class="text-end py-2" style="width: 20%">Amount</th>
+                                    <th class="text-end py-2" style="width: 18%">Balance</th>
+                                    <th class="text-center py-2" style="width: 5%">Stat</th>
                                     <th class="text-center py-2" style="width: 15%">Action</th>
                                 </tr>
                             </thead>
@@ -206,7 +206,7 @@
                                     </td>
                                     <td class="text-end text-secondary align-top py-3">
                                         <div class="d-flex justify-content-end align-items-center gap-2">
-                                            <span><small>₱</small> {{ "{:,.0f}".format(bill.transaction_amount)
+                                            <span class="font-monospace"><small>₱</small> {{ "{:,.2f}".format(bill.transaction_amount)
                                                 }}</span>
 
                                             <button class="btn btn-link text-muted p-0"
@@ -221,8 +221,8 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="text-end fw-normal align-top py-3 {{ 'text-danger' if bill.balance > 0 else 'text-success' }}">
-                                        <small>₱</small> {{ "{:,.0f}".format(bill.balance) }}
+                                        class="text-end fw-normal font-monospace align-top py-3 {{ 'text-danger' if bill.balance > 0 else 'text-success' }}">
+                                        <small>₱</small> {{ "{:,.2f}".format(bill.balance) }}
                                     </td>
                                     <td class="text-center align-top py-3">
                                         {% if bill.is_fully_paid %}
@@ -290,7 +290,7 @@
                     <div class="bg-light p-2 border-top text-end rounded-bottom">
                         <small class="text-muted me-2">Total Balance Due:</small>
                         {% set total_bal = case.transactions | sum(attribute='balance') %}
-                        <span class="fw-bold fs-6 {{ 'text-danger' if total_bal > 0 else 'text-success' }}">
+                        <span class="fw-bold font-monospace fs-6 {{ 'text-danger' if total_bal > 0 else 'text-success' }}">
                             ₱ {{ "{:,.2f}".format(total_bal) }}
                         </span>
                     </div>
@@ -1136,28 +1136,50 @@
                     <div class="alert alert-light border mb-3">
                         <small class="text-muted d-block">Paying for:</small>
                         <strong class="d-block text-dark" id="payModalPurpose">...</strong>
-                        <small class="text-muted">Balance Due:</small>
-                        <strong class="text-danger" id="payModalBalance">₱ 0.00</strong>
+                        <div class="d-flex justify-content-between mt-2">
+                            <div>
+                                <small class="text-muted">Balance Due:</small><br>
+                                <strong class="text-danger" id="payModalBalance">₱ 0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Note / Remarks</label>
+                        <textarea class="form-control" name="payment_note" rows="2"
+                            placeholder="e.g. Partial payment via GCash..."></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Amount Paid Now *</label>
-                        <input type="number" class="form-control" name="payment_amount" step="0.01" required>
+                        <div class="input-group">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" class="form-control fw-bold text-success" name="payment_amount"
+                                step="0.01" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Reference (OR / AR / Cash)</label>
-                        <input type="text" class="form-control" name="payment_reference" placeholder="e.g. OR-1234"
-                            required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Method</label>
-                        <select class="form-select" name="payment_method">
-                            <option value="Cash">Cash</option>
+                        <label class="form-label fw-bold">Method</label>
+                        <select class="form-select" name="payment_method" id="casePayMethod"
+                            onchange="updateCasePaymentRules()">
+                            <option value="Cash">Cash (OR Required)</option>
+                            <option value="Cash_Staff">Cash (Handed to Staff)</option>
+                            <option value="GCash">GCash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
                             <option value="Check">Check</option>
-                            <option value="Online">Online/GCash</option>
                         </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Reference (OR / AR / Ref No.) *</label>
+                        <div class="input-group has-validation">
+                            <input type="text" class="form-control" name="payment_reference" id="casePayRef"
+                                placeholder="e.g. OR-1234" required>
+                            <div class="invalid-feedback" id="casePayFeedback">
+                                Please enter a valid reference.
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1228,7 +1250,7 @@
 </script>
 
 <div class="modal fade" id="paymentHistoryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h6 class="modal-title">Payment History</h6>
@@ -1262,6 +1284,98 @@
             document.getElementById('historyContent').innerHTML = '<p class="text-danger p-3">Error loading history.</p>';
         }
     }
+</script>
+
+<script>
+    function updateCasePaymentRules() {
+        const method = document.getElementById('casePayMethod').value;
+        const refInput = document.getElementById('casePayRef');
+        const feedback = document.getElementById('casePayFeedback');
+        
+        // Inject current user name
+        const currentUserName = "{{ current_user.full_name }}"; 
+
+        // 1. Reset State
+        refInput.readOnly = false;
+        refInput.classList.remove('is-invalid', 'is-valid');
+        
+        // Clear auto-filled name if switching away
+        if (refInput.value.includes('Received by')) {
+            refInput.value = '';
+        }
+
+        // 2. Apply Logic
+        switch (method) {
+            case 'GCash':
+                refInput.pattern = "^\\d{13}$";
+                refInput.placeholder = "09xxxxxxxxx (13 digits)";
+                feedback.textContent = "GCash ref must be 13 digits.";
+                break;
+
+            case 'Cash_Staff':
+                refInput.value = "Received by " + currentUserName;
+                refInput.readOnly = true;
+                refInput.pattern = ".*"; 
+                break;
+
+            case 'Check':
+                refInput.pattern = "^[0-9]+$";
+                refInput.placeholder = "Check Number";
+                feedback.textContent = "Check number must be numeric.";
+                break;
+
+            case 'Bank Transfer':
+                refInput.pattern = "^[A-Za-z0-9\\-]{6,}$";
+                refInput.placeholder = "Transaction ID";
+                feedback.textContent = "Enter valid transaction ID.";
+                break;
+
+            default: // Cash
+                refInput.pattern = ".*";
+                refInput.placeholder = "OR Number";
+        }
+    }
+
+    // Initialize listeners when modal opens or input changes
+    document.addEventListener('DOMContentLoaded', function() {
+        const refInput = document.getElementById('casePayRef');
+        if(refInput) {
+            // Real-time validation visual feedback
+            refInput.addEventListener('input', function() {
+                if (this.readOnly) return;
+                
+                const pattern = new RegExp(this.pattern);
+                if (pattern.test(this.value)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    if (this.value.length > 0) {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                }
+            });
+        }
+        
+        // Run once to set defaults
+        updateCasePaymentRules();
+    });
+
+    // Hook into your existing openPaymentModal function to reset validation
+    const originalOpenPaymentModal = window.openPaymentModal;
+    window.openPaymentModal = function(transactionId, balance, purpose) {
+        // Call original logic
+        originalOpenPaymentModal(transactionId, balance, purpose);
+        
+        // Reset validation state
+        const refInput = document.getElementById('casePayRef');
+        const methodSelect = document.getElementById('casePayMethod');
+        
+        methodSelect.value = "Cash"; // Default to Cash
+        refInput.value = "";
+        refInput.classList.remove('is-invalid', 'is-valid');
+        updateCasePaymentRules();
+    };
 </script>
 
 

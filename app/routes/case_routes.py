@@ -44,7 +44,7 @@ def list_cases():
         sort_by = 'created_at'
     
     # Get cases with filtering and sorting
-    cases_query = Case.query
+    cases_query = Case.query.filter(Case.deleted_at == None)
     
     # Apply status filter
     if status_filter and status_filter != 'all':
@@ -141,6 +141,14 @@ def create_case():
         violation = request.form.get('violation')
         cause_of_action = request.form.get('cause_of_action')
         
+        raw_category = request.form.get('case_category')
+        if raw_category == 'Others':
+            # If "Others" is selected, grab the text input instead
+            case_category = request.form.get('other_case_category_details')
+        else:
+            # Otherwise use the dropdown value (default to 'individual' if missing)
+            case_category = raw_category or 'individual'
+        
         # Record suggestions
         if case_type and case_type.strip():
             SuggestionService.add_suggestion('case', 'case_type', case_type.strip(), current_user.id)
@@ -175,12 +183,18 @@ def create_case():
             
         pay_method = request.form.get('pay_method')
         pay_ref = request.form.get('pay_ref')
-                
+        pay_note = request.form.get('payment_note')
         
+        if pay_method == 'Cash_Staff':
+            pay_method = 'Cash'
+        
+            
+
         
         case_data = {
+            'case_number': request.form.get('case_number'),
             'title': request.form.get('title'),
-            'case_category': request.form.get('case_category', 'individual'),
+            'case_category': case_category,
             'case_type': case_type,
             'violation': violation,
             'cause_of_action': cause_of_action,
@@ -194,6 +208,7 @@ def create_case():
             'initial_payment': initial_pay,
             'pay_method': pay_method,
             'pay_ref': pay_ref,
+            'pay_note': pay_note,
             
         }
         
@@ -365,6 +380,7 @@ def edit_case(case_id):
             'client_id': int(request.form.get('client_id')),
             'assigned_attorney_id': current_user.id,
             'status': request.form.get('status', 'active'),
+            'dismissal_reason': request.form.get('dismissal_reason'),
             'representatives': representatives
         }
         

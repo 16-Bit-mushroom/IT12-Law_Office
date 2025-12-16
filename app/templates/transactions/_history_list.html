@@ -15,26 +15,39 @@
     </div>
 </div>
 
-<div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+<div class="list-group list-group-flush" style="max-height: 700px; overflow-y: auto;">
     {% for p in payments %}
     <div class="list-group-item p-3">
         <div class="d-flex justify-content-between align-items-start">
-            <div>
+
+            <div style="flex: 1;">
                 <div class="fw-bold text-dark fs-5">₱ {{ "{:,.2f}".format(p.pay_amount) }}</div>
+
                 <div class="small text-muted mt-1">
-                    <i class="bi bi-calendar3 me-1"></i> {{ p.pay_date.strftime('%b %d, %Y') }}
+                    <i class="bi bi-calendar3 me-1"></i> {{ p.pay_date.strftime('%b %d, %Y %I:%M %p') }}
                 </div>
+
                 <div class="small text-dark mt-1">
                     <span class="badge bg-light text-dark border">{{ p.pay_method }}</span>
-                    <span class="ms-1 font-monospace">{{ p.pay_ref }}</span>
+                    <span class="ms-1 font-monospace">{{ p.pay_ref or '--' }}</span>
                 </div>
+
+                {% if p.notes %}
+                <div class="mt-2 p-2 bg-light rounded border border-light small text-secondary fst-italic">
+                    <i class="bi bi-sticky me-1 opacity-50"></i> {{ p.notes }}
+                </div>
+                {% endif %}
             </div>
-            
-            <form action="{{ url_for('transaction.void_payment', payment_id=p.id) }}" method="POST" 
-                  onsubmit="return confirm('⚠️ IRREVERSIBLE ACTION ⚠️\n\nAre you sure you want to VOID this payment record?\n\nThis will:\n1. Remove this payment from the ledger.\n2. Revert the status to Unpaid/Partial.\n\nClick OK only if this was a mistake.');">
-                <button type="button" class="btn btn-outline-danger btn-sm border-0" 
-                        title="Void / Correction" onclick="this.form.submit()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+
+            <form action="{{ url_for('transaction.void_payment', payment_id=p.id) }}" method="POST" class="ms-3"
+                onsubmit="return confirm('⚠️ IRREVERSIBLE ACTION ⚠️\n\nAre you sure you want to VOID this payment record?');">
+
+                <button type="submit" class="btn btn-outline-danger btn-sm border-0 p-1" title="Void / Correction">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                        <line x1="12" y1="2" x2="12" y2="12"></line>
+                    </svg>
                 </button>
             </form>
         </div>
@@ -42,7 +55,11 @@
     {% else %}
     <div class="text-center p-4 text-muted small">
         <div class="mb-2 opacity-50">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+            </svg>
         </div>
         No recorded payments found.
     </div>

@@ -182,7 +182,7 @@
                                 <div class="small">{{ document.uploaded_at.strftime('%m/%d/%Y') }}</div>
                             </td>
                             <td>
-                                <div class="action-buttons">
+                                <div class="action-buttons" style="justify-content: start;">
                                     <a href="{{ url_for('documents.view_document', document_id=document.id) }}"
                                         target="_blank" class="btn-action btn-action--info" title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -193,46 +193,10 @@
                                         </svg>
                                     </a>
 
-                                    <!-- Status Dropdown -->
-                                    <div class="dropdown status-dropdown">
-                                        <button class="btn-action btn-action--secondary dropdown-toggle" type="button"
-                                            data-bs-toggle="dropdown" aria-expanded="false" title="Update Status">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                                <polyline points="17 6 23 6 23 12"></polyline>
-                                            </svg>
-                                        </button>
-                                        <form
-                                            action="{{ url_for('documents.update_document_status', document_id=document.id) }}"
-                                            method="POST" class="dropdown-menu status-dropdown-menu p-2">
-                                            {% set status_options = [
-                                            ('Pending', 'pending'),
-                                            ('Draft', 'draft'),
-                                            ('For Signature', 'for-signature'),
-                                            ('For Notarization', 'for-notarization'),
-                                            ('Complete', 'complete'),
-                                            ('Released', 'released'),
-                                            ('Missing', 'missing'),
-                                            ('Lacking', 'lacking')
-                                            ] %}
-
-                                            {% for status_name, status_value in status_options %}
-                                            <button type="submit" name="status" value="{{ status_name }}"
-                                                class="dropdown-item status-option {% if document.document_status == status_name %}active{% endif %}"
-                                                data-status="{{ status_value }}">
-                                                <span
-                                                    class="status-indicator status-indicator--{{ status_value }}"></span>
-                                                {{ status_name }}
-                                            </button>
-                                            {% endfor %}
-                                        </form>
-                                    </div>
 
                                     <form action="{{ url_for('documents.delete_document', document_id=document.id) }}"
                                         method="POST" style="display:inline;"
-                                        onsubmit="return confirm('Are you sure you want to delete this document?');">
+                                        onsubmit="return confirm('Are you sure you want to move to trash this document?');">
                                         <button type="submit" class="btn-action btn-action--danger" title="Delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -276,7 +240,7 @@
     .action-buttons {
         display: flex;
         gap: 4px;
-        justify-content: center;
+        /* justify-content: start; */
         position: relative;
         /* Add this */
     }

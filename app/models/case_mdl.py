@@ -36,6 +36,7 @@ class Case(db.Model, SoftDeleteMixin):
     client = db.relationship('Client', backref='cases', lazy=True)
     assigned_attorney = db.relationship('User', backref='assigned_cases', lazy=True)
     schedules = db.relationship('Schedule', backref='case', lazy=True, cascade="all, delete-orphan", order_by="asc(Schedule.deadline)")
+    dismissal_reason = db.Column(db.String(255), nullable=True)
     
     # Helper to get snapshot as dict
     @property

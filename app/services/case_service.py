@@ -39,10 +39,14 @@ class CaseService:
                 status = 'pending'
             
             # 2. Generate case number
-            case_number = CaseService._generate_case_number()
+            input_case_number = case_data.get('case_number')
+            if input_case_number and input_case_number.strip():
+                case_number = input_case_number.strip()
+            else:
+                case_number = CaseService._generate_case_number()
             
             case = Case(
-                case_number=case_number,
+                case_number=case_number, # Now uses the correct variable
                 title=case_data['title'],
                 case_category=case_data.get('case_category', 'individual'),
                 case_type=case_data.get('case_type'),
@@ -92,7 +96,7 @@ class CaseService:
                 service_id=case_service.id,
                 case_id=case.id,
                 transaction_type='Case',
-                purpose=f"Acceptance Fee: {case.title}",
+                purpose=f"Total Legal Fee: {case.title}",
                 transaction_amount=fee_amount,
                 payment_status='Pending'
             )
@@ -106,7 +110,8 @@ class CaseService:
                     transaction_item_id=transaction.id,
                     pay_amount=initial_pay,
                     pay_method=case_data.get('pay_method', 'Cash'),
-                    pay_ref=case_data.get('pay_ref', 'Initial Deposit')
+                    pay_ref=case_data.get('pay_ref', 'Initial Deposit'),
+                    notes=case_data.get('pay_note')
                 )
                 db.session.add(payment)
                 
@@ -174,6 +179,13 @@ class CaseService:
 
             # Get new values
             new_status = case_data.get('status', case.status)
+            
+            if new_status == 'dismissed':
+                case.dismissal_reason = case_data.get('dismissal_reason')
+            else:
+                # Optional: Clear reason if status changes back to active/completed
+                case.dismissal_reason = None
+                
             new_filing_date = case_data.get('filing_date') # None or Date object
             
             # --- LOGIC: AUTO-PROMOTE TO ACTIVE ---
@@ -282,6 +294,9 @@ class CaseService:
                 raise ValueError("Case not found")
             
             case.soft_delete() # Uses Mixin
+            
+            db.session.commit()
+            
             return case.case_number
         except Exception as e:
             db.session.rollback()

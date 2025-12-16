@@ -360,6 +360,8 @@
                                 <div class="card-body py-2 px-3">
                                     <h6 class="text-success small fw-bold mb-2">PAYMENT DETAILS (Required)</h6>
 
+                                    <input type="hidden" name="payment_note" value="Notarial Fee">
+
                                     <div class="row g-2">
                                         <div class="col-6">
                                             <label class="form-label small">Fee Amount (₱) *</label>
@@ -369,16 +371,24 @@
                                         </div>
                                         <div class="col-6">
                                             <label class="form-label small">Method</label>
-                                            <select class="form-select form-select-sm" name="pay_method">
-                                                <option value="Cash" selected>Cash</option>
+                                            <select class="form-select form-select-sm" name="pay_method"
+                                                id="notarialPayMethod" onchange="updateNotarialPaymentRules()">
+                                                <option value="Cash">Cash</option>
+                                                <option value="Cash_Staff">Cash (Handed to Staff)</option>
                                                 <option value="GCash">GCash</option>
+                                                <option value="Bank Transfer">Bank Transfer</option>
                                                 <option value="Check">Check</option>
                                             </select>
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label small">OR No. / Reference *</label>
-                                            <input type="text" class="form-control form-control-sm" name="pay_ref"
-                                                required placeholder="Enter OR Number">
+                                            <div class="input-group has-validation">
+                                                <input type="text" class="form-control form-control-sm" name="pay_ref"
+                                                    id="notarialPayRef" required placeholder="Enter OR Number">
+                                                <div class="invalid-feedback" id="notarialPayFeedback">
+                                                    Please enter a valid reference.
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -862,7 +872,7 @@
     const getSuggestionsUrl = "{{ url_for('notarial_entries.get_suggestions_api', field='FIELD') }}";
     const searchSuggestionsUrl = "{{ url_for('notarial_entries.search_suggestions_api', field='FIELD') }}";
     const removeSuggestionUrl = "{{ url_for('notarial_entries.remove_suggestion_api', field='FIELD') }}";
-    const searchPartiesUrl = "/notarial-entries/api/parties/search"; 
+    const searchPartiesUrl = "/notarial-entries/api/parties/search";
 
     let currentEditingId = null;
 
@@ -950,7 +960,7 @@
     async function searchPartyHistory(input, dropdownId) {
         const query = input.value.trim();
         const dropdown = document.getElementById(dropdownId);
-        
+
         if (query.length < 2) {
             dropdown.style.display = 'none';
             return;
@@ -959,9 +969,9 @@
         try {
             const response = await fetch(`${searchPartiesUrl}?q=${encodeURIComponent(query)}`);
             const parties = await response.json();
-            
+
             dropdown.innerHTML = '';
-            
+
             if (parties.length === 0) {
                 dropdown.style.display = 'none';
                 return;
@@ -978,41 +988,41 @@
                         </div>
                     </div>
                 `;
-                
+
                 item.onclick = (e) => {
                     fillPartyFields(input, p);
                     dropdown.style.display = 'none';
                 };
                 dropdown.appendChild(item);
             });
-            
+
             dropdown.style.display = 'block';
-            
+
         } catch (e) { console.error('Error searching parties:', e); }
     }
 
     function fillPartyFields(nameInput, data) {
         const container = nameInput.closest('.party-field');
-        
+
         nameInput.value = data.party_name;
-        
+
         const addr = container.querySelector('input[name="party_address"]');
-        if(addr) addr.value = data.party_address;
-        
+        if (addr) addr.value = data.party_address;
+
         const cit = container.querySelector('input[name="party_citizenship"]');
-        if(cit) cit.value = data.citizenship || 'Filipino';
-        
+        if (cit) cit.value = data.citizenship || 'Filipino';
+
         const idType = container.querySelector('input[name="party_id_type"]');
-        if(idType) {
+        if (idType) {
             idType.value = data.party_id_type || '';
             updateIdValidation(idType);
         }
-        
+
         const idNum = container.querySelector('input[name="party_id_number"]');
-        if(idNum) idNum.value = data.party_id_number || '';
-        
+        if (idNum) idNum.value = data.party_id_number || '';
+
         const exp = container.querySelector('input[name="party_id_expiry"]');
-        if(exp && data.party_id_expiry) exp.value = data.party_id_expiry;
+        if (exp && data.party_id_expiry) exp.value = data.party_id_expiry;
     }
 
     // ==========================================
@@ -1025,7 +1035,7 @@
 
         const idTypeInputId = `party_id_type_${uniqueId}`;
         const idTypeDropdownId = `party_id_type_suggestions_${uniqueId}`;
-        
+
         // NEW IDs for Name Search
         const nameInputId = `party_name_${uniqueId}`;
         const nameDropdownId = `party_name_suggestions_${uniqueId}`;
@@ -1116,7 +1126,7 @@
     // ==========================================
     //  HELPER FUNCTIONS (Dropdowns, ID Validation)
     // ==========================================
-    
+
     async function showMixedIdSuggestions(query, dropdown, targetInputId, apiField) {
         let combinedList = [];
         if (!query) {
@@ -1195,7 +1205,7 @@
     }
 
     function updateIdValidation(typeInput) {
-        const row = typeInput.closest('.row'); 
+        const row = typeInput.closest('.row');
         if (!row) return;
         const numberInput = row.querySelector('input[name="party_id_number"]');
         const selectedType = typeInput.value;
@@ -1340,6 +1350,92 @@
         document.getElementById('paymentForm').action = `/notarial-entries/${entryId}/mark-paid`;
         new bootstrap.Modal(document.getElementById('paymentModal')).show();
     }
+</script>
+
+<script>
+    function updateNotarialPaymentRules() {
+        const method = document.getElementById('notarialPayMethod').value;
+        const refInput = document.getElementById('notarialPayRef');
+        const feedback = document.getElementById('notarialPayFeedback');
+        
+        // Get current user name from Jinja (Server-side injection)
+        // Ensure this variable is available in your template context
+        const currentUserName = "{{ current_user.full_name }}"; 
+
+        // 1. Reset State
+        refInput.readOnly = false;
+        refInput.classList.remove('is-invalid', 'is-valid');
+        
+        // If switching away from "Cash_Staff", clear the auto-filled name
+        if (refInput.value.includes('Received by')) {
+            refInput.value = '';
+        }
+
+        // 2. Apply Rules based on Method
+        switch (method) {
+            case 'GCash':
+                // Rule: Exactly 13 digits
+                refInput.pattern = "^\\d{13}$";
+                refInput.placeholder = "Ref No. (e.g. 0912345678901)";
+                refInput.title = "GCash reference must be exactly 13 digits";
+                feedback.textContent = "GCash reference must be exactly 13 digits.";
+                break;
+
+            case 'Cash_Staff':
+                // Rule: Auto-fill, Read-only
+                refInput.value = "Received by " + currentUserName;
+                refInput.readOnly = true;
+                refInput.pattern = ".*"; // Always valid
+                refInput.classList.remove('is-invalid'); // Clear errors
+                break;
+
+            case 'Check':
+                // Rule: Numeric Check Number
+                refInput.pattern = "^[0-9]+$";
+                refInput.placeholder = "Check Number";
+                feedback.textContent = "Check number must be numeric.";
+                break;
+
+            case 'Bank Transfer':
+                // Rule: Alphanumeric, at least 6 chars
+                refInput.pattern = "^[A-Za-z0-9\\-]{6,}$";
+                refInput.placeholder = "Transaction / Confirmation No.";
+                feedback.textContent = "Enter a valid bank transaction ID.";
+                break;
+
+            case 'Cash':
+            default:
+                // Rule: Default (Requires value, lenient format)
+                refInput.pattern = ".*";
+                refInput.placeholder = "Official Receipt (OR) Number";
+                feedback.textContent = "Please enter the OR Number.";
+                break;
+        }
+    }
+
+    // Attach real-time validation listener
+    document.addEventListener('DOMContentLoaded', function() {
+        const refInput = document.getElementById('notarialPayRef');
+        if(refInput){
+            refInput.addEventListener('input', function() {
+                if (this.readOnly) return; // Skip if read-only
+                
+                const pattern = new RegExp(this.pattern);
+                if (pattern.test(this.value)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    if (this.value.length > 0) {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                }
+            });
+            
+            // Initialize on load
+            updateNotarialPaymentRules();
+        }
+    });
 </script>
 
 {% block scripts %}

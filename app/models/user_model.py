@@ -22,6 +22,13 @@ class User(UserMixin, db.Model):
     # Contact Information
     contact_number = db.Column(db.String(20), nullable=True)
     
+    first_name = db.Column(db.String(100), nullable=True)
+    middle_name = db.Column(db.String(100), nullable=True)
+    last_name = db.Column(db.String(100), nullable=True)
+    birth_date = db.Column(db.Date, nullable=True)
+    gender = db.Column(db.String(20), nullable=True)
+    address = db.Column(db.String(255), nullable=True)
+    
     # Authorization and Status fields
     # Role: Determines access level (e.g., 'admin', 'attorney', 'paralegal')
     role = db.Column(db.String(50), default='attorney', nullable=False)
@@ -74,5 +81,7 @@ class User(UserMixin, db.Model):
 
     @property
     def full_name(self):
-        """Helper to return username as full name for now"""
+        """Returns First Last if available, otherwise Username"""
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
         return self.username

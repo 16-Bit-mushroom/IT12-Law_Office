@@ -44,7 +44,7 @@
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 
-<body>
+<body data-auth="{{ 'true' if current_user.is_authenticated else 'false' }}">
     <aside class="sidebar">
         <div class="sidebar-header">
             <img src="{{ url_for('static', filename='img/scales-of-justice.svg') }}" alt="logo" class="logo-img">
@@ -183,21 +183,45 @@
     </aside>
 
     <div class="page-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-messages">
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
             {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="toast align-items-center text-white bg-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'primary' }} border-0 show"
+                role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {% if category == 'error' %}
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {% elif category == 'success' %}
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        {% else %}
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
             </div>
             {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
-        {% endif %}
-        {% endwith %}
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+                var toastList = toastElList.map(function (toastEl) {
+                    // Initialize Bootstrap Toast with 5s delay
+                    return new bootstrap.Toast(toastEl, { delay: 5000 });
+                });
+            });
+        </script>
+
         {% block content %}
         {% endblock %}
-    </div>
+
 
 </body>
 
@@ -256,6 +280,34 @@
         }
     });
 </script>
+
+<script>
+    // GLOBAL SESSION RESET LOGIC
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // 1. Check Authentication Status from the Body Tag
+        const body = document.body;
+        const isAuthenticated = body.getAttribute('data-auth') === 'true';
+
+        // 2. If NOT logged in (e.g. Login Page), clear the flag
+        if (!isAuthenticated) {
+            sessionStorage.removeItem('briefingSeen');
+        }
+
+        // 3. Listen for Logout Clicks
+        document.body.addEventListener('click', function(e) {
+            // Find if the clicked element (or its parent) is a link
+            const link = e.target.closest('a');
+            
+            // If it's a logout link, clear the session storage
+            if (link && link.href.includes('logout')) {
+                sessionStorage.removeItem('briefingSeen');
+            }
+        });
+    });
+</script>
+</body>
+</html>
 <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
 </html>

@@ -201,7 +201,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text">₱</span>
                                     <input type="number" class="form-control" name="acceptance_fee" required min="1"
-                                        step="0.01" placeholder="Total Contract Price">
+                                        step="0.01" placeholder="0.00">
                                 </div>
                             </div>
 
@@ -212,9 +212,13 @@
 
                                 <div class="row g-2">
                                     <div class="col-6">
-                                        <label class="form-label small">Amount Paid Now *</label>
-                                        <input type="number" class="form-control form-control-sm" name="initial_payment"
-                                            required min="1" step="0.01">
+                                        <label class="form-label small">Amount</label>
+
+                                        <div class="input-group">
+                                            <span class="input-group-text">₱</span>
+                                            <input type="number" class="form-control form-control-sm"
+                                                name="initial_payment" required min="1" step="0.01" placeholder="0.00">
+                                        </div>
                                     </div>
 
                                     <div class="col-6">
@@ -394,6 +398,41 @@
             dropdown.style.display = 'block';
         } catch (e) { console.error(e); }
     }
+    // --- CASE DUPLICATE WARNING ---
+    async function checkCaseDuplicate() {
+        const titleInput = document.querySelector('input[name="title"]');
+        const clientId = document.getElementById('client_id').value;
+        const warningContainer = titleInput.parentNode; // The col-md-6 div
+
+        // Remove existing warning
+        const existing = document.getElementById('title-warning');
+        if (existing) existing.remove();
+
+        if (titleInput.value && clientId) {
+            try {
+                const response = await fetch('/cases/api/check-title', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: titleInput.value, client_id: clientId })
+                });
+
+                const result = await response.json();
+
+                if (result.exists) {
+                    const warning = document.createElement('div');
+                    warning.id = 'title-warning';
+                    warning.className = 'alert alert-warning mt-2 py-1 small mb-0';
+                    warning.innerHTML = `<i class="bi bi-info-circle-fill me-2"></i> ${result.message}`;
+                    warningContainer.appendChild(warning);
+                }
+            } catch (e) { console.error(e); }
+        }
+    }
+
+    // Attach listeners
+    document.querySelector('input[name="title"]').addEventListener('blur', checkCaseDuplicate);
+    // Also re-check if client changes (optional but good UX)
+    // You can call checkCaseDuplicate() inside your existing selectClient() function logic if available
 </script>
 
 <script>
@@ -464,14 +503,14 @@
         const method = document.getElementById('payMethod').value;
         const refInput = document.getElementById('payRef');
         const feedback = document.getElementById('payRefFeedback');
-        
+
         // Get current user name from Jinja (Server-side injection)
-        const currentUserName = "{{ current_user.full_name }}"; 
+        const currentUserName = "{{ current_user.full_name }}";
 
         // 1. Reset State
         refInput.readOnly = false;
         refInput.classList.remove('is-invalid', 'is-valid');
-        
+
         // If switching away from "Cash_Staff", clear the auto-filled name
         if (refInput.value.includes('Received by')) {
             refInput.value = '';
@@ -520,9 +559,9 @@
     }
 
     // Attach real-time validation listener to show the red box immediately
-    document.getElementById('payRef').addEventListener('input', function() {
+    document.getElementById('payRef').addEventListener('input', function () {
         if (this.readOnly) return; // Skip if read-only
-        
+
         const pattern = new RegExp(this.pattern);
         if (pattern.test(this.value)) {
             this.classList.remove('is-invalid');

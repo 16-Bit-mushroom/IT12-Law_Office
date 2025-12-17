@@ -1436,6 +1436,55 @@
             updateNotarialPaymentRules();
         }
     });
+
+    // --- DUPLICATE CHECKER ---
+    async function checkNotarialDuplicate() {
+        const book = document.querySelector('input[name="entry_book_num"]').value;
+        const page = document.querySelector('input[name="entry_page_num"]').value;
+        const entry = document.querySelector('input[name="entry_number"]').value;
+        const submitBtn = document.querySelector('#entryForm button[type="submit"]');
+        
+        // Remove existing alerts
+        const existingAlert = document.getElementById('duplicate-alert');
+        if (existingAlert) existingAlert.remove();
+        submitBtn.disabled = false;
+
+        if (book && page && entry) {
+            try {
+                const response = await fetch('/notarial-entries/api/check-duplicate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ book, page, entry })
+                });
+                
+                const result = await response.json();
+                
+                if (result.exists) {
+                    // Show Error
+                    const alertDiv = document.createElement('div');
+                    alertDiv.id = 'duplicate-alert';
+                    alertDiv.className = 'alert alert-danger mt-2 py-2 small fw-bold';
+                    alertDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i> ${result.message}`;
+                    
+                    // Insert after Entry Number field
+                    document.querySelector('input[name="entry_number"]').parentNode.appendChild(alertDiv);
+                    
+                    // Block Submit
+                    submitBtn.disabled = true;
+                }
+            } catch (e) {
+                console.error("Validation failed", e);
+            }
+        }
+    }
+
+    // Attach listeners to inputs
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input[name="entry_book_num"], input[name="entry_page_num"], input[name="entry_number"]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', checkNotarialDuplicate); // Check when user leaves field
+        });
+    });
 </script>
 
 {% block scripts %}

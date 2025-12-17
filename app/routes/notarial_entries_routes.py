@@ -432,3 +432,32 @@ def search_previous_parties_api():
     except Exception as e:
         print(f"Error searching parties: {e}")
         return jsonify([])
+    
+# In app/routes/notarial_entries_routes.py
+
+@notarial_entries_bp.route('/api/check-duplicate', methods=['POST'])
+@login_required
+def check_duplicate_entry():
+    """Check if Book/Page/Entry combination already exists"""
+    data = request.get_json()
+    book = data.get('book')
+    page = data.get('page')
+    entry_num = data.get('entry')
+    
+    if not all([book, page, entry_num]):
+        return jsonify({'exists': False})
+        
+    # Check database
+    exists = NotarialEntry.query.filter_by(
+        not_book_num=book,
+        not_page_num=page,
+        not_entry_num=entry_num
+    ).first()
+    
+    if exists:
+        return jsonify({
+            'exists': True,
+            'message': f'Error: Entry #{entry_num} on Book {book}, Page {page} already exists (ID: {exists.id}).'
+        })
+    
+    return jsonify({'exists': False})

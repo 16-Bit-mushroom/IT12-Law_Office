@@ -9,7 +9,6 @@ class Client(db.Model, SoftDeleteMixin):
     id = db.Column(db.Integer, primary_key=True)
     
     # 1. DISCRIMINATOR
-    # 'individual' or 'corporate'
     client_type = db.Column(db.String(20), default='individual', nullable=False) 
     
     # 2. INDIVIDUAL FIELDS (Nullable)
@@ -39,9 +38,32 @@ class Client(db.Model, SoftDeleteMixin):
     # Meta
     is_active = db.Column(db.Boolean, default=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
+    
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # --- SMART PROPERTIES ---
 
+    @property
+    def update_details(self, form_data):
+        """Updates client details safely from form data"""
+        # Map form fields to model fields
+        if self.client_type == 'individual':
+            self.first_name = form_data.get('first_name', self.first_name)
+            self.middle_name = form_data.get('middle_name', self.middle_name)
+            self.last_name = form_data.get('last_name', self.last_name)
+        else:
+            self.company_name = form_data.get('company_name', self.company_name)
+            self.designated_representative = form_data.get('representative', self.designated_representative)
+            
+        self.email = form_data.get('email', self.email)
+        self.phone = form_data.get('phone', self.phone)
+        self.street_address = form_data.get('street_address', self.street_address)
+        self.city = form_data.get('city', self.city)
+        self.province = form_data.get('province', self.province)
+        self.zip_code = form_data.get('zip_code', self.zip_code)
+        
+        self.updated_at = datetime.now()
     @property
     def full_name(self):
         """Returns the display name based on type"""

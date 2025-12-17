@@ -4,132 +4,38 @@
 
 {% block content %}
 <style>
-    /* Google-esque Search Result Styling */
-    .search-container {
-        max-width: 900px;
-        /* limits width for better readability */
-        padding-top: 20px;
-    }
-
-    .search-stats {
-        color: #70757a;
-        font-size: 0.9rem;
-        margin-bottom: 20px;
-    }
-
-    .result-card {
-        margin-bottom: 2rem;
-        border-bottom: 1px solid #ebebeb;
-        /* Optional separator */
-        padding-bottom: 1rem;
-    }
-
-    .result-card:last-child {
-        border-bottom: none;
-    }
-
-    /* The "Breadcrumb" URL look */
-    .result-context {
-        color: #202124;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        margin-bottom: 4px;
-    }
-
-    .result-context .category-badge {
-        font-weight: 600;
-        color: #5f6368;
-    }
-
-    /* The Title Link */
-    .result-title {
-        color: #1a0dab;
-        font-size: 1.25rem;
-        text-decoration: none;
-        display: block;
-        margin-bottom: 3px;
-        font-weight: 400;
-    }
-
-    .result-title:hover {
-        text-decoration: underline;
-    }
-
-    /* The Snippet/Description */
-    .result-snippet {
-        color: #4d5156;
-        font-size: 0.95rem;
-        line-height: 1.58;
-    }
-
-    .result-meta {
-        font-size: 0.8rem;
-        color: #70757a;
-        margin-top: 5px;
-    }
-
-    /* Tabs Styling */
-    .search-tabs .nav-link {
-        color: #5f6368;
-        border: none;
-        border-bottom: 3px solid transparent;
-        padding-bottom: 10px;
-    }
-
-    .search-tabs .nav-link.active {
-        color: #1a73e8;
-        border-bottom: 3px solid #1a73e8;
-        background: transparent;
-        font-weight: 500;
-    }
+    .search-container { max-width: 900px; padding-top: 20px; }
+    .search-stats { color: #70757a; font-size: 0.9rem; margin-bottom: 20px; }
+    .result-card { margin-bottom: 2rem; border-bottom: 1px solid #ebebeb; padding-bottom: 1rem; }
+    .result-card:last-child { border-bottom: none; }
+    .result-context { color: #202124; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+    .result-context .category-badge { font-weight: 600; color: #5f6368; }
+    .result-title { color: #1a0dab; font-size: 1.25rem; text-decoration: none; display: block; margin-bottom: 3px; font-weight: 400; }
+    .result-title:hover { text-decoration: underline; }
+    .result-snippet { color: #4d5156; font-size: 0.95rem; line-height: 1.58; }
+    .result-meta { font-size: 0.8rem; color: #70757a; margin-top: 5px; }
+    .search-tabs .nav-link { color: #5f6368; border: none; border-bottom: 3px solid transparent; padding-bottom: 10px; }
+    .search-tabs .nav-link.active { color: #1a73e8; border-bottom: 3px solid #1a73e8; background: transparent; font-weight: 500; }
 </style>
 
 <div class="container-fluid">
     <div class="search-container">
 
-        <!-- Optional: Refine Search Input (if they want to change query on this page) -->
         <div class="row mb-4">
             <div class="col-12">
                 <h2 class="mb-3">Search Results</h2>
-
-                <!-- Filter Tabs -->
-                <!-- Replace the tabs section with this: -->
                 <ul class="nav nav-tabs search-tabs mb-3">
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if not filter_type or filter_type == 'all' else '' }}"
-                            href="{{ url_for('search.search_page', q=query) }}">All</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if filter_type == 'cases' else '' }}"
-                            href="{{ url_for('search.search_page', q=query, type='cases') }}">Cases</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if filter_type == 'documents' else '' }}"
-                            href="{{ url_for('search.search_page', q=query, type='documents') }}">Documents</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if filter_type == 'notarial' else '' }}"
-                            href="{{ url_for('search.search_page', q=query, type='notarial') }}">Notarial</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if filter_type == 'transactions' else '' }}"
-                            href="{{ url_for('search.search_page', q=query, type='transactions') }}">Transactions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if filter_type == 'clients' else '' }}"
-                            href="{{ url_for('search.search_page', q=query, type='clients') }}">Clients</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ 'active' if filter_type == 'payments' else '' }}"
-                            href="{{ url_for('search.search_page', q=query, type='payments') }}">Payments</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if not filter_type or filter_type == 'all' else '' }}" href="{{ url_for('search.search_page', q=query) }}">All</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if filter_type == 'cases' else '' }}" href="{{ url_for('search.search_page', q=query, type='cases') }}">Cases</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if filter_type == 'documents' else '' }}" href="{{ url_for('search.search_page', q=query, type='documents') }}">Documents</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if filter_type == 'notarial' else '' }}" href="{{ url_for('search.search_page', q=query, type='notarial') }}">Notarial</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if filter_type == 'transactions' else '' }}" href="{{ url_for('search.search_page', q=query, type='transactions') }}">Transactions</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if filter_type == 'clients' else '' }}" href="{{ url_for('search.search_page', q=query, type='clients') }}">Clients</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if filter_type == 'payments' else '' }}" href="{{ url_for('search.search_page', q=query, type='payments') }}">Payments</a></li>
                 </ul>
             </div>
         </div>
 
-        <!-- Search Stats -->
         <div class="search-stats">
             {% if results %}
             About {{ results|length }} results for "<strong>{{ query }}</strong>"
@@ -138,40 +44,41 @@
             {% endif %}
         </div>
 
-        <!-- Results List -->
         <div class="results-list">
-
             {% if results %}
             {% for item in results %}
             <div class="result-card">
 
-                <!-- 1. Context / Breadcrumb -->
                 <div class="result-context">
-                    <!-- Icon based on type -->
                     {% if item.type == 'Case' %}
                     <img src="{{ url_for('static', filename='img/cases.svg') }}" width="14" height="14" alt="case">
                     {% elif item.type == 'Document' %}
                     <img src="{{ url_for('static', filename='img/documents.svg') }}" width="14" height="14" alt="doc">
                     {% elif item.type == 'Notarial' %}
                     <img src="{{ url_for('static', filename='img/book.svg') }}" width="14" height="14" alt="book">
+                    {% elif item.type == 'Client' %}
+                    <i class="bi bi-person-fill" style="font-size: 14px; color: #5f6368;"></i>
                     {% endif %}
 
-                    <span class="category-badge">{{ item.type }}</span>
+                    <span class="category-badge ms-1">{{ item.type }}</span>
                     <span class="text-muted">› {{ item.subtype }}</span>
                 </div>
 
-                <!-- 2. Main Title Link -->
-                <a href="{{ item.url }}" class="result-title">
-                    {{ item.title }}
-                </a>
+                {% if item.type == 'Client' %}
+                    {% set client_id = item.id if item.id else item.url.split('/')[-1] %}
+                    <a href="{{ url_for('clients.clients_page', view=client_id) }}" class="result-title">
+                        {{ item.title }}
+                    </a>
+                {% else %}
+                    <a href="{{ item.url }}" class="result-title">
+                        {{ item.title }}
+                    </a>
+                {% endif %}
 
-                <!-- 3. Snippet / Description -->
                 <div class="result-snippet">
-                    <!-- We truncate the description to keep it clean -->
                     {{ item.description | truncate(160) }}
                 </div>
 
-                <!-- 4. Meta Data (Date, Status, etc) -->
                 <div class="result-meta">
                     {% if item.date %}
                     <span class="me-3">{{ item.date }}</span>
@@ -182,9 +89,7 @@
                 </div>
             </div>
             {% endfor %}
-
             {% else %}
-            <!-- Empty State -->
             <div class="py-5">
                 <p>Your search - <strong>{{ query }}</strong> - did not match any documents.</p>
                 <p>Suggestions:</p>
@@ -195,17 +100,13 @@
                 </ul>
             </div>
             {% endif %}
-
         </div>
 
-        <!-- Simple Pagination (Static Mockup for now) -->
         {% if results|length > 10 %}
         <nav aria-label="Search results pages" class="mt-5">
             <ul class="pagination">
                 <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
                 <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
                 <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
         </nav>

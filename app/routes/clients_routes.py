@@ -4,6 +4,7 @@ from app.services.client_service import add_client, get_all_clients, get_client_
 from app.models.client_mdl import Client
 from app import db
 from app.services.system_log_service import SystemLogService
+from sqlalchemy import func
 
 clients_bp = Blueprint('clients', __name__, url_prefix='/clients')
 
@@ -91,10 +92,42 @@ def submit_new_client():
             
         else:
             # === CREATE MODE ===
-            # Duplicate Check (Only for Create)
-            if get_client_by_email(data.get('email')):
-                flash('Email already exists. Please search for the client.', 'error')
+            
+            # 1. Email Check (Strict)
+            email_input = data.get('email').strip()
+            if get_client_by_email(email_input):
+                flash(f'The email "{email_input}" is already in use.', 'error')
                 return redirect(url_for('clients.new_client_form'))
+
+            # 2. Name Check (Strict Case-Insensitive)
+            client_type = data.get('client_type')
+            
+            if client_type == 'individual':
+                fname = data.get('first_name').strip()
+                lname = data.get('last_name').strip()
+                
+                # Check for same First + Last name combination
+                duplicate = Client.query.filter(
+                    func.lower(Client.first_name) == func.lower(fname),
+                    func.lower(Client.last_name) == func.lower(lname),
+                    Client.is_active == True # Only check active clients
+                ).first()
+                
+                if duplicate:
+                    flash(f'Duplicate Warning: An individual named "{fname} {lname}" already exists.', 'error')
+                    return redirect(url_for('clients.new_client_form'))
+                    
+            else:
+                # Corporate Check
+                comp_name = data.get('company_name').strip()
+                duplicate = Client.query.filter(
+                    func.lower(Client.company_name) == func.lower(comp_name),
+                    Client.is_active == True
+                ).first()
+                
+                if duplicate:
+                    flash(f'Duplicate Warning: The company "{comp_name}" already exists.', 'error')
+                    return redirect(url_for('clients.new_client_form'))
 
             client = Client(
                 client_type=data.get('client_type'),
@@ -250,3 +283,45 @@ def empty_recycle_bin():
         db.session.rollback()
         current_app.logger.error(f"Error emptying recycle bin: {str(e)}")  # FIXED: use current_app
         return jsonify({'error': f'Failed to empty recycle bin: {str(e)}'}), 500
+
+# ... existing imports ...
+
+@clients_bp.route('/api/update', methods=['POST'])
+@login_required
+def api_update_client():
+    """AJAX Endpoint to update client details from modals"""
+    try:
+        data = request.form
+        client_id = data.get('client_id')
+        client = Client.query.get(client_id)
+        
+        if not client:
+            return jsonify({'success': False, 'message': 'Client not found'}), 404
+
+        # Update Fields
+        client.client_type = data.get('client_type', client.client_type)
+        client.email = data.get('email', client.email)
+        client.phone = data.get('phone', client.phone)
+        client.street_address = data.get('street_address', client.street_address)
+        client.barangay = data.get('barangay', client.barangay)
+        client.city = data.get('city', client.city)
+        client.province = data.get('province', client.province)
+        client.zip_code = data.get('zip_code', client.zip_code)
+
+        if client.client_type == 'individual':
+            client.first_name = data.get('first_name', client.first_name)
+            client.middle_name = data.get('middle_name', client.middle_name)
+            client.last_name = data.get('last_name', client.last_name)
+        else:
+            client.company_name = data.get('company_name', client.company_name)
+            client.designated_representative = data.get('representative', client.designated_representative)
+
+        db.session.commit()
+        
+        # Log it
+        SystemLogService.log('Update', 'Client', f"Quick updated client: {client.full_name}", client.id)
+        
+        return jsonify({'success': True, 'message': 'Client updated successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500

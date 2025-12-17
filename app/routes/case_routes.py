@@ -837,3 +837,30 @@ def undo_case_payment(case_id):
         print(f"Error undoing payment: {e}") 
         flash(f'Error undoing payment: {str(e)}', 'error')
         return redirect(url_for('case.view_case', case_id=case_id))
+
+# Add this to case_routes.py
+
+@case_bp.route('/api/check-title', methods=['POST'])
+@login_required
+def check_case_title():
+    data = request.get_json()
+    title = data.get('title')
+    client_id = data.get('client_id')
+    
+    if not title or not client_id:
+        return jsonify({'exists': False})
+
+    # Check if this client has a case with the SAME title (Active or Completed)
+    # Using ilike for case-insensitive match
+    duplicate = Case.query.filter(
+        Case.title.ilike(title.strip()),
+        Case.client_id == client_id,
+        Case.deleted_at == None
+    ).first()
+    
+    if duplicate:
+        return jsonify({
+            'exists': True,
+            'message': f"Note: This client already has a case titled '{duplicate.title}' ({duplicate.status})."
+        })
+    return jsonify({'exists': False})

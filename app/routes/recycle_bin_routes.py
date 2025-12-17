@@ -35,7 +35,7 @@ def get_data():
                 'type': 'Client',
                 'type_slug': 'client',
                 'title': c.full_name,
-                'subtitle': c.client_email or 'No email',
+                'subtitle': c.email or 'No email',
                 'deleted_at': c.deleted_at.strftime('%Y-%m-%d %I:%M %p'),
                 'view_url': f'/clients/{c.id}' 
             })

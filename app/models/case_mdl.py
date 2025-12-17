@@ -10,7 +10,6 @@ class Case(db.Model, SoftDeleteMixin):
     __tablename__ = 'cases'
     
     id = db.Column(db.Integer, primary_key=True)
-    # ... (Keep all your existing fields: case_number, title, etc.) ...
     case_number = db.Column(db.String(100), unique=True, nullable=False)
     title = db.Column(db.String(255), nullable=False)
     case_category = db.Column(db.String(50), default='individual', nullable=False)

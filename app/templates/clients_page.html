@@ -14,6 +14,9 @@
 
             <a href="{{ url_for('case.list_cases') }}" class="btn btn-outline-secondary d-flex align-items-center"
                 style="gap: 8px; padding: 10px 16px; font-weight: 500;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8Zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816ZM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
                 </svg>
                 Return to Cases
             </a>
@@ -29,7 +32,6 @@
             </div>
 
             <div style="display: flex; gap: 10px; align-items: center;">
-                <!-- Recycle Bin Link -->
                 <a href="{{ url_for('clients.recycle_bin') }}" class="btn btn-outline"
                     style="display: flex; align-items: center; gap: 5px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -84,7 +86,7 @@
                 <span class="data-card__value">
                     {% set individual_count = [] %}
                     {% for client in clients %}
-                    {% if client.client_role == 'Individual' %}
+                    {% if client.client_type == 'individual' %}
                     {% if individual_count.append(1) %}{% endif %}
                     {% endif %}
                     {% endfor %}
@@ -100,7 +102,7 @@
                 <span class="data-card__value">
                     {% set corporate_count = [] %}
                     {% for client in clients %}
-                    {% if client.client_role == 'Corporate' %}
+                    {% if client.client_type == 'corporate' %}
                     {% if corporate_count.append(1) %}{% endif %}
                     {% endif %}
                     {% endfor %}
@@ -144,35 +146,45 @@
                         <tr>
                             <td>#{{ client.id }}</td>
                             <td>
-                                <a href="#" class="table-link">{{ client.full_name }}</a>
+                                <a href="#" class="table-link fw-bold"
+                                    onclick="viewClient('{{ client.id }}'); return false;">{{ client.full_name }}</a>
                             </td>
-                            <td>{{ client.client_role or 'Individual' }}</td>
-                            <td>{{ client.client_email }}</td>
-                            <td class="address-cell">
-                                <span class="address-text" title="{{ client.client_address }}">
-                                    {{ client.client_address }}
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    {{ client.client_type|title }}
                                 </span>
                             </td>
-                            <td>{{ client.client_phone or 'N/A' }}</td>
+                            <td>{{ client.email }}</td>
+
+                            <td class="address-cell">
+                                <span class="address-text" title="{{ client.full_address }}">
+                                    {{ client.full_address }}
+                                </span>
+                            </td>
+
+                            <td>{{ client.phone or 'N/A' }}</td>
+
                             <td>
-                                <span class="badge bg-primary">{{ client.transaction_items|length }}</span>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                    {{ client.transaction_items|length }}
+                                </span>
                             </td>
                             <td>
                                 <div class="action-buttons" style="justify-content: start;">
-                                    <a href="{{ url_for('case.create_case') }}" class="btn-action btn-action--primary"
-                                        title="New Case">
+
+                                    <button class="btn-action btn-action--info" onclick="viewClient('{{ client.id }}')"
+                                        title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
-                                    </a>
+                                    </button>
 
-                                    <!-- Updated Delete Button -->
                                     <button class="btn-action btn-action--danger delete-client"
-                                        data-client-id="{{ client.id }}" data-client-name="{{ client.full_name }}"
-                                        title="Move to Recycle Bin">
+                                        style="background-color: salmon;" data-client-id="{{ client.id }}"
+                                        data-client-name="{{ client.full_name }}" title="Move to Recycle Bin">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">
@@ -188,8 +200,12 @@
                         {% else %}
                         <tr>
                             <td colspan="8" style="text-align: center; padding: 2rem;">
-                                No clients found. <a href="{{ url_for('clients.new_client_form') }}">Add your first
-                                    client</a>
+                                <div class="text-muted">
+                                    <i class="bi bi-people fs-1 d-block mb-3"></i>
+                                    <p>No clients found.</p>
+                                    <a href="{{ url_for('clients.new_client_form') }}"
+                                        class="btn btn-primary btn-sm">Add your first client</a>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -199,6 +215,127 @@
         </div>
     </section>
 </main>
+
+<div class="modal fade" id="clientDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-light border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-secondary">Client Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <form id="clientUpdateForm">
+                    <input type="hidden" name="client_id" id="view_client_id">
+                    <input type="hidden" name="client_type" id="view_client_type">
+
+                    <div class="d-flex align-items-center mb-4 mt-3 p-3 bg-white border rounded shadow-sm">
+                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style="width: 50px; height: 50px; font-size: 1.5rem;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h4 class="mb-0 fw-bold text-dark" id="display_name">Loading...</h4>
+                            <span class="badge bg-secondary" id="display_type">Individual</span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"
+                                id="btnEditProfile" onclick="toggleEditMode()">
+                                <i class="bi bi-pencil-square"></i> Edit Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-2 mb-3">Identity
+                                Information</h6>
+                        </div>
+
+                        <div class="col-md-4 individual-field">
+                            <label class="form-label small text-muted">First Name</label>
+                            <input type="text" class="form-control form-control-sm" name="first_name" id="view_fname"
+                                disabled>
+                        </div>
+                        <div class="col-md-4 individual-field">
+                            <label class="form-label small text-muted">Middle Name</label>
+                            <input type="text" class="form-control form-control-sm" name="middle_name" id="view_mname"
+                                disabled>
+                        </div>
+                        <div class="col-md-4 individual-field">
+                            <label class="form-label small text-muted">Last Name</label>
+                            <input type="text" class="form-control form-control-sm" name="last_name" id="view_lname"
+                                disabled>
+                        </div>
+
+                        <div class="col-md-6 corporate-field" style="display:none;">
+                            <label class="form-label small text-muted">Company Name</label>
+                            <input type="text" class="form-control form-control-sm" name="company_name"
+                                id="view_company" disabled>
+                        </div>
+                        <div class="col-md-6 corporate-field" style="display:none;">
+                            <label class="form-label small text-muted">Representative</label>
+                            <input type="text" class="form-control form-control-sm" name="representative" id="view_rep"
+                                disabled>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-2 mb-3">Contact Details
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Email Address</label>
+                            <input type="email" class="form-control form-control-sm" name="email" id="view_email"
+                                disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Phone Number</label>
+                            <input type="text" class="form-control form-control-sm" name="phone" id="view_phone"
+                                disabled>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-2 mb-3">Address</h6>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small text-muted">Street / House No.</label>
+                            <input type="text" class="form-control form-control-sm" name="street_address"
+                                id="view_street" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Barangay</label>
+                            <input type="text" class="form-control form-control-sm" name="barangay" id="view_barangay"
+                                disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">City</label>
+                            <input type="text" class="form-control form-control-sm" name="city" id="view_city" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Province</label>
+                            <input type="text" class="form-control form-control-sm" name="province" id="view_province"
+                                disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Zip Code</label>
+                            <input type="text" class="form-control form-control-sm" name="zip_code" id="view_zip"
+                                disabled>
+                        </div>
+                    </div>
+
+                    <div id="editActions" class="mt-4 pt-3 border-top text-end" style="display: none;">
+                        <button type="button" class="btn btn-secondary me-2" onclick="cancelEditMode()">Cancel</button>
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     .action-buttons {
@@ -217,6 +354,7 @@
         border-radius: 4px;
         cursor: pointer;
         text-decoration: none;
+        transition: all 0.2s;
     }
 
     .btn-action--primary {
@@ -231,11 +369,13 @@
 
     .btn-action:hover {
         opacity: 0.8;
+        transform: translateY(-1px);
     }
 
     .badge {
         font-size: 0.75em;
-        padding: 0.25em 0.4em;
+        padding: 0.35em 0.65em;
+        font-weight: 500;
     }
 
     .btn-action--danger {
@@ -261,9 +401,9 @@
         cursor: help;
     }
 
-    /* Adjust column widths for better layout */
+    /* Adjust column widths */
     col.short {
-        width: 80px;
+        width: 60px;
     }
 
     col.medium {
@@ -275,12 +415,194 @@
     }
 
     col.actions {
-        width: 140px;
+        width: 100px;
+    }
+
+    .table-link {
+        color: #2c3e50;
+        text-decoration: none;
+    }
+
+    .table-link:hover {
+        color: #0d6efd;
+        text-decoration: underline;
+    }
+
+    /* Modal Form Styles */
+    .form-control:disabled {
+        background-color: #f8f9fa;
+        border: 1px solid transparent;
+        padding-left: 0;
+        font-weight: 500;
+        color: #212529;
+    }
+
+    /* When editing */
+    .editing .form-control:disabled {
+        /* Keep disabled appearance for truly read-only fields if any */
+    }
+
+    .editing input:not([disabled]) {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        padding-left: 0.75rem;
     }
 </style>
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/clients/client_table.js') }}"></script>
+
+<script>
+    let isEditMode = false;
+    let originalData = {};
+
+    async function viewClient(clientId) {
+        try {
+            // Fetch data
+            const response = await fetch(`/clients/api/clients/${clientId}`);
+            const data = await response.json();
+
+            if (!data) { alert("Client not found"); return; }
+
+            // Store for canceling edit
+            originalData = data;
+
+            // Populate Fields
+            document.getElementById('view_client_id').value = data.id;
+            document.getElementById('view_client_type').value = data.client_type;
+
+            // Header Info
+            document.getElementById('display_type').textContent = data.client_type === 'corporate' ? 'Corporate' : 'Individual';
+
+            // Common Fields
+            document.getElementById('view_email').value = data.email || '';
+            document.getElementById('view_phone').value = data.phone || '';
+            document.getElementById('view_street').value = data.street_address || '';
+            document.getElementById('view_barangay').value = data.barangay || '';
+            document.getElementById('view_city').value = data.city || '';
+            document.getElementById('view_province').value = data.province || '';
+            document.getElementById('view_zip').value = data.zip_code || '';
+
+            // Type Specific
+            if (data.client_type === 'corporate') {
+                document.querySelectorAll('.individual-field').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.corporate-field').forEach(el => el.style.display = 'block');
+
+                document.getElementById('view_company').value = data.company_name || '';
+                document.getElementById('view_rep').value = data.representative || '';
+                document.getElementById('display_name').textContent = data.company_name || 'Unnamed Corp';
+            } else {
+                document.querySelectorAll('.individual-field').forEach(el => el.style.display = 'block');
+                document.querySelectorAll('.corporate-field').forEach(el => el.style.display = 'none');
+
+                document.getElementById('view_fname').value = data.first_name || '';
+                document.getElementById('view_mname').value = data.middle_name || '';
+                document.getElementById('view_lname').value = data.last_name || '';
+
+                const mi = data.middle_name ? ` ${data.middle_name[0]}.` : '';
+                document.getElementById('display_name').textContent = `${data.first_name}${mi} ${data.last_name}`;
+            }
+
+            // Ensure View Mode State
+            cancelEditMode();
+
+            // Show Modal
+            new bootstrap.Modal(document.getElementById('clientDetailsModal')).show();
+
+        } catch (e) {
+            console.error(e);
+            alert("Error loading client details.");
+        }
+    }
+
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const form = document.getElementById('clientUpdateForm');
+        const btn = document.getElementById('btnEditProfile');
+        const actions = document.getElementById('editActions');
+
+        if (isEditMode) {
+            // Enable Inputs
+            form.classList.add('editing');
+            form.querySelectorAll('input').forEach(input => input.disabled = false);
+            btn.style.display = 'none';
+            actions.style.display = 'block';
+        } else {
+            // View Only
+            cancelEditMode();
+        }
+    }
+
+    function cancelEditMode() {
+        isEditMode = false;
+        const form = document.getElementById('clientUpdateForm');
+        const btn = document.getElementById('btnEditProfile');
+        const actions = document.getElementById('editActions');
+
+        form.classList.remove('editing');
+        form.querySelectorAll('input').forEach(input => input.disabled = true);
+        btn.style.display = 'flex';
+        actions.style.display = 'none';
+
+        // Restore original values if canceled (optional, simply re-fetching or using stored obj)
+        // For simplicity, we assume user won't mind fields resetting on next open, 
+        // but to reset now we can re-populate from originalData variable
+        if (originalData.id) {
+            // Re-populate basic fields to undo typing
+            if (originalData.client_type === 'individual') {
+                document.getElementById('view_fname').value = originalData.first_name || '';
+                document.getElementById('view_lname').value = originalData.last_name || '';
+            } else {
+                document.getElementById('view_company').value = originalData.company_name || '';
+            }
+            // ... populate others if strict reset needed
+        }
+    }
+
+    // Submit Update
+    document.getElementById('clientUpdateForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch("{{ url_for('clients.api_update_client') }}", {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Client profile updated successfully!");
+                location.reload(); // Reload to update table
+            } else {
+                alert("Update failed: " + result.message);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("An error occurred while updating.");
+        }
+    });
+
+    // --- ADD THIS SECTION: AUTO-OPEN MODAL FROM URL ---
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewId = urlParams.get('view');
+
+        if (viewId) {
+            // Wait a brief moment to ensure other scripts initialized
+            setTimeout(() => {
+                viewClient(viewId);
+
+                // Optional: Clean URL to remove the query param so refresh doesn't reopen it
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }, 300);
+        }
+    });
+</script>
+
+
 {% endblock scripts %}
 
 {% endblock content %}

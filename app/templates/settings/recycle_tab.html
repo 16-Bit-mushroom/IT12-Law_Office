@@ -214,10 +214,6 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
                                 Restore
                             </button>
-                            <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" 
-                                onclick="purgeItem('${item.type_slug}', ${item.id})" title="Delete Permanently">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            </button>
                         </div>
                     </div>
                     `;
@@ -242,20 +238,6 @@
         if(!confirm('Restore this item? It will reappear in the main list.')) return;
         
         fetch(`/recycle-bin/restore/${type}/${id}`, {method: 'POST'})
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    loadRecycleData(); // Refresh list
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            });
-    }
-
-    function purgeItem(type, id) {
-        if(!confirm('PERMANENTLY DELETE? This cannot be undone.')) return;
-        
-        fetch(`/recycle-bin/purge/${type}/${id}`, {method: 'POST'})
             .then(res => res.json())
             .then(data => {
                 if(data.success) {

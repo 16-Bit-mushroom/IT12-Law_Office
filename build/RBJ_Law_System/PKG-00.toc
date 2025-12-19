@@ -1,0 +1,1036 @@
+('C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+ 'Law_Office\\build\\RBJ_Law_System\\RBJ_Law_System.pkg',
+ {'BINARY': True,
+  'DATA': True,
+  'EXECUTABLE': True,
+  'EXTENSION': True,
+  'PYMODULE': True,
+  'PYSOURCE': True,
+  'PYZ': False,
+  'SPLASH': True,
+  'SYMLINK': False},
+ [('pyi-contents-directory _internal', '', 'OPTION'),
+  ('PYZ-00.pyz',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\PYZ-00.pyz',
+   'PYZ'),
+  ('struct',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\localpycs\\struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\localpycs\\pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\localpycs\\pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\localpycs\\pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyimod04_pywin32',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\localpycs\\pyimod04_pywin32.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('pyi_rth_pkgutil',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
+   'PYSOURCE'),
+  ('pyi_rth_multiprocessing',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_multiprocessing.py',
+   'PYSOURCE'),
+  ('pyi_rth_setuptools',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_setuptools.py',
+   'PYSOURCE'),
+  ('desktop_run',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\desktop_run.py',
+   'PYSOURCE'),
+  ('python314.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\python314.dll',
+   'BINARY'),
+  ('_zstd.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_zstd.pyd',
+   'EXTENSION'),
+  ('_lzma.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_lzma.pyd',
+   'EXTENSION'),
+  ('_bz2.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_bz2.pyd',
+   'EXTENSION'),
+  ('_decimal.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_decimal.pyd',
+   'EXTENSION'),
+  ('_hashlib.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_hashlib.pyd',
+   'EXTENSION'),
+  ('select.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\select.pyd',
+   'EXTENSION'),
+  ('_socket.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_socket.pyd',
+   'EXTENSION'),
+  ('unicodedata.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\unicodedata.pyd',
+   'EXTENSION'),
+  ('_ssl.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_ssl.pyd',
+   'EXTENSION'),
+  ('_overlapped.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_overlapped.pyd',
+   'EXTENSION'),
+  ('_asyncio.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_asyncio.pyd',
+   'EXTENSION'),
+  ('_queue.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_queue.pyd',
+   'EXTENSION'),
+  ('_ctypes.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_ctypes.pyd',
+   'EXTENSION'),
+  ('_multiprocessing.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_multiprocessing.pyd',
+   'EXTENSION'),
+  ('pyexpat.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\pyexpat.pyd',
+   'EXTENSION'),
+  ('_wmi.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_wmi.pyd',
+   'EXTENSION'),
+  ('greenlet\\_greenlet.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\greenlet\\_greenlet.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('_uuid.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_uuid.pyd',
+   'EXTENSION'),
+  ('_sqlite3.pyd',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_sqlite3.pyd',
+   'EXTENSION'),
+  ('markupsafe\\_speedups.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe\\_speedups.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\etree.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\etree.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\_elementpath.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\_elementpath.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\sax.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\sax.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\objectify.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\objectify.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\html\\diff.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\html\\diff.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\html\\_difflib.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\html\\_difflib.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('lxml\\builder.cp314-win_amd64.pyd',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\builder.cp314-win_amd64.pyd',
+   'EXTENSION'),
+  ('VCRUNTIME140.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('libcrypto-3.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libcrypto-3.dll',
+   'BINARY'),
+  ('libssl-3.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libssl-3.dll',
+   'BINARY'),
+  ('libffi-8.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libffi-8.dll',
+   'BINARY'),
+  ('VCRUNTIME140_1.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\VCRUNTIME140_1.dll',
+   'BINARY'),
+  ('sqlite3.dll',
+   'C:\\Users\\chris\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\sqlite3.dll',
+   'BINARY'),
+  ('static\\css\\base\\_variable.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\base\\_variable.css',
+   'DATA'),
+  ('static\\css\\base\\layout.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\base\\layout.css',
+   'DATA'),
+  ('static\\css\\base\\reset.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\base\\reset.css',
+   'DATA'),
+  ('static\\css\\components\\_button.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_button.css',
+   'DATA'),
+  ('static\\css\\components\\_dashboard.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_dashboard.css',
+   'DATA'),
+  ('static\\css\\components\\_data-card.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_data-card.css',
+   'DATA'),
+  ('static\\css\\components\\_deadline-list.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_deadline-list.css',
+   'DATA'),
+  ('static\\css\\components\\_document-list.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_document-list.css',
+   'DATA'),
+  ('static\\css\\components\\_forms.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_forms.css',
+   'DATA'),
+  ('static\\css\\components\\_search-bar.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_search-bar.css',
+   'DATA'),
+  ('static\\css\\components\\_status-tag.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_status-tag.css',
+   'DATA'),
+  ('static\\css\\components\\_table.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\_table.css',
+   'DATA'),
+  ('static\\css\\components\\card.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\card.css',
+   'DATA'),
+  ('static\\css\\components\\sidebar.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\sidebar.css',
+   'DATA'),
+  ('static\\css\\components\\topbar.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\components\\topbar.css',
+   'DATA'),
+  ('static\\css\\main.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\main.css',
+   'DATA'),
+  ('static\\css\\pages\\_admin.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\pages\\_admin.css',
+   'DATA'),
+  ('static\\css\\pages\\dashboard.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\pages\\dashboard.css',
+   'DATA'),
+  ('static\\css\\pages\\login.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\pages\\login.css',
+   'DATA'),
+  ('static\\css\\pages\\search.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\css\\pages\\search.css',
+   'DATA'),
+  ('static\\data\\philippine_provinces_cities_municipalities_and_barangays_2019v2.json',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\data\\philippine_provinces_cities_municipalities_and_barangays_2019v2.json',
+   'DATA'),
+  ('static\\img\\avatar.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\avatar.svg',
+   'DATA'),
+  ('static\\img\\book.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\book.svg',
+   'DATA'),
+  ('static\\img\\cases.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\cases.svg',
+   'DATA'),
+  ('static\\img\\cases1.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\cases1.svg',
+   'DATA'),
+  ('static\\img\\clients.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\clients.svg',
+   'DATA'),
+  ('static\\img\\clients1.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\clients1.svg',
+   'DATA'),
+  ('static\\img\\consult.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\consult.svg',
+   'DATA'),
+  ('static\\img\\dashboard.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\dashboard.svg',
+   'DATA'),
+  ('static\\img\\dashboard1.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\dashboard1.svg',
+   'DATA'),
+  ('static\\img\\documents.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\documents.svg',
+   'DATA'),
+  ('static\\img\\documents1.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\documents1.svg',
+   'DATA'),
+  ('static\\img\\payments.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\payments.svg',
+   'DATA'),
+  ('static\\img\\payments1.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\payments1.svg',
+   'DATA'),
+  ('static\\img\\profile.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\profile.svg',
+   'DATA'),
+  ('static\\img\\scales-of-justice.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\scales-of-justice.svg',
+   'DATA'),
+  ('static\\img\\scales-of-justice1.png',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\scales-of-justice1.png',
+   'DATA'),
+  ('static\\img\\service.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\service.svg',
+   'DATA'),
+  ('static\\img\\transaction.svg',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\img\\transaction.svg',
+   'DATA'),
+  ('static\\js\\case_logs\\case_logs_table.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\case_logs\\case_logs_table.js',
+   'DATA'),
+  ('static\\js\\clients\\client_form.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\clients\\client_form.js',
+   'DATA'),
+  ('static\\js\\clients\\client_table.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\clients\\client_table.js',
+   'DATA'),
+  ('static\\js\\documents\\document_table.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\documents\\document_table.js',
+   'DATA'),
+  ('static\\js\\main.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\main.js',
+   'DATA'),
+  ('static\\js\\payments\\payment_table.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\payments\\payment_table.js',
+   'DATA'),
+  ('static\\js\\search.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\js\\search.js',
+   'DATA'),
+  ('static\\templates\\affidavit-of-loss-template.docx',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\templates\\affidavit-of-loss-template.docx',
+   'DATA'),
+  ('static\\templates\\affidavit-of-no-income.docx',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\templates\\affidavit-of-no-income.docx',
+   'DATA'),
+  ('static\\templates\\affidavit-of-undertaking.docx',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\templates\\affidavit-of-undertaking.docx',
+   'DATA'),
+  ('static\\templates\\joint-affidavit-two-disenterested-person.docx',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\templates\\joint-affidavit-two-disenterested-person.docx',
+   'DATA'),
+  ('static\\templates\\special-power-of-attorney.docx',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\templates\\special-power-of-attorney.docx',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-grid.rtl.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-reboot.rtl.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap-utilities.rtl.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.rtl.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.rtl.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.rtl.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.rtl.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.rtl.min.css',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.rtl.min.css',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\css\\bootstrap.rtl.min.css.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\css\\bootstrap.rtl.min.css.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.bundle.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.bundle.js',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.bundle.js.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.bundle.js.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.bundle.min.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.bundle.min.js',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.bundle.min.js.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.bundle.min.js.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.esm.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.esm.js',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.esm.js.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.esm.js.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.esm.min.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.esm.min.js',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.esm.min.js.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.esm.min.js.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.js',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.js.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.js.map',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.min.js',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.min.js',
+   'DATA'),
+  ('static\\vendor\\bootstrap\\js\\bootstrap.min.js.map',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\static\\vendor\\bootstrap\\js\\bootstrap.min.js.map',
+   'DATA'),
+  ('templates\\add_client.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\add_client.html',
+   'DATA'),
+  ('templates\\add_user.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\add_user.html',
+   'DATA'),
+  ('templates\\base.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\base.html',
+   'DATA'),
+  ('templates\\case_logs_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\case_logs_page.html',
+   'DATA'),
+  ('templates\\cases\\case_detail.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\cases\\case_detail.html',
+   'DATA'),
+  ('templates\\cases\\create.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\cases\\create.html',
+   'DATA'),
+  ('templates\\cases\\edit_case.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\cases\\edit_case.html',
+   'DATA'),
+  ('templates\\cases\\list.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\cases\\list.html',
+   'DATA'),
+  ('templates\\clients_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\clients_page.html',
+   'DATA'),
+  ('templates\\components.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\components.html',
+   'DATA'),
+  ('templates\\components\\alert.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\components\\alert.html',
+   'DATA'),
+  ('templates\\components\\client_form.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\components\\client_form.html',
+   'DATA'),
+  ('templates\\components\\client_form1.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\components\\client_form1.html',
+   'DATA'),
+  ('templates\\dashboard_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\dashboard_page.html',
+   'DATA'),
+  ('templates\\document_row.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\document_row.html',
+   'DATA'),
+  ('templates\\documents_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\documents_page.html',
+   'DATA'),
+  ('templates\\edit_user.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\edit_user.html',
+   'DATA'),
+  ('templates\\legal_consultation_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\legal_consultation_page.html',
+   'DATA'),
+  ('templates\\login_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\login_page.html',
+   'DATA'),
+  ('templates\\manage_profile_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\manage_profile_page.html',
+   'DATA'),
+  ('templates\\manage_users.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\manage_users.html',
+   'DATA'),
+  ('templates\\new_case_form.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\new_case_form.html',
+   'DATA'),
+  ('templates\\new_consultation.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\new_consultation.html',
+   'DATA'),
+  ('templates\\new_transaction_form.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\new_transaction_form.html',
+   'DATA'),
+  ('templates\\notarial_entries.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\notarial_entries.html',
+   'DATA'),
+  ('templates\\notarial_entry_details.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\notarial_entry_details.html',
+   'DATA'),
+  ('templates\\notarial_entry_print.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\notarial_entry_print.html',
+   'DATA'),
+  ('templates\\payments_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\payments_page.html',
+   'DATA'),
+  ('templates\\recycle_bin\\index.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\recycle_bin\\index.html',
+   'DATA'),
+  ('templates\\recycle_bin_clients.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\recycle_bin_clients.html',
+   'DATA'),
+  ('templates\\schedules\\_schedule_list.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\schedules\\_schedule_list.html',
+   'DATA'),
+  ('templates\\schedules\\add_schedule.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\schedules\\add_schedule.html',
+   'DATA'),
+  ('templates\\schedules\\edit_schedule.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\schedules\\edit_schedule.html',
+   'DATA'),
+  ('templates\\search_results_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\search_results_page.html',
+   'DATA'),
+  ('templates\\settings\\backup_tab.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings\\backup_tab.html',
+   'DATA'),
+  ('templates\\settings\\logs_tab.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings\\logs_tab.html',
+   'DATA'),
+  ('templates\\settings\\modals\\create_user_modal.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings\\modals\\create_user_modal.html',
+   'DATA'),
+  ('templates\\settings\\modals\\edit_user_modal.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings\\modals\\edit_user_modal.html',
+   'DATA'),
+  ('templates\\settings\\recycle_tab.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings\\recycle_tab.html',
+   'DATA'),
+  ('templates\\settings\\users_tab.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings\\users_tab.html',
+   'DATA'),
+  ('templates\\settings_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\settings_page.html',
+   'DATA'),
+  ('templates\\transactions\\_history_list.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\transactions\\_history_list.html',
+   'DATA'),
+  ('templates\\transactions_page.html',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\app\\templates\\transactions_page.html',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\LICENSE',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\LICENSE',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\RECORD',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\Lorem '
+   'ipsum.txt',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_dsdl_include.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_dsdl_include.xsl',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\RNG2Schtrn.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\RNG2Schtrn.xsl',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\readme.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\readme.txt',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_svrl_for_xslt1.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_svrl_for_xslt1.xsl',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_schematron_skeleton_for_xslt1.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_schematron_skeleton_for_xslt1.xsl',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\XSD2Schtrn.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\XSD2Schtrn.xsl',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\rng\\iso-schematron.rng',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\rng\\iso-schematron.rng',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_schematron_message.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_schematron_message.xsl',
+   'DATA'),
+  ('lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_abstract_expand.xsl',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\lxml\\isoschematron\\resources\\xsl\\iso-schematron-xslt1\\iso_abstract_expand.xsl',
+   'DATA'),
+  ('docx\\templates\\default-settings.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-settings.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\_rels\\document.xml.rels',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\_rels\\document.xml.rels',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\stylesWithEffects.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\stylesWithEffects.xml',
+   'DATA'),
+  ('docx\\templates\\default-footer.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-footer.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\settings.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\settings.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\customXml\\itemProps1.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\customXml\\itemProps1.xml',
+   'DATA'),
+  ('docx\\templates\\default-comments.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-comments.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\fontTable.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\fontTable.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\numbering.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\numbering.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\[Content_Types].xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\[Content_Types].xml',
+   'DATA'),
+  ('docx\\py.typed',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\py.typed',
+   'DATA'),
+  ('docx\\templates\\default.docx',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default.docx',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\theme\\theme1.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\theme\\theme1.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\docProps\\thumbnail.jpeg',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\docProps\\thumbnail.jpeg',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\customXml\\_rels\\item1.xml.rels',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\customXml\\_rels\\item1.xml.rels',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\document.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\document.xml',
+   'DATA'),
+  ('docx\\templates\\default-styles.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-styles.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\_rels\\.rels',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\_rels\\.rels',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\webSettings.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\webSettings.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\word\\styles.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\word\\styles.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\docProps\\app.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\docProps\\app.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\docProps\\core.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\docProps\\core.xml',
+   'DATA'),
+  ('docx\\templates\\default-docx-template\\customXml\\item1.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-docx-template\\customXml\\item1.xml',
+   'DATA'),
+  ('docx\\templates\\default-header.xml',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\docx\\templates\\default-header.xml',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\METADATA',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\METADATA',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\REQUESTED',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\REQUESTED',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\RECORD',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\REQUESTED',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\REQUESTED',
+   'DATA'),
+  ('click-8.3.0.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\click-8.3.0.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\LICENSE.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\top_level.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
+   'DATA'),
+  ('click-8.3.0.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\click-8.3.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\LICENSE.rst',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\LICENSE.rst',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\RECORD',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\RECORD',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
+   'DATA'),
+  ('flask_sqlalchemy-3.1.1.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask_sqlalchemy-3.1.1.dist-info\\WHEEL',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\WHEEL',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\METADATA',
+   'DATA'),
+  ('click-8.3.0.dist-info\\RECORD',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\click-8.3.0.dist-info\\RECORD',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('click-8.3.0.dist-info\\licenses\\LICENSE.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\click-8.3.0.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('flask-3.1.2.dist-info\\entry_points.txt',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\flask-3.1.2.dist-info\\entry_points.txt',
+   'DATA'),
+  ('click-8.3.0.dist-info\\METADATA',
+   'c:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\.venv\\Lib\\site-packages\\click-8.3.0.dist-info\\METADATA',
+   'DATA'),
+  ('base_library.zip',
+   'C:\\Users\\chris\\OneDrive\\Desktop\\Projects\\IT12 '
+   'Law_Office\\build\\RBJ_Law_System\\base_library.zip',
+   'DATA')],
+ 'python314.dll',
+ False,
+ False,
+ False,
+ [],
+ None,
+ None,
+ None)
